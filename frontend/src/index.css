@@ -10,15 +10,15 @@
     --muted: 243 243 240;
     --ink: 17 18 23;
     --ink-soft: 76 79 92;
-    --ink-faint: 134 137 150;
+    --ink-faint: 102 105 118;      /* ≥4.5:1 on the page background */
     --line: 229 229 224;
     --brand: 49 114 57;          /* logo green #317239 */
     --brand-soft: 233 243 235;
     --gold: 216 171 84;          /* logo gold #D8AB54 */
     --maroon: 70 8 12;           /* logo maroon #46080C */
     --brand-ink: 255 255 255;
-    --deal: 236 72 55;
-    --success: 22 163 74;
+    --deal: 185 36 24;             /* ≥4.5:1 for red text, on its tint, and white-on-red badges */
+    --success: 21 128 61;          /* ≥4.5:1 for "% off" text */
     --warning: 217 119 6;
     --danger: 220 38 38;
     color-scheme: light;
@@ -50,7 +50,7 @@
     font-feature-settings: 'cv11', 'ss01';
     text-rendering: optimizeLegibility;
   }
-  h1, h2, h3, h4 { @apply font-display tracking-tight; }
+  h1, h2, h3, h4 { @apply font-display tracking-tight; letter-spacing: -0.025em; }
   ::selection { background: rgb(var(--brand) / 0.2); }
   :focus-visible { outline: 2px solid rgb(var(--brand)); outline-offset: 2px; border-radius: 6px; }
   img { @apply select-none; }

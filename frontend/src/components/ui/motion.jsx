@@ -38,10 +38,14 @@ export function Stagger({ children, className, gap = 0.07 }) {
   );
 }
 
+let firstPage = true;
+
 export function PageTransition({ children }) {
+  const skip = firstPage;
+  firstPage = false;
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={skip ? false : { opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease }}
     >

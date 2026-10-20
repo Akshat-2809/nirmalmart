@@ -3,19 +3,25 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import StoreLayout from './components/layout/StoreLayout';
 import { Spinner } from './components/ui/bits';
 import { useAuth } from './context/AuthContext';
-import AccountLayout from './pages/account/AccountLayout';
-import Addresses from './pages/account/Addresses';
-import { OrderDetail, Orders } from './pages/account/Orders';
-import { Profile, Security } from './pages/account/Profile';
-import { Login, Register } from './pages/Auth';
-import Cart from './pages/Cart';
-import Checkout from './pages/Checkout';
 import Home from './pages/Home';
-import NotFound from './pages/NotFound';
-import OrderSuccess from './pages/OrderSuccess';
-import ProductDetail from './pages/ProductDetail';
-import Shop from './pages/Shop';
-import Wishlist from './pages/Wishlist';
+
+// Only the home page ships in the first download; every other page loads when it is first visited.
+const named = (load, name) => lazy(() => load().then((m) => ({ default: m[name] })));
+const Shop = lazy(() => import('./pages/Shop'));
+const ProductDetail = lazy(() => import('./pages/ProductDetail'));
+const Cart = lazy(() => import('./pages/Cart'));
+const Checkout = lazy(() => import('./pages/Checkout'));
+const Wishlist = lazy(() => import('./pages/Wishlist'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const OrderSuccess = lazy(() => import('./pages/OrderSuccess'));
+const Login = named(() => import('./pages/Auth'), 'Login');
+const Register = named(() => import('./pages/Auth'), 'Register');
+const AccountLayout = lazy(() => import('./pages/account/AccountLayout'));
+const Addresses = lazy(() => import('./pages/account/Addresses'));
+const Orders = named(() => import('./pages/account/Orders'), 'Orders');
+const OrderDetail = named(() => import('./pages/account/Orders'), 'OrderDetail');
+const Profile = named(() => import('./pages/account/Profile'), 'Profile');
+const Security = named(() => import('./pages/account/Profile'), 'Security');
 
 // Admin is code-split so shoppers never download it (or the charts library)
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));

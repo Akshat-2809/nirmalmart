@@ -24,8 +24,9 @@ export default {
         danger: v('danger'),
       },
       fontFamily: {
-        sans: ['Inter', '"Noto Sans Devanagari"', 'system-ui', 'sans-serif'],
-        display: ['"Bricolage Grotesque"', 'Inter', '"Noto Sans Devanagari"', 'sans-serif'],
+        // One self-hosted variable font; Devanagari (Marathi) comes from the device's built-in fonts
+        sans: ['"Inter Variable"', 'system-ui', '-apple-system', 'Roboto', '"Noto Sans Devanagari"', '"Kohinoor Devanagari"', 'Mangal', 'sans-serif'],
+        display: ['"Inter Variable"', 'system-ui', '-apple-system', 'Roboto', '"Noto Sans Devanagari"', '"Kohinoor Devanagari"', 'Mangal', 'sans-serif'],
       },
       borderRadius: { xl: '0.875rem', '2xl': '1.25rem', '3xl': '1.75rem' },
       boxShadow: {

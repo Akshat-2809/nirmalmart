@@ -1,33 +1,26 @@
 import { motion } from 'framer-motion';
 import { Minus, Plus, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useUI } from '../../context/UIContext';
 import { cn } from '../../lib/cn';
 import { discountPct, price } from '../../lib/format';
 
 /**
- * Brand logo. `onDark` forces the light-text version (for always-dark panels);
- * otherwise it follows the site theme. On the narrowest phones the wordmark
- * gives way to the square "N" icon so the header still fits.
+ * Brand logo. Exactly one file is downloaded: the light/dark version follows the site theme
+ * (`onDark` forces light text for always-dark panels), and <picture> swaps in the compact cart mark
+ * on the narrowest phones so the header still fits.
  */
 export function Logo({ className, onDark = false, to = '/' }) {
-  const full = 'h-7 w-auto select-none max-[379px]:hidden sm:h-9';
-  const mark = 'h-9 w-auto select-none min-[380px]:hidden';
+  const { theme } = useUI();
+  const dark = onDark || theme === 'dark';
   return (
     <Link to={to} className={cn('group inline-flex shrink-0 items-center', className)} aria-label="Nirmal Mart home">
       <motion.span whileHover={{ y: -1, scale: 1.02 }} transition={{ type: 'spring', stiffness: 400, damping: 20 }} className="inline-flex">
-        {onDark ? (
-          <>
-            <img src="/logo-dark.svg" alt="Nirmal Mart" className={full} />
-            <img src="/logo-mark-dark.svg" alt="Nirmal Mart" className={mark} />
-          </>
-        ) : (
-          <>
-            <img src="/logo.svg" alt="Nirmal Mart" className={cn(full, 'dark:hidden')} />
-            <img src="/logo-dark.svg" alt="" aria-hidden className={cn(full, 'hidden dark:block max-[379px]:!hidden')} />
-            <img src="/logo-mark.svg" alt="Nirmal Mart" className={cn(mark, 'dark:hidden')} />
-            <img src="/logo-mark-dark.svg" alt="" aria-hidden className={cn(mark, 'hidden dark:block min-[380px]:!hidden')} />
-          </>
-        )}
+        <picture>
+          <source media="(max-width: 379px)" srcSet={dark ? '/logo-mark-dark.svg' : '/logo-mark.svg'} />
+          <img src={dark ? '/logo-dark.svg' : '/logo.svg'} alt="Nirmal Mart" width="154" height="35"
+            className="h-7 w-auto select-none max-[379px]:h-9 sm:h-9" />
+        </picture>
       </motion.span>
     </Link>
   );

@@ -10,6 +10,7 @@ import { ease, fadeUp, Reveal, Stagger } from '../components/ui/motion';
 import { useRecentlyViewed } from '../hooks/useRecentlyViewed';
 import { cn } from '../lib/cn';
 import { discountPct, price, productImage, sized } from '../lib/format';
+import { takePrefetched } from '../lib/prefetch';
 
 const maxOff = (items) => Math.max(0, ...items.map((p) => discountPct(p.price, p.compare_at_price)));
 const byDiscount = (a, b) => discountPct(b.price, b.compare_at_price) - discountPct(a.price, a.compare_at_price);
@@ -90,10 +91,11 @@ function PromoCarousel({ slides, loading }) {
               </div>
               <div className="flex shrink-0 items-center gap-3 lg:gap-4">
                 {s.images.map((p, k) => (
-                  <motion.div key={p.id} initial={{ y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.12 + k * 0.08, ease }}
+                  <motion.div key={p.id} initial={i === 0 ? false : { y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.12 + k * 0.08, ease }}
                     className={cn('h-28 w-28 overflow-hidden rounded-2xl bg-white p-1.5 shadow-lift sm:h-36 sm:w-36 lg:h-44 lg:w-44',
                       k === 1 && 'hidden md:block', k === 2 && 'hidden lg:block')}>
-                    <img src={sized(productImage(p), 400)} alt="" className="h-full w-full rounded-xl object-cover" draggable={false} />
+                    <img src={sized(productImage(p), 400)} alt="" width="176" height="176" fetchpriority={i === 0 && k === 0 ? 'high' : undefined}
+                      className="h-full w-full rounded-xl object-cover" draggable={false} />
                   </motion.div>
                 ))}
               </div>
@@ -105,10 +107,11 @@ function PromoCarousel({ slides, loading }) {
           <>
             <button onClick={() => go(-1)} aria-label="Previous offer" className="absolute left-2 top-1/2 hidden h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/80 text-ink shadow backdrop-blur transition hover:bg-white sm:grid"><ChevronLeft size={20} /></button>
             <button onClick={() => go(1)} aria-label="Next offer" className="absolute right-2 top-1/2 hidden h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/80 text-ink shadow backdrop-blur transition hover:bg-white sm:grid"><ChevronRight size={20} /></button>
-            <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
+            <div className="absolute bottom-1 left-1/2 flex -translate-x-1/2 gap-0.5">
               {slides.map((x, k) => (
-                <button key={x.key} onClick={() => setI(k)} aria-label={`Offer ${k + 1}`}
-                  className={cn('h-1.5 rounded-full bg-white/90 transition-all', k === i ? 'w-6' : 'w-1.5 opacity-50')} />
+                <button key={x.key} onClick={() => setI(k)} aria-label={`Offer ${k + 1}`} className="grid h-6 min-w-6 place-items-center">
+                  <span className={cn('block h-1.5 rounded-full bg-white/90 transition-all', k === i ? 'w-6' : 'w-1.5 opacity-50')} />
+                </button>
               ))}
             </div>
           </>
@@ -120,6 +123,23 @@ function PromoCarousel({ slides, loading }) {
 
 /* ───────────── Category circles (Amazon-app style) ───────────── */
 
+const STRIP_H = 'h-[124px] sm:h-[142px]';   // same for the placeholder and the real strip, so nothing jumps
+
+function CategoryStripSkeleton() {
+  return (
+    <section className="container pt-6">
+      <div className={cn('no-scrollbar -mx-4 flex gap-3 overflow-hidden px-4 sm:gap-6 lg:justify-center', STRIP_H)}>
+        {Array.from({ length: 8 }, (_, i) => (
+          <div key={i} className="flex w-[76px] shrink-0 flex-col items-center sm:w-24">
+            <div className="skeleton h-16 w-16 rounded-full sm:h-20 sm:w-20" />
+            <div className="skeleton mt-2 h-3 w-14" /><div className="skeleton mt-1.5 h-2.5 w-10" />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function CategoryStrip({ categories, trendingImage }) {
   if (!categories.length) return null;
   const items = [
@@ -128,7 +148,7 @@ function CategoryStrip({ categories, trendingImage }) {
   ];
   return (
     <section className="container pt-6">
-      <Stagger key={items.length} className="no-scrollbar -mx-4 flex gap-3 overflow-x-auto px-4 pb-1 sm:gap-6 lg:justify-center">
+      <Stagger key={items.length} className={cn('no-scrollbar -mx-4 flex gap-3 overflow-x-auto overflow-y-hidden px-4 sm:gap-6 lg:justify-center', STRIP_H)}>
         {items.map((c) => (
           <motion.div key={c.key} variants={fadeUp} className="shrink-0">
             <Link to={c.to} className="group flex w-[76px] flex-col items-center text-center sm:w-24">
@@ -341,14 +361,17 @@ function TrustStrip() {
 }
 
 export default function Home() {
-  const { data: categories = [], isPending: catsLoading } = useQuery({ queryKey: ['categories'], queryFn: catalogApi.categories, staleTime: 300_000 });
-  // per_page 100 needs the current backend; fall back to 48 if an older one rejects it
+  const { data: categories = [], isPending: catsLoading } = useQuery({ queryKey: ['categories'], queryFn: () => takePrefetched('/api/categories', catalogApi.categories), staleTime: 300_000 });
+  // NOTE: keep in sync with the prefetch URLs in index.html. Raise per_page to 100 once the catalogue
+  // grows past 48 (the current backend allows up to 100).
   const allQ = useQuery({
     queryKey: ['products', { home: 'all' }],
-    queryFn: () => catalogApi.products({ sort_by: 'newest', per_page: 100 })
-      .catch((e) => { if (e?.response?.status === 422) return catalogApi.products({ sort_by: 'newest', per_page: 48 }); throw e; }),
+    queryFn: () => takePrefetched('/api/products?sort_by=newest&per_page=48', () => catalogApi.products({ sort_by: 'newest', per_page: 48 })),
   });
-  const trendQ = useQuery({ queryKey: ['products', { trending: true }], queryFn: () => catalogApi.products({ trending: true, sort_by: 'newest', per_page: 24 }) });
+  const trendQ = useQuery({
+    queryKey: ['products', { trending: true }],
+    queryFn: () => takePrefetched('/api/products?trending=true&sort_by=newest&per_page=24', () => catalogApi.products({ trending: true, sort_by: 'newest', per_page: 24 })),
+  });
   const { items: recent } = useRecentlyViewed();
 
   const all = allQ.data?.items || [];
@@ -365,25 +388,29 @@ export default function Home() {
   }, [allQ.isPending]);
 
   return (
-    <div className="pb-6">
+    <div className={cn('pb-6', (loading || catsLoading) && 'min-h-[110svh]')}>
       <AnimatePresence>
         {slow && (
-          <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className="container mt-4 flex items-center justify-center gap-2 text-sm text-ink-soft">
+          <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} role="status"
+            className="fixed inset-x-0 bottom-6 z-40 mx-auto flex w-fit max-w-[92vw] items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm text-bg shadow-lift">
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand border-r-transparent" />
             Loading the latest deals… <span lang="mr" className="text-ink-faint">कृपया थोडा वेळ थांबा</span>
           </motion.p>
         )}
       </AnimatePresence>
       <PromoCarousel slides={slides} loading={loading || catsLoading} />
-      <CategoryStrip categories={categories} trendingImage={trending[0] ? productImage(trending[0]) : null} />
-      <DealCards all={all} trending={trending} categories={categories} />
-      <TodaysDeals items={deals} loading={allQ.isPending} />
-      <Trending items={trending} loading={trendQ.isPending} />
-      <PriceBuckets all={all} />
-      <ExploreAll all={all} loading={allQ.isPending} />
-      {recent.length > 0 && <ProductRail eyebrow="Pick up where you left off" title="Recently viewed" products={recent} />}
-      <TrustStrip />
+      {loading || catsLoading ? <CategoryStripSkeleton /> : (
+        <>
+          <CategoryStrip categories={categories} trendingImage={trending[0] ? productImage(trending[0]) : null} />
+          <DealCards all={all} trending={trending} categories={categories} />
+          <TodaysDeals items={deals} loading={false} />
+          <Trending items={trending} loading={false} />
+          <PriceBuckets all={all} />
+          <ExploreAll all={all} loading={false} />
+          {recent.length > 0 && <ProductRail eyebrow="Pick up where you left off" title="Recently viewed" products={recent} />}
+          <TrustStrip />
+        </>
+      )}
     </div>
   );
 }

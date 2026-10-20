@@ -4,6 +4,7 @@ import { ChevronDown, Heart, LayoutDashboard, LogOut, Menu, Moon, Package, Searc
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { catalogApi } from '../../api';
+import { takePrefetched } from '../../lib/prefetch';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useUI } from '../../context/UIContext';
@@ -125,7 +126,7 @@ function MoreMenu({ categories }) {
 }
 
 export default function Header() {
-  const { data: categories = [] } = useQuery({ queryKey: ['categories'], queryFn: catalogApi.categories, staleTime: 300_000 });
+  const { data: categories = [] } = useQuery({ queryKey: ['categories'], queryFn: () => takePrefetched('/api/categories', catalogApi.categories), staleTime: 300_000 });
   const { cart } = useCart();
   const { items: wish } = useWishlist();
   const { setCartOpen, setSearchOpen, theme, toggleTheme, cartIconRef, cartPulse } = useUI();

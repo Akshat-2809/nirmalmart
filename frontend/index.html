@@ -5,28 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#317239" />
     <meta name="description" content="Nirmal Mart — trending gadgets and everyday essentials, delivered across Maharashtra." />
-    <title>NirmalMart — Shop everything you love</title>
+    <title>Nirmal Mart — Trending gadgets & home essentials</title>
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <meta property="og:image" content="/android-chrome-512x512.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://wvnecttrzmnmlnklryps.supabase.co" crossorigin />
-    <link rel="dns-prefetch" href="https://wvnecttrzmnmlnklryps.supabase.co" />
-    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet" />
+    <!-- One self-hosted variable font (latin, 48 KB). Marathi uses the phone's built-in Devanagari font. -->
+    <link rel="preload" href="/fonts/inter-latin-var.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preconnect" href="https://wvnecttrzmnmlnklryps.supabase.co" />
+    <style>
+      @font-face {
+        font-family: 'Inter Variable';
+        font-style: normal;
+        font-display: swap;
+        font-weight: 100 900;
+        src: url(/fonts/inter-latin-var.woff2) format('woff2-variations');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+    </style>
     <script>
       // Apply the saved theme before first paint to avoid a flash
       try {
         const t = JSON.parse(localStorage.getItem('nm-theme')); // saved as JSON by lib/storage
         if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark');
       } catch (e) {}
+      // Start the store's data requests now, in parallel with the app's JavaScript download.
+      // The app picks these up (lib/prefetch.js) instead of requesting the same data again.
+      window.__nmPrefetch = {};
+      (function () {
+        const get = (u) => { window.__nmPrefetch[u] = fetch(u).then((r) => (r.ok ? r.json() : Promise.reject(r))); window.__nmPrefetch[u].catch(() => {}); };
+        get('/api/categories');
+        if (location.pathname === '/') {
+          get('/api/products?sort_by=newest&per_page=48');
+          get('/api/products?trending=true&sort_by=newest&per_page=24');
+        }
+      })();
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <!-- Static first paint: replaced by the app as soon as it starts -->
+    <div id="root"><div class="flex min-h-screen flex-col">
+      <div class="h-9 bg-ink"></div>
+      <div class="border-b border-transparent bg-bg">
+        <div class="container flex h-16 items-center gap-3">
+          <img id="nm-shell-logo" src="/logo.svg" alt="Nirmal Mart" width="154" height="35" class="h-7 w-auto sm:h-9" />
+        </div>
+      </div>
+      <div class="container pt-4"><div class="skeleton h-[180px] rounded-3xl sm:h-[240px] lg:h-[280px]"></div></div>
+      <div class="container pt-6"><div class="flex h-[124px] gap-3 overflow-hidden sm:h-[142px] sm:gap-6 lg:justify-center">
+        <div class="flex w-[76px] shrink-0 flex-col items-center sm:w-24"><div class="skeleton h-16 w-16 rounded-full sm:h-20 sm:w-20"></div></div>
+        <div class="flex w-[76px] shrink-0 flex-col items-center sm:w-24"><div class="skeleton h-16 w-16 rounded-full sm:h-20 sm:w-20"></div></div>
+        <div class="flex w-[76px] shrink-0 flex-col items-center sm:w-24"><div class="skeleton h-16 w-16 rounded-full sm:h-20 sm:w-20"></div></div>
+        <div class="flex w-[76px] shrink-0 flex-col items-center sm:w-24"><div class="skeleton h-16 w-16 rounded-full sm:h-20 sm:w-20"></div></div>
+        <div class="flex w-[76px] shrink-0 flex-col items-center sm:w-24"><div class="skeleton h-16 w-16 rounded-full sm:h-20 sm:w-20"></div></div>
+      </div></div>
+    </div></div>
+    <script>
+      if (document.documentElement.classList.contains('dark')) document.getElementById('nm-shell-logo').src = '/logo-dark.svg';
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
