@@ -45,3 +45,4 @@ alembic/versions/__pycache__/
 
 # Old frontend kept for reference during the revamp
 _legacy/
+.env.render-update
