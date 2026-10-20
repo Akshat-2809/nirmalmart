@@ -1,42 +1,144 @@
 {
-  "category": {"name": "Trending Gadgets", "name_mr": "ट्रेंडिंग गॅझेट्स",
-               "description": "Handy gadgets our customers love right now"},
+  "categories": [
+    {
+      "key": "home-kitchen",
+      "name": "Home & Kitchen",
+      "name_mr": "घर आणि स्वयंपाकघर",
+      "description": "Handy gadgets for the home and kitchen"
+    },
+    {
+      "key": "car-bike-care",
+      "name": "Car & Bike Care",
+      "name_mr": "कार आणि बाईक केअर",
+      "description": "Keep your car and bike spotless"
+    },
+    {
+      "key": "tools-outdoor",
+      "name": "Tools & Outdoor",
+      "name_mr": "टूल्स आणि आउटडोअर",
+      "description": "Power tools, lights and outdoor essentials"
+    },
+    {
+      "key": "electronics",
+      "name": "Electronics",
+      "name_mr": "इलेक्ट्रॉनिक्स",
+      "description": "Audio and everyday electronics"
+    },
+    {
+      "key": "health-wellness",
+      "name": "Health & Wellness",
+      "name_mr": "आरोग्य आणि वेलनेस",
+      "description": "Feel better every day"
+    }
+  ],
   "products": [
-    {"sku": "NM-TG-001", "image": "gas-stove.jpg", "price": 1600, "mrp": 2400,
-     "name": "Portable Gas Stove", "name_mr": "पोर्टेबल गॅस शेगडी",
-     "description": "A portable gas stove you can carry anywhere and cook home-style meals — on trips, picnics or during power cuts. Comes with a carry case.",
-     "description_mr": "हि पोर्टेबल शेगडी आहे. हि कोठेही नेऊन घरगुती जेवण बनवू शकता."},
-    {"sku": "NM-TG-002", "image": "washer-gun.jpg", "price": 1500, "mrp": 2000,
-     "name": "Portable Washer Gun", "name_mr": "पोर्टेबल वॉशर गन",
-     "description": "Cordless high-pressure washer gun, mainly used for washing cars and two-wheelers. 48V double-battery set.",
-     "description_mr": "हि वॉशर गन प्रामुख्याने चारचाकी आणि दुचाकी धुण्यासाठी वापरली जाते."},
-    {"sku": "NM-TG-003", "image": "solar-camera-light.jpg", "price": 400, "mrp": 700,
-     "name": "Camera Shape Solar Light", "name_mr": "कॅमेरा आकाराची सोलर लाईट",
-     "description": "A solar light shaped like a CCTV camera. Its realistic look helps keep thieves away from your belongings. Comes with a remote.",
-     "description_mr": "हा सीसीटीव्ही कॅमेरा आकाराचा सौर दिवा आहे. चोर तुमचे सामान चोरू शकत नाही कारण त्याला हा खरा कॅमेरा वाटतो."},
-    {"sku": "NM-TG-004", "image": "chain-saw.jpg", "price": 1500, "mrp": 1800,
-     "name": "Automatic Chain Saw", "name_mr": "ऑटोमॅटिक चैन करवत",
-     "description": "Battery-powered chain saw that cuts tree branches with ease — handles wood up to 6 inches thick.",
-     "description_mr": "ही बॅटरीवर चालणारी चेन सॉ आहे. ती झाडाच्या फांद्या सहजपणे कापू शकते. ती ६ इंच जाडीपर्यंतचे लाकूड कापू शकते."},
-    {"sku": "NM-TG-005", "image": "vacuum-cleaner.jpg", "price": 1000, "mrp": 2100,
-     "name": "Vacuum Cleaner", "name_mr": "व्हॅक्यूम क्लीनर",
-     "description": "4-in-1 car vacuum cleaner with 6 attachments and a blower — for home, office, car, keyboard, travel and sofa.",
-     "description_mr": "कार व्हॅक्यूम क्लीनर ४ इन १, ६ अटॅचमेंट आणि ब्लोअरसह | घर/ऑफिस/कार/कीबोर्ड/प्रवास/सोफा साठी उपयुक्त."},
-    {"sku": "NM-TG-006", "image": "liquid-ship.jpg", "price": 500, "mrp": 800,
-     "name": "Liquid Ship", "name_mr": "लिक्विड शिप",
-     "description": "Liquid ship showpiece for décor — a lovely piece for your living room or office.",
-     "description_mr": "लिक्विड शिप शोपीस डेकोरसाठी — लिव्हिंग रूम आणि ऑफिससाठी सुंदर शोपीस."},
-    {"sku": "NM-TG-007", "image": "massager-gun.jpg", "price": 700, "mrp": 1000,
-     "name": "Heavy Massager Gun", "name_mr": "हेवी मसाजर गन",
-     "description": "Massage gun with multiple heads to soothe body pain and relax tired muscles.",
-     "description_mr": "मसाज गन — शरीरदुखी कमी करण्यासाठी."},
-    {"sku": "NM-TG-008", "image": "earbuds.jpg", "price": 600, "mrp": 899,
-     "name": "Wireless Earbuds Pro", "name_mr": "वायरलेस इअरबड्स प्रो",
-     "description": "Wireless earbuds with a charging case.",
-     "description_mr": "चार्जिंग केससह वायरलेस हेडफोन."},
-    {"sku": "NM-TG-009", "image": "rechargeable-torch.jpg", "price": 400, "mrp": 800,
-     "name": "Rechargeable Torch (MZ M035)", "name_mr": "रिचार्जेबल बॅटरी (MZ M035)",
-     "description": "Rechargeable LED torch, model MZ M035.",
-     "description_mr": "रिचार्जेबल बॅटरी (टॉर्च)."}
+    {
+      "category": "home-kitchen",
+      "trending": true,
+      "sku": "NM-TG-001",
+      "image": "gas-stove.jpg",
+      "price": 1600,
+      "mrp": 2400,
+      "name": "Portable Gas Stove",
+      "name_mr": "पोर्टेबल गॅस शेगडी",
+      "description": "A portable gas stove you can carry anywhere and cook home-style meals — on trips, picnics or during power cuts. Comes with a carry case.",
+      "description_mr": "हि पोर्टेबल शेगडी आहे. हि कोठेही नेऊन घरगुती जेवण बनवू शकता."
+    },
+    {
+      "category": "car-bike-care",
+      "trending": true,
+      "sku": "NM-TG-002",
+      "image": "washer-gun.jpg",
+      "price": 1500,
+      "mrp": 2000,
+      "name": "Portable Washer Gun",
+      "name_mr": "पोर्टेबल वॉशर गन",
+      "description": "Cordless high-pressure washer gun, mainly used for washing cars and two-wheelers. 48V double-battery set.",
+      "description_mr": "हि वॉशर गन प्रामुख्याने चारचाकी आणि दुचाकी धुण्यासाठी वापरली जाते."
+    },
+    {
+      "category": "tools-outdoor",
+      "trending": true,
+      "sku": "NM-TG-003",
+      "image": "solar-camera-light.jpg",
+      "price": 400,
+      "mrp": 700,
+      "name": "Camera Shape Solar Light",
+      "name_mr": "कॅमेरा आकाराची सोलर लाईट",
+      "description": "A solar light shaped like a CCTV camera. Its realistic look helps keep thieves away from your belongings. Comes with a remote.",
+      "description_mr": "हा सीसीटीव्ही कॅमेरा आकाराचा सौर दिवा आहे. चोर तुमचे सामान चोरू शकत नाही कारण त्याला हा खरा कॅमेरा वाटतो."
+    },
+    {
+      "category": "tools-outdoor",
+      "trending": true,
+      "sku": "NM-TG-004",
+      "image": "chain-saw.jpg",
+      "price": 1500,
+      "mrp": 1800,
+      "name": "Automatic Chain Saw",
+      "name_mr": "ऑटोमॅटिक चैन करवत",
+      "description": "Battery-powered chain saw that cuts tree branches with ease — handles wood up to 6 inches thick.",
+      "description_mr": "ही बॅटरीवर चालणारी चेन सॉ आहे. ती झाडाच्या फांद्या सहजपणे कापू शकते. ती ६ इंच जाडीपर्यंतचे लाकूड कापू शकते."
+    },
+    {
+      "category": "car-bike-care",
+      "trending": true,
+      "sku": "NM-TG-005",
+      "image": "vacuum-cleaner.jpg",
+      "price": 1000,
+      "mrp": 2100,
+      "name": "Vacuum Cleaner",
+      "name_mr": "व्हॅक्यूम क्लीनर",
+      "description": "4-in-1 car vacuum cleaner with 6 attachments and a blower — for home, office, car, keyboard, travel and sofa.",
+      "description_mr": "कार व्हॅक्यूम क्लीनर ४ इन १, ६ अटॅचमेंट आणि ब्लोअरसह | घर/ऑफिस/कार/कीबोर्ड/प्रवास/सोफा साठी उपयुक्त."
+    },
+    {
+      "category": "home-kitchen",
+      "trending": true,
+      "sku": "NM-TG-006",
+      "image": "liquid-ship.jpg",
+      "price": 500,
+      "mrp": 800,
+      "name": "Liquid Ship",
+      "name_mr": "लिक्विड शिप",
+      "description": "Liquid ship showpiece for décor — a lovely piece for your living room or office.",
+      "description_mr": "लिक्विड शिप शोपीस डेकोरसाठी — लिव्हिंग रूम आणि ऑफिससाठी सुंदर शोपीस."
+    },
+    {
+      "category": "health-wellness",
+      "trending": true,
+      "sku": "NM-TG-007",
+      "image": "massager-gun.jpg",
+      "price": 700,
+      "mrp": 1000,
+      "name": "Heavy Massager Gun",
+      "name_mr": "हेवी मसाजर गन",
+      "description": "Massage gun with multiple heads to soothe body pain and relax tired muscles.",
+      "description_mr": "मसाज गन — शरीरदुखी कमी करण्यासाठी."
+    },
+    {
+      "category": "electronics",
+      "trending": true,
+      "sku": "NM-TG-008",
+      "image": "earbuds.jpg",
+      "price": 600,
+      "mrp": 899,
+      "name": "Wireless Earbuds Pro",
+      "name_mr": "वायरलेस इअरबड्स प्रो",
+      "description": "Wireless earbuds with a charging case.",
+      "description_mr": "चार्जिंग केससह वायरलेस हेडफोन."
+    },
+    {
+      "category": "tools-outdoor",
+      "trending": true,
+      "sku": "NM-TG-009",
+      "image": "rechargeable-torch.jpg",
+      "price": 400,
+      "mrp": 800,
+      "name": "Rechargeable Torch (MZ M035)",
+      "name_mr": "रिचार्जेबल बॅटरी (MZ M035)",
+      "description": "Rechargeable LED torch, model MZ M035.",
+      "description_mr": "रिचार्जेबल बॅटरी (टॉर्च)."
+    }
   ]
 }

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'framer-motion';
-import { Heart, LayoutDashboard, LogOut, Menu, Moon, Package, Search, ShoppingBag, Sun, User } from 'lucide-react';
+import { ChevronDown, Heart, LayoutDashboard, LogOut, Menu, Moon, Package, Search, ShoppingBag, Sun, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { catalogApi } from '../../api';
@@ -91,6 +91,39 @@ function AccountMenu() {
   );
 }
 
+const MAX_NAV = 6; // keep the bar short; extra categories go under "More"
+
+function MoreMenu({ categories }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    const close = (e) => !ref.current?.contains(e.target) && setOpen(false);
+    document.addEventListener('mousedown', close);
+    return () => document.removeEventListener('mousedown', close);
+  }, []);
+  return (
+    <div className="relative" ref={ref} onMouseLeave={() => setOpen(false)}>
+      <button onClick={() => setOpen((o) => !o)} onMouseEnter={() => setOpen(true)} aria-expanded={open}
+        className="flex items-center gap-1 rounded-full px-3.5 py-1.5 text-[13px] font-medium text-ink-soft hover:text-ink">
+        More <ChevronDown size={14} className={cn('transition', open && 'rotate-180')} />
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }} transition={{ duration: 0.15 }}
+            className="absolute left-0 top-9 z-50 w-56 rounded-2xl border border-line bg-surface p-2 shadow-lift">
+            {categories.map((c) => (
+              <Link key={c.id} to={`/shop?category=${c.slug}`} onClick={() => setOpen(false)}
+                className="block rounded-xl px-3 py-2 text-sm text-ink-soft hover:bg-muted hover:text-ink">
+                {c.name}{c.name_mr && <span lang="mr" className="block text-xs text-ink-faint">{c.name_mr}</span>}
+              </Link>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export default function Header() {
   const { data: categories = [] } = useQuery({ queryKey: ['categories'], queryFn: catalogApi.categories, staleTime: 300_000 });
   const { cart } = useCart();
@@ -110,6 +143,7 @@ export default function Header() {
   useEffect(() => setMobileOpen(false), [pathname, search]);
 
   const activeCat = new URLSearchParams(search).get('category');
+  const isTrending = new URLSearchParams(search).get('trending') === 'true';
 
   return (
     <>
@@ -162,30 +196,34 @@ export default function Header() {
         </div>
 
         <nav className="container hidden h-11 items-center gap-1 lg:flex" aria-label="Categories">
-          {[{ slug: null, name: 'All' }, ...categories].map((c) => {
-            const active = pathname === '/shop' && (c.slug ? activeCat === c.slug : !activeCat);
-            return (
-              <NavLink key={c.slug ?? 'all'} to={c.slug ? `/shop?category=${c.slug}` : '/shop'}
-                className={cn('relative rounded-full px-3.5 py-1.5 text-[13px] font-medium transition', active ? 'text-ink' : 'text-ink-soft hover:text-ink')}>
-                {active && <motion.span layoutId="cat-pill" className="absolute inset-0 rounded-full bg-muted" transition={{ type: 'spring', stiffness: 400, damping: 32 }} />}
-                <span className="relative">{c.name}</span>
-              </NavLink>
-            );
-          })}
-          <Link to="/shop?sort_by=discount" className="ml-auto text-[13px] font-semibold text-deal">🔥 Deals</Link>
+          {[
+            { key: 'all', to: '/shop', name: 'All', active: pathname === '/shop' && !activeCat && !isTrending },
+            { key: 'trending', to: '/shop?trending=true', name: '🔥 Trending', mr: 'ट्रेंडिंग', active: pathname === '/shop' && isTrending },
+            ...categories.slice(0, MAX_NAV).map((c) => ({ key: c.slug, to: `/shop?category=${c.slug}`, name: c.name, mr: c.name_mr, active: pathname === '/shop' && activeCat === c.slug })),
+          ].map((c) => (
+            <NavLink key={c.key} to={c.to} title={c.mr || undefined}
+              className={cn('relative rounded-full px-3.5 py-1.5 text-[13px] font-medium transition', c.active ? 'text-ink' : 'text-ink-soft hover:text-ink')}>
+              {c.active && <motion.span layoutId="cat-pill" className="absolute inset-0 rounded-full bg-muted" transition={{ type: 'spring', stiffness: 400, damping: 32 }} />}
+              <span className="relative">{c.name}</span>
+            </NavLink>
+          ))}
+          {categories.length > MAX_NAV && <MoreMenu categories={categories.slice(MAX_NAV)} />}
+          <Link to="/shop?sort_by=discount" className="ml-auto text-[13px] font-semibold text-deal">Today’s Deals</Link>
         </nav>
       </motion.header>
 
       <Drawer open={mobileOpen} onClose={() => setMobileOpen(false)} title="Menu" side="left" width="max-w-xs">
         <nav className="p-3">
           <Link to="/shop" className="block rounded-xl px-3 py-3 font-medium hover:bg-muted">All products</Link>
+          <Link to="/shop?trending=true" className="block rounded-xl px-3 py-3 font-medium hover:bg-muted">🔥 Trending <span lang="mr" className="text-xs text-ink-faint">ट्रेंडिंग</span></Link>
           {categories.map((c) => (
-            <Link key={c.id} to={`/shop?category=${c.slug}`} className="flex items-center justify-between rounded-xl px-3 py-3 hover:bg-muted">
-              <span className="font-medium">{c.name}</span><span className="text-xs text-ink-faint">{c.product_count}</span>
+            <Link key={c.id} to={`/shop?category=${c.slug}`} className="flex items-center justify-between rounded-xl px-3 py-2.5 hover:bg-muted">
+              <span><span className="block font-medium">{c.name}</span>{c.name_mr && <span lang="mr" className="block text-xs text-ink-faint">{c.name_mr}</span>}</span>
+              <span className="text-xs text-ink-faint">{c.product_count}</span>
             </Link>
           ))}
           <div className="my-3 h-px bg-line" />
-          <Link to="/shop?sort_by=discount" className="block rounded-xl px-3 py-3 font-semibold text-deal hover:bg-muted">🔥 Deals</Link>
+          <Link to="/shop?sort_by=discount" className="block rounded-xl px-3 py-3 font-semibold text-deal hover:bg-muted">Today’s Deals</Link>
           <Link to="/wishlist" className="block rounded-xl px-3 py-3 hover:bg-muted">Wishlist</Link>
           <Link to="/account/orders" className="block rounded-xl px-3 py-3 hover:bg-muted">My orders</Link>
           <button onClick={toggleTheme} className="flex w-full items-center gap-3 rounded-xl px-3 py-3 hover:bg-muted">

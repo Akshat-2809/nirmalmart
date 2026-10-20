@@ -3,7 +3,7 @@ import logging
 import os
 import uuid
 import httpx
-from PIL import Image, UnidentifiedImageError
+from PIL import Image, ImageOps, UnidentifiedImageError
 from fastapi import HTTPException, UploadFile, status
 from app.config import settings
 
@@ -38,22 +38,41 @@ async def read_image(file: UploadFile) -> tuple[bytes, str, str]:
     return data, ext, mime
 
 
-def save_image(data: bytes, ext: str, mime: str, folder: str = "products") -> str:
-    """Stores an image and returns its public URL."""
-    name = f"{folder}/{uuid.uuid4().hex}.{ext}"
+MAIN_PX, THUMB_PX = 1200, 480   # product page / listing sizes
+THUMB_SUFFIX = "_480"
+
+
+def _variants(data: bytes) -> tuple[bytes, bytes]:
+    """Normalises an upload into a 1200px main WebP and a 480px thumbnail WebP.
+    Phone photos are rotated per their EXIF, transparency is flattened onto white."""
+    with Image.open(io.BytesIO(data)) as img:
+        img = ImageOps.exif_transpose(img)
+        if img.mode in ("RGBA", "LA", "P"):
+            img = img.convert("RGBA")
+            bg = Image.new("RGB", img.size, (255, 255, 255)); bg.paste(img, mask=img.getchannel("A")); img = bg
+        else:
+            img = img.convert("RGB")
+        out = []
+        for px, quality in ((MAIN_PX, 82), (THUMB_PX, 78)):
+            v = img.copy(); v.thumbnail((px, px), Image.LANCZOS)
+            buf = io.BytesIO(); v.save(buf, "WEBP", quality=quality, method=6); out.append(buf.getvalue())
+        return out[0], out[1]
+
+
+def _put(name: str, data: bytes, mime: str):
     if settings.STORAGE_BACKEND == "supabase":
         base = settings.SUPABASE_URL.rstrip("/")
         resp = httpx.post(
             f"{base}/storage/v1/object/{settings.SUPABASE_BUCKET}/{name}",
             content=data,
-            headers={**_auth_headers(), "Content-Type": mime, "x-upsert": "false"},
+            headers={**_auth_headers(), "Content-Type": mime, "x-upsert": "false",
+                     "cache-control": "max-age=31536000"},   # file names are unique, so cache for a year
             timeout=30,
         )
         if resp.status_code >= 300:
             logger.error("Supabase upload failed (%s): %s", resp.status_code, resp.text[:300])
             raise HTTPException(status.HTTP_502_BAD_GATEWAY, "Image storage upload failed")
         return f"{base}/storage/v1/object/public/{settings.SUPABASE_BUCKET}/{name}"
-
     path = os.path.join(settings.UPLOAD_DIR, name)
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "wb") as f:
@@ -61,7 +80,26 @@ def save_image(data: bytes, ext: str, mime: str, folder: str = "products") -> st
     return f"/uploads/{name}"
 
 
+def save_image(data: bytes, ext: str, mime: str, folder: str = "products") -> str:
+    """Stores an image (as main + thumbnail WebP) and returns the main image's public URL.
+    The thumbnail lives next to it with a `_480` suffix; the frontend picks it for small slots."""
+    main, thumb = _variants(data)
+    stem = f"{folder}/{uuid.uuid4().hex}"
+    url = _put(f"{stem}.webp", main, "image/webp")
+    _put(f"{stem}{THUMB_SUFFIX}.webp", thumb, "image/webp")
+    return url
+
+
 def delete_image(url: str):
+    """Removes an image we stored (and its thumbnail). External URLs are ignored."""
+    urls = [url]
+    if url.endswith(".webp") and THUMB_SUFFIX not in url:
+        urls.append(url[:-5] + f"{THUMB_SUFFIX}.webp")
+    for u in urls:
+        _delete_one(u)
+
+
+def _delete_one(url: str):
     if url.startswith("/uploads/"):
         path = os.path.join(settings.UPLOAD_DIR, url.removeprefix("/uploads/"))
         if os.path.isfile(path):

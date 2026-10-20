@@ -52,7 +52,7 @@ export function Stars({ value = 0, size = 14, className }) {
 }
 
 export function RatingPill({ value, count }) {
-  if (!count) return <span className="text-xs text-ink-faint">No reviews yet</span>;
+  if (!count) return null;
   return (
     <span className="inline-flex items-center gap-1.5 text-xs text-ink-soft">
       <span className="inline-flex items-center gap-0.5 rounded-md bg-success px-1.5 py-0.5 font-semibold text-white">

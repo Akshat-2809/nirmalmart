@@ -1,6 +1,8 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Heart, Plus, Check } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
+import { catalogApi } from '../../api';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useUI } from '../../context/UIContext';
@@ -38,6 +40,13 @@ export function HeartButton({ product, className }) {
 export default function ProductCard({ product, className }) {
   const { add } = useCart();
   const { flyToCart } = useUI();
+  const qc = useQueryClient();
+  // Start loading the product page as soon as the shopper shows intent, so it opens instantly
+  const prefetch = () => {
+    qc.prefetchQuery({ queryKey: ['product', product.slug], queryFn: () => catalogApi.product(product.slug), staleTime: 60_000 });
+    const full = product.images?.[0]?.image_url;
+    if (full) { const i = new Image(); i.src = sized(full, 1200); }
+  };
   const imgRef = useRef(null);
   const [added, setAdded] = useState(false);
   const [first, second] = product.images || [];
@@ -56,7 +65,7 @@ export default function ProductCard({ product, className }) {
 
   return (
     <motion.article variants={fadeUp} className={cn('group relative', className)}>
-      <Link to={`/product/${product.slug}`} className="block">
+      <Link to={`/product/${product.slug}`} className="block" onMouseEnter={prefetch} onTouchStart={prefetch} onFocus={prefetch}>
         <div className="relative aspect-square overflow-hidden rounded-2xl bg-muted">
           {first && (
             <img ref={imgRef} src={sized(first.image_url, 600)} alt={product.name} loading="lazy"

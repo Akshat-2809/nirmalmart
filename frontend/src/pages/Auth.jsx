@@ -38,7 +38,7 @@ function Shell({ title, subtitle, children, footer }) {
               ))}
             </div>
           </div>
-          <p className="text-xs text-bg/50">Trusted by 50,000+ shoppers across India</p>
+          <p lang="mr" className="text-xs text-bg/60">ट्रेंडिंग गॅझेट्स, उत्तम किमतीत</p>
         </div>
       </div>
     </div>

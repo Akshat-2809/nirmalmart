@@ -12,10 +12,12 @@ export const dateTime = (s) =>
 
 export const productImage = (p) => p?.images?.[0]?.image_url || p?.product_image || null;
 
-// Unsplash images accept size params; other URLs pass through unchanged
+// Picks a lighter image for small slots. Our uploads are stored as `<id>.webp` (1200px) plus
+// `<id>_480.webp` (thumbnail); Unsplash URLs take a width param; anything else passes through.
 export const sized = (url, w) => {
   if (!url) return url;
   if (url.includes('images.unsplash.com')) return url.replace(/w=\d+/, `w=${w}`);
+  if (w <= 600 && url.endsWith('.webp') && !url.endsWith('_480.webp')) return url.replace(/\.webp$/, '_480.webp');
   return url;
 };
 

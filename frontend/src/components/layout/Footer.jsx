@@ -1,26 +1,32 @@
+import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { ArrowRight, Instagram, Twitter, Youtube, Facebook } from 'lucide-react';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
+import { catalogApi } from '../../api';
 import { Logo } from '../ui/bits';
 
-const COLS = [
-  { title: 'Shop', links: [['All products', '/shop'], ['Electronics', '/shop?category=electronics'], ['Fashion', '/shop?category=fashion'], ['Home & Living', '/shop?category=home-living'], ['Deals', '/shop?sort_by=discount']] },
+const STATIC_COLS = [
   { title: 'Account', links: [['My account', '/account'], ['Orders', '/account/orders'], ['Wishlist', '/wishlist'], ['Bag', '/cart']] },
   { title: 'Help', links: [['Shipping', '/shop'], ['Returns', '/shop'], ['Contact us', '/shop'], ['FAQs', '/shop']] },
 ];
 
 export default function Footer() {
   const [email, setEmail] = useState('');
+  const { data: categories = [] } = useQuery({ queryKey: ['categories'], queryFn: catalogApi.categories, staleTime: 300_000 });
+  const COLS = [
+    { title: 'Shop', links: [['All products', '/shop'], ['🔥 Trending', '/shop?trending=true'],
+      ...categories.slice(0, 5).map((c) => [c.name, `/shop?category=${c.slug}`]), ['Today’s Deals', '/shop?sort_by=discount']] },
+    ...STATIC_COLS,
+  ];
   return (
     <footer className="mt-20 border-t border-line bg-surface">
       <div className="container grid gap-12 py-14 lg:grid-cols-[1.3fr_2fr]">
         <div>
           <Logo />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-ink-soft">
-            Everything you love — electronics, fashion, home, beauty and more — curated and delivered across India.
-          </p>
+            Trending gadgets and everyday essentials at great prices — delivered to your door across Maharashtra.</p>
           <form className="mt-6 flex max-w-sm gap-2" onSubmit={(e) => { e.preventDefault(); setEmail(''); toast.success('You’re on the list!'); }}>
             <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Your email for offers" className="input rounded-full" aria-label="Email" />
             <motion.button whileTap={{ scale: 0.92 }} className="btn-dark h-11 w-11 shrink-0 px-0" aria-label="Subscribe"><ArrowRight size={18} /></motion.button>

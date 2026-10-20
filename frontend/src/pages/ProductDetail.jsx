@@ -46,7 +46,7 @@ function Gallery({ images, name, imgRef }) {
       >
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.img
-            key={img?.id} ref={imgRef} src={sized(img?.image_url, 1200)} alt={name}
+            key={img?.id} ref={imgRef} src={sized(img?.image_url, 1200)} alt={name} fetchpriority="high" decoding="async"
             initial={{ opacity: 0, scale: 1.04 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.45, ease }}
             drag={images.length > 1 ? 'x' : false} dragConstraints={{ left: 0, right: 0 }} dragElastic={0.3}
             onDragEnd={(_, info) => {
@@ -259,11 +259,9 @@ export default function ProductDetail() {
               product.brand && <Link key="b" to={`/shop?search=${encodeURIComponent(product.brand)}`} className="text-xs font-bold uppercase tracking-[0.15em] text-brand hover:underline">{product.brand}</Link>,
               <h1 key="h" className="mt-2 font-display text-3xl font-extrabold leading-tight sm:text-4xl">{product.name}</h1>,
               product.name_mr && <p key="hmr" lang="mr" className="mt-1.5 text-xl font-semibold text-ink-soft sm:text-2xl">{product.name_mr}</p>,
-              <button key="r" onClick={() => { setTab('Reviews'); document.getElementById('details')?.scrollIntoView({ behavior: 'smooth' }); }}
+              product.rating_count > 0 && <button key="r" onClick={() => { setTab('Reviews'); document.getElementById('details')?.scrollIntoView({ behavior: 'smooth' }); }}
                 className="mt-3 flex items-center gap-2 text-sm text-ink-soft hover:text-ink">
-                {product.rating_count > 0 ? (
-                  <><Stars value={Number(product.rating_avg)} /> <b className="text-ink">{Number(product.rating_avg).toFixed(1)}</b> · {product.rating_count} review{product.rating_count > 1 && 's'}</>
-                ) : <span>No reviews yet · be the first</span>}
+                <Stars value={Number(product.rating_avg)} /> <b className="text-ink">{Number(product.rating_avg).toFixed(1)}</b> · {product.rating_count} review{product.rating_count > 1 && 's'}
                 {product.sold_count > 0 && <> · {product.sold_count}+ sold</>}
               </button>,
               <div key="p" className="mt-6">
