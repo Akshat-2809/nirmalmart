@@ -342,7 +342,12 @@ function TrustStrip() {
 
 export default function Home() {
   const { data: categories = [], isLoading: catsLoading } = useQuery({ queryKey: ['categories'], queryFn: catalogApi.categories, staleTime: 300_000 });
-  const allQ = useQuery({ queryKey: ['products', { home: 'all' }], queryFn: () => catalogApi.products({ sort_by: 'newest', per_page: 100 }) });
+  // per_page 100 needs the current backend; fall back to 48 if an older one rejects it
+  const allQ = useQuery({
+    queryKey: ['products', { home: 'all' }],
+    queryFn: () => catalogApi.products({ sort_by: 'newest', per_page: 100 })
+      .catch((e) => { if (e?.response?.status === 422) return catalogApi.products({ sort_by: 'newest', per_page: 48 }); throw e; }),
+  });
   const trendQ = useQuery({ queryKey: ['products', { trending: true }], queryFn: () => catalogApi.products({ trending: true, sort_by: 'newest', per_page: 24 }) });
   const { items: recent } = useRecentlyViewed();
 
