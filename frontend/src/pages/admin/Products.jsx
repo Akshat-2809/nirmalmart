@@ -144,7 +144,7 @@ function ImageManager({ product, pendingFiles, setPendingFiles }) {
         </button>
       </div>
       <input ref={input} type="file" multiple accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(e) => { onFiles(e.target.files); e.target.value = ''; }} />
-      <p className="mt-1.5 text-xs text-ink-faint">JPEG, PNG or WebP up to 5 MB. Drag & drop supported.</p>
+      <p className="mt-1.5 text-xs text-ink-faint">JPEG, PNG or WebP up to 4 MB. Drag & drop supported.</p>
     </div>
   );
 }

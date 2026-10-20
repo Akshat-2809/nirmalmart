@@ -32,7 +32,7 @@ class Settings(BaseSettings):
 
     CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000"
     UPLOAD_DIR: str = "uploads"
-    MAX_UPLOAD_MB: int = 5
+    MAX_UPLOAD_MB: int = 4  # Vercel's proxy caps request bodies at ~4.5 MB
 
     # "local" (dev: files on disk) or "supabase" (prod: Supabase Storage bucket)
     STORAGE_BACKEND: str = "local"
