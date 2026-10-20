@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+
+# Environment
+.env
+.env.local
+.env.production
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+dist/
+build/
+*.egg-info/
+
+# Uploads
+uploads/*
+!uploads/.gitkeep
+
+# Docker
+postgres_data/
+
+# Logs
+*.log
+
+# Alembic
+alembic/versions/__pycache__/
+
+# Old frontend kept for reference during the revamp
+_legacy/
