@@ -1,17 +1,17 @@
 from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional, List, Literal
 from datetime import datetime
-from app.schemas.common import Money
+from app.schemas.common import Money, NAME_PATTERN, CITY_PATTERN, MOBILE_PATTERN, PINCODE_PATTERN
 
 
 class ShippingAddress(BaseModel):
-    full_name: str = Field(..., min_length=2, max_length=100)
-    phone: str = Field(..., pattern=r"^[0-9+\- ]{10,15}$")
+    full_name: str = Field(..., min_length=2, max_length=100, pattern=NAME_PATTERN)
+    phone: str = Field(..., pattern=MOBILE_PATTERN)
     address_line1: str = Field(..., min_length=3, max_length=255)
     address_line2: Optional[str] = None
-    city: str = Field(..., min_length=2)
+    city: str = Field(..., min_length=2, max_length=100, pattern=CITY_PATTERN)
     state: str = Field(..., min_length=2)
-    postal_code: str = Field(..., pattern=r"^[1-9][0-9]{5}$")
+    postal_code: str = Field(..., pattern=PINCODE_PATTERN)
     country: str = "India"
 
 

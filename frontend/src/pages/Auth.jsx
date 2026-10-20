@@ -8,6 +8,7 @@ import { Logo } from '../components/ui/bits';
 import { ease } from '../components/ui/motion';
 import { useAuth } from '../context/AuthContext';
 import { cn } from '../lib/cn';
+import { cleanMobile, cleanName, isMobile, isName } from '../lib/validate';
 
 function Shell({ title, subtitle, children, footer }) {
   return (
@@ -117,10 +118,12 @@ export function Register() {
 
   const submit = async (e) => {
     e.preventDefault();
+    if (!isName(f.full_name)) return toast.error('Please enter your name using letters only');
+    if (f.phone && !isMobile(f.phone)) return toast.error('Mobile number must be 10 digits starting with 6–9');
     if (f.password.length < 8) return toast.error('Password must be at least 8 characters');
     setLoading(true);
     try {
-      const u = await register({ ...f, email: f.email.trim(), phone: f.phone.replace(/\D/g, '').slice(-10) || undefined });
+      const u = await register({ ...f, full_name: f.full_name.trim(), email: f.email.trim(), phone: f.phone || undefined });
       toast.success(`Welcome to NirmalMart, ${u.full_name.split(' ')[0]}! 🎉`);
       navigate(to, { replace: true });
     } catch (err) {
@@ -133,9 +136,9 @@ export function Register() {
   return (
     <Shell title="Create your account" subtitle="It takes less than a minute." footer={<>Already have an account? <Link to="/login" state={{ from: to }} className="font-semibold text-brand">Sign in</Link></>}>
       <form onSubmit={submit} className="space-y-4">
-        <div><label className="label" htmlFor="name">Full name</label><input id="name" required minLength={2} autoComplete="name" value={f.full_name} onChange={(e) => setF({ ...f, full_name: e.target.value })} className="input" /></div>
+        <div><label className="label" htmlFor="name">Full name</label><input id="name" required minLength={2} autoComplete="name" value={f.full_name} onChange={(e) => setF({ ...f, full_name: cleanName(e.target.value) })} className="input" /></div>
         <div><label className="label" htmlFor="email">Email</label><input id="email" type="email" required autoComplete="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} className="input" /></div>
-        <div><label className="label" htmlFor="phone">Mobile (optional)</label><input id="phone" inputMode="tel" autoComplete="tel" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} className="input" /></div>
+        <div><label className="label" htmlFor="phone">Mobile (optional)</label><input id="phone" inputMode="numeric" maxLength={10} autoComplete="tel-national" placeholder="10-digit number" value={f.phone} onChange={(e) => setF({ ...f, phone: cleanMobile(e.target.value) })} className="input" /></div>
         <div>
           <label className="label" htmlFor="pw">Password</label>
           <PasswordInput id="pw" autoComplete="new-password" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} />

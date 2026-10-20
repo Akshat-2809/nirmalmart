@@ -1,13 +1,14 @@
 from pydantic import BaseModel, ConfigDict, Field, EmailStr
 from typing import Optional
 from datetime import datetime
+from app.schemas.common import NAME_PATTERN, CITY_PATTERN, MOBILE_PATTERN, PINCODE_PATTERN
 
 
 class UserCreate(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=8, max_length=128)
-    full_name: str = Field(..., min_length=2, max_length=100)
-    phone: Optional[str] = Field(None, pattern=r"^[0-9+\- ]{10,15}$")
+    full_name: str = Field(..., min_length=2, max_length=100, pattern=NAME_PATTERN)
+    phone: Optional[str] = Field(None, pattern=MOBILE_PATTERN)
 
 
 class UserLogin(BaseModel):
@@ -29,8 +30,8 @@ class UserResponse(BaseModel):
 
 
 class UserUpdate(BaseModel):
-    full_name: Optional[str] = Field(None, min_length=2, max_length=100)
-    phone: Optional[str] = Field(None, pattern=r"^[0-9+\- ]{10,15}$")
+    full_name: Optional[str] = Field(None, min_length=2, max_length=100, pattern=NAME_PATTERN)
+    phone: Optional[str] = Field(None, pattern=MOBILE_PATTERN)
 
 
 class PasswordChange(BaseModel):
@@ -51,13 +52,13 @@ class RefreshRequest(BaseModel):
 
 class AddressBase(BaseModel):
     label: str = Field("Home", max_length=30)
-    full_name: str = Field(..., min_length=2, max_length=100)
-    phone: str = Field(..., pattern=r"^[0-9+\- ]{10,15}$")
+    full_name: str = Field(..., min_length=2, max_length=100, pattern=NAME_PATTERN)
+    phone: str = Field(..., pattern=MOBILE_PATTERN)
     address_line1: str = Field(..., min_length=3, max_length=255)
     address_line2: Optional[str] = None
-    city: str = Field(..., min_length=2, max_length=100)
+    city: str = Field(..., min_length=2, max_length=100, pattern=CITY_PATTERN)
     state: str = Field(..., min_length=2, max_length=100)
-    postal_code: str = Field(..., pattern=r"^[1-9][0-9]{5}$")
+    postal_code: str = Field(..., pattern=PINCODE_PATTERN)
     country: str = "India"
     is_default: bool = False
 

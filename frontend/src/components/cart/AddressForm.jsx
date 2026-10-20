@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { cn } from '../../lib/cn';
+import { cleanCity, cleanMobile, cleanName, cleanPincode, isCity, isMobile, isName, isPincode } from '../../lib/validate';
 
 export const STATES = [
   'Andaman and Nicobar Islands', 'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chandigarh', 'Chhattisgarh',
@@ -13,21 +14,27 @@ const EMPTY = { label: 'Home', full_name: '', phone: '', address_line1: '', addr
 
 const validate = (a) => {
   const e = {};
-  if (a.full_name.trim().length < 2) e.full_name = 'Enter the recipient’s name';
-  if (!/^[6-9]\d{9}$/.test(a.phone.replace(/\D/g, '').slice(-10))) e.phone = 'Enter a valid 10-digit mobile number';
+  if (!isName(a.full_name)) e.full_name = 'Enter a name using letters only';
+  if (!isMobile(a.phone)) e.phone = 'Enter a valid 10-digit mobile number (starts with 6–9)';
   if (a.address_line1.trim().length < 3) e.address_line1 = 'Enter house no. and street';
-  if (a.city.trim().length < 2) e.city = 'Enter city';
+  if (!isCity(a.city)) e.city = 'Enter a city name using letters only';
   if (!a.state) e.state = 'Select state';
-  if (!/^[1-9]\d{5}$/.test(a.postal_code)) e.postal_code = 'Enter a valid 6-digit pincode';
+  if (!isPincode(a.postal_code)) e.postal_code = 'Enter a valid 6-digit pincode';
   return e;
 };
 
+// Each field's characters are filtered as the customer types, so invalid input can't be entered
+const CLEAN = { full_name: cleanName, phone: cleanMobile, city: cleanCity, postal_code: cleanPincode };
+
 export default function AddressForm({ initial, onSubmit, submitting, submitLabel = 'Save address', onCancel }) {
-  const [a, setA] = useState({ ...EMPTY, ...initial });
+  const [a, setA] = useState(() => {
+    const init = { ...EMPTY, ...initial };
+    return { ...init, phone: cleanMobile(init.phone || ''), full_name: init.full_name || '', city: init.city || '' };
+  });
   const [errors, setErrors] = useState({});
   const field = (k) => ({
     value: a[k] ?? '', 'aria-invalid': !!errors[k],
-    onChange: (e) => { setA({ ...a, [k]: e.target.value }); setErrors({ ...errors, [k]: undefined }); },
+    onChange: (e) => { setA({ ...a, [k]: CLEAN[k] ? CLEAN[k](e.target.value) : e.target.value }); setErrors({ ...errors, [k]: undefined }); },
     className: cn('input', errors[k] && 'border-danger focus:border-danger focus:ring-danger/15'),
   });
   const Err = ({ k }) => (errors[k] ? <p className="mt-1 text-xs text-danger">{errors[k]}</p> : null);
@@ -36,7 +43,7 @@ export default function AddressForm({ initial, onSubmit, submitting, submitLabel
     e.preventDefault();
     const errs = validate(a);
     setErrors(errs);
-    if (!Object.keys(errs).length) onSubmit({ ...a, phone: a.phone.replace(/\D/g, '').slice(-10) });
+    if (!Object.keys(errs).length) onSubmit({ ...a, full_name: a.full_name.trim(), city: a.city.trim() });
   };
 
   return (
@@ -47,7 +54,7 @@ export default function AddressForm({ initial, onSubmit, submitting, submitLabel
         ))}
       </div>
       <div><label className="label">Full name</label><input {...field('full_name')} autoComplete="name" /><Err k="full_name" /></div>
-      <div><label className="label">Mobile number</label><input {...field('phone')} inputMode="tel" autoComplete="tel" placeholder="10-digit number" /><Err k="phone" /></div>
+      <div><label className="label">Mobile number</label><input {...field('phone')} inputMode="numeric" maxLength={10} autoComplete="tel-national" placeholder="10-digit number" /><Err k="phone" /></div>
       <div className="sm:col-span-2"><label className="label">House no., building, street</label><input {...field('address_line1')} autoComplete="address-line1" /><Err k="address_line1" /></div>
       <div className="sm:col-span-2"><label className="label">Area, landmark (optional)</label><input {...field('address_line2')} autoComplete="address-line2" /></div>
       <div><label className="label">Pincode</label><input {...field('postal_code')} inputMode="numeric" maxLength={6} autoComplete="postal-code" /><Err k="postal_code" /></div>

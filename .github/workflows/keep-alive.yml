@@ -1,0 +1,22 @@
+# Render's free plan sleeps after 15 idle minutes (first visitor then waits ~50 s).
+# Pinging the health check every 10 minutes keeps the backend (and the Supabase
+# free project, which pauses after a week without activity) awake.
+name: Keep backend awake
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Ping API health
+        run: |
+          for i in 1 2 3; do
+            if curl -fsS --max-time 60 https://nirmalmart-1.onrender.com/api/health; then exit 0; fi
+            sleep 10
+          done
+          exit 1

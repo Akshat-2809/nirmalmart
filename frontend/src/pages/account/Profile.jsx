@@ -5,12 +5,13 @@ import { authApi, userApi } from '../../api';
 import { errorMessage } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import { date } from '../../lib/format';
+import { cleanMobile, cleanName, isMobile, isName } from '../../lib/validate';
 
 export function Profile() {
   const { user, setUser } = useAuth();
-  const [f, setF] = useState({ full_name: user.full_name, phone: user.phone || '' });
+  const [f, setF] = useState({ full_name: user.full_name, phone: cleanMobile(user.phone || '') });
   const save = useMutation({
-    mutationFn: () => userApi.update({ full_name: f.full_name, phone: f.phone.replace(/\D/g, '').slice(-10) || null }),
+    mutationFn: () => userApi.update({ full_name: f.full_name.trim(), phone: f.phone || null }),
     onSuccess: (u) => { setUser(u); toast.success('Profile updated'); },
     onError: (e) => toast.error(errorMessage(e)),
   });
@@ -18,10 +19,15 @@ export function Profile() {
     <div className="card p-6">
       <h2 className="font-display text-xl font-bold">Personal details</h2>
       <p className="mt-1 text-sm text-ink-soft">Member since {date(user.created_at, { month: 'long', year: 'numeric' })}</p>
-      <form className="mt-6 grid max-w-xl gap-4 sm:grid-cols-2" onSubmit={(e) => { e.preventDefault(); save.mutate(); }}>
-        <div className="sm:col-span-2"><label className="label">Full name</label><input className="input" required minLength={2} value={f.full_name} onChange={(e) => setF({ ...f, full_name: e.target.value })} /></div>
+      <form className="mt-6 grid max-w-xl gap-4 sm:grid-cols-2" onSubmit={(e) => {
+        e.preventDefault();
+        if (!isName(f.full_name)) return toast.error('Please enter your name using letters only');
+        if (f.phone && !isMobile(f.phone)) return toast.error('Mobile number must be 10 digits starting with 6–9');
+        save.mutate();
+      }}>
+        <div className="sm:col-span-2"><label className="label">Full name</label><input className="input" required minLength={2} value={f.full_name} onChange={(e) => setF({ ...f, full_name: cleanName(e.target.value) })} /></div>
         <div><label className="label">Email</label><input className="input opacity-60" value={user.email} disabled /></div>
-        <div><label className="label">Mobile</label><input className="input" inputMode="tel" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} /></div>
+        <div><label className="label">Mobile</label><input className="input" inputMode="numeric" maxLength={10} placeholder="10-digit number" value={f.phone} onChange={(e) => setF({ ...f, phone: cleanMobile(e.target.value) })} /></div>
         <div><button className="btn-dark" disabled={save.isPending}>{save.isPending ? 'Saving…' : 'Save changes'}</button></div>
       </form>
     </div>

@@ -45,7 +45,14 @@ client.interceptors.response.use(
 export const errorMessage = (err, fallback = 'Something went wrong') => {
   const d = err?.response?.data?.detail;
   if (typeof d === 'string') return d;
-  if (Array.isArray(d) && d[0]?.msg) return d[0].msg.replace(/^Value error, /, '');
+  if (Array.isArray(d) && d[0]?.msg) {
+    const field = d[0].loc?.[d[0].loc.length - 1];
+    if (/should match pattern/i.test(d[0].msg)) {
+      const label = { full_name: 'name (letters only)', phone: '10-digit mobile number', city: 'city name (letters only)', postal_code: '6-digit pincode' }[field] || field;
+      return `Please enter a valid ${label}`;
+    }
+    return d[0].msg.replace(/^Value error, /, '');
+  }
   if (!err?.response) return 'Network error — please check your connection';
   return fallback;
 };
