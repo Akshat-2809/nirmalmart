@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
-import { cartApi } from '../api';
+import { cartApi, catalogApi } from '../api';
 import { errorMessage } from '../api/client';
 import { store } from '../lib/storage';
 import { productImage } from '../lib/format';
@@ -45,8 +45,22 @@ export function CartProvider({ children }) {
     if (authLoading) return;
     if (!user) {
       mergedFor.current = null;
-      setCart(summarise(store.get(GUEST_KEY, [])));
+      const saved = store.get(GUEST_KEY, []);
+      setCart(summarise(saved));
       setReady(true);
+      if (saved.length) {   // refresh price / photo / stock so the guest bag never shows stale data
+        catalogApi.byIds(saved.map((i) => i.product_id)).then(({ items: fresh }) => {
+          const byId = new Map(fresh.map((p) => [p.id, p]));
+          const next = saved.filter((i) => byId.has(i.product_id)).map((i) => {
+            const p = byId.get(i.product_id);
+            const quantity = Math.max(1, Math.min(i.quantity, p.stock_quantity || i.quantity));
+            return { ...i, product_name: p.name, product_name_mr: p.name_mr, product_slug: p.slug, product_price: p.price,
+              compare_at_price: p.compare_at_price, product_image: productImage(p), stock_quantity: p.stock_quantity,
+              quantity, subtotal: p.price * quantity };
+          });
+          store.set(GUEST_KEY, next); setCart(summarise(next));
+        }).catch(() => {});
+      }
       return;
     }
     setReady(false);

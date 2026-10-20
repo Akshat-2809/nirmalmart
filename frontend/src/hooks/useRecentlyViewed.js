@@ -1,17 +1,28 @@
+import { useQuery } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
+import { catalogApi } from '../api';
 import { store } from '../lib/storage';
 
 const KEY = 'nm-recent';
 
+// Only product ids are remembered; names, prices and photos are always fetched fresh, so a renamed
+// product or replaced photo never shows stale (or broken) data.
+const readIds = () => store.get(KEY, []).map((x) => (typeof x === 'object' ? x?.id : x)).filter(Number.isInteger);
+
 export function useRecentlyViewed() {
-  const [items, setItems] = useState(() => store.get(KEY, []));
+  const [ids, setIds] = useState(readIds);
   const push = useCallback((p) => {
-    const slim = { id: p.id, name: p.name, name_mr: p.name_mr, slug: p.slug, brand: p.brand, price: p.price,
-      compare_at_price: p.compare_at_price, images: p.images?.slice(0, 1), rating_avg: p.rating_avg,
-      rating_count: p.rating_count, stock_quantity: p.stock_quantity };
-    const next = [slim, ...store.get(KEY, []).filter((x) => x.id !== p.id)].slice(0, 12);
+    const next = [p.id, ...readIds().filter((id) => id !== p.id)].slice(0, 12);
     store.set(KEY, next);
-    setItems(next);
+    setIds(next);
   }, []);
+  const { data } = useQuery({
+    queryKey: ['products', { ids }],
+    queryFn: () => catalogApi.byIds(ids),
+    enabled: ids.length > 0,
+    staleTime: 60_000,
+  });
+  const byId = new Map((data?.items || []).map((p) => [p.id, p]));
+  const items = ids.map((id) => byId.get(id)).filter(Boolean); // keeps viewing order, drops removed products
   return { items, push };
 }

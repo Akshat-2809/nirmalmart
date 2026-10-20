@@ -88,13 +88,11 @@ function PromoCarousel({ slides, loading }) {
                   Shop now <ArrowRight size={15} />
                 </span>
               </div>
-              <div className="relative flex h-full shrink-0 items-center">
+              <div className="flex shrink-0 items-center gap-3 lg:gap-4">
                 {s.images.map((p, k) => (
-                  <motion.div key={p.id} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.15 + k * 0.08, ease }}
-                    className={cn('overflow-hidden rounded-2xl bg-white p-1.5 shadow-lift',
-                      k === 0 && 'relative z-10 h-28 w-28 sm:h-40 sm:w-40 lg:h-48 lg:w-48',
-                      k === 1 && '-ml-6 hidden h-32 w-32 rotate-3 md:block lg:h-40 lg:w-40',
-                      k === 2 && '-ml-6 hidden h-32 w-32 -rotate-3 lg:block lg:h-40 lg:w-40')}>
+                  <motion.div key={p.id} initial={{ y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.12 + k * 0.08, ease }}
+                    className={cn('h-28 w-28 overflow-hidden rounded-2xl bg-white p-1.5 shadow-lift sm:h-36 sm:w-36 lg:h-44 lg:w-44',
+                      k === 1 && 'hidden md:block', k === 2 && 'hidden lg:block')}>
                     <img src={sized(productImage(p), 400)} alt="" className="h-full w-full rounded-xl object-cover" draggable={false} />
                   </motion.div>
                 ))}
@@ -284,6 +282,51 @@ function PriceBuckets({ all }) {
   );
 }
 
+/* ───────────── Explore all: categories interleaved, reshuffled daily ───────────── */
+
+const seeded = (seed) => () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+
+function mixProducts(all) {
+  const rand = seeded(Number(new Date().toISOString().slice(0, 10).replace(/-/g, '')));   // same order all day
+  const groups = new Map();
+  for (const p of all) {
+    const k = p.category_id ?? 0;
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(p);
+  }
+  const lists = [...groups.values()].map((g) => g.map((p) => [rand(), p]).sort((a, b) => a[0] - b[0]).map((x) => x[1]))
+    .sort(() => rand() - 0.5);
+  const out = [];
+  for (let i = 0; out.length < all.length; i++) for (const g of lists) if (g[i]) out.push(g[i]);   // round-robin across categories
+  return out;
+}
+
+function ExploreAll({ all, loading }) {
+  const mixed = useMemo(() => mixProducts(all), [all]);
+  const [shown, setShown] = useState(20);
+  if (!loading && !all.length) return null;
+  return (
+    <section className="container pt-12">
+      <div className="mb-4 flex items-end justify-between gap-4">
+        <div>
+          <h2 className="font-display text-xl font-bold sm:text-2xl">Explore all products</h2>
+          <p lang="mr" className="text-sm font-semibold text-ink-soft">सर्व उत्पादने</p>
+        </div>
+        <Link to="/shop" className="group flex shrink-0 items-center gap-1 text-sm font-semibold text-brand">
+          Shop all <ArrowRight size={15} className="transition group-hover:translate-x-1" />
+        </Link>
+      </div>
+      <ProductGrid products={mixed.slice(0, shown)} loading={loading} skeletons={10}
+        cols="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 lg:grid-cols-5" />
+      {shown < mixed.length && (
+        <div className="mt-8 text-center">
+          <button onClick={() => setShown((n) => n + 20)} className="btn-outline">Show more ({mixed.length - shown} left)</button>
+        </div>
+      )}
+    </section>
+  );
+}
+
 /* ───────────── Slim trust strip ───────────── */
 
 function TrustStrip() {
@@ -299,7 +342,7 @@ function TrustStrip() {
 
 export default function Home() {
   const { data: categories = [], isLoading: catsLoading } = useQuery({ queryKey: ['categories'], queryFn: catalogApi.categories, staleTime: 300_000 });
-  const allQ = useQuery({ queryKey: ['products', { home: 'all' }], queryFn: () => catalogApi.products({ sort_by: 'newest', per_page: 48 }) });
+  const allQ = useQuery({ queryKey: ['products', { home: 'all' }], queryFn: () => catalogApi.products({ sort_by: 'newest', per_page: 100 }) });
   const trendQ = useQuery({ queryKey: ['products', { trending: true }], queryFn: () => catalogApi.products({ trending: true, sort_by: 'newest', per_page: 24 }) });
   const { items: recent } = useRecentlyViewed();
 
@@ -317,7 +360,7 @@ export default function Home() {
       <TodaysDeals items={deals} loading={allQ.isLoading} />
       <Trending items={trending} loading={trendQ.isLoading} />
       <PriceBuckets all={all} />
-      {all.length > 12 && <ProductRail eyebrow="Just in" title="New arrivals" products={all.slice(0, 12)} href="/shop?sort_by=newest" />}
+      <ExploreAll all={all} loading={allQ.isLoading} />
       {recent.length > 0 && <ProductRail eyebrow="Pick up where you left off" title="Recently viewed" products={recent} />}
       <TrustStrip />
     </div>

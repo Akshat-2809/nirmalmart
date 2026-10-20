@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import { wishlistApi } from '../api';
+import { catalogApi, wishlistApi } from '../api';
 import { store } from '../lib/storage';
 import { useAuth } from './AuthContext';
 
@@ -13,7 +13,19 @@ export function WishlistProvider({ children }) {
 
   useEffect(() => {
     if (loading) return;
-    if (!user) return setItems(store.get(KEY, []));
+    if (!user) {
+      const saved = store.get(KEY, []);
+      setItems(saved);
+      // refresh names/prices/photos (saved copies may be stale, e.g. after a photo was replaced)
+      if (saved.length) {
+        catalogApi.byIds(saved.map((p) => p.id)).then(({ items: fresh }) => {
+          const byId = new Map(fresh.map((p) => [p.id, p]));
+          const next = saved.map((p) => byId.get(p.id)).filter(Boolean);
+          store.set(KEY, next); setItems(next);
+        }).catch(() => {});
+      }
+      return;
+    }
     const guest = store.get(KEY, []);
     Promise.all(guest.map((p) => wishlistApi.add(p.id).catch(() => null)))
       .then(() => wishlistApi.get())

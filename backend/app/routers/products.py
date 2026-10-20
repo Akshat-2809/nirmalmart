@@ -11,8 +11,9 @@ router = APIRouter(prefix="/api/products", tags=["Products"])
 @router.get("", response_model=PaginatedProducts)
 def list_products(
     page: int = Query(1, ge=1),
-    per_page: int = Query(12, ge=1, le=48),
+    per_page: int = Query(12, ge=1, le=100),
     category: Optional[str] = Query(None, description="Category id or slug"),
+    ids: Optional[str] = Query(None, max_length=1000, description="Comma-separated product ids (e.g. recently viewed)"),
     category_id: Optional[int] = None,
     search: Optional[str] = Query(None, max_length=100),
     brand: Optional[List[str]] = Query(None),
@@ -25,9 +26,10 @@ def list_products(
     sort_by: str = Query("newest", pattern=f"^({'|'.join(SORTS)})$"),
     db: Session = Depends(get_db),
 ):
+    id_list = [int(x) for x in ids.split(",") if x.strip().isdigit()][:100] if ids else None
     return get_products(db, page, per_page, sort_by, category=category or category_id, search=search,
                         brands=brand, min_price=min_price, max_price=max_price, in_stock=in_stock,
-                        min_rating=min_rating, featured=featured, trending=trending)
+                        min_rating=min_rating, featured=featured, trending=trending, ids=id_list)
 
 
 @router.get("/facets", response_model=ProductFacets)

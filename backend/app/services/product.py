@@ -44,7 +44,7 @@ def _base_query(db: Session, include_inactive: bool = False):
 
 
 def _apply_filters(db, query, category=None, search=None, brands=None, min_price=None,
-                   max_price=None, in_stock=False, min_rating=None, featured=None, trending=None):
+                   max_price=None, in_stock=False, min_rating=None, featured=None, trending=None, ids=None):
     if category:
         query = query.filter(Product.category_id.in_(_category_ids(db, str(category))))
     if search:
@@ -71,6 +71,8 @@ def _apply_filters(db, query, category=None, search=None, brands=None, min_price
         query = query.filter(Product.is_featured.is_(featured))
     if trending is not None:
         query = query.filter(Product.is_trending.is_(trending))
+    if ids is not None:
+        query = query.filter(Product.id.in_(ids or [-1]))
     return query
 
 

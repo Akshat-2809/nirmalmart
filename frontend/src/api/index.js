@@ -12,6 +12,7 @@ export const authApi = {
 export const catalogApi = {
   categories: () => d(client.get('/categories')),
   products: (params) => d(client.get('/products', { params, paramsSerializer: { indexes: null } })),
+  byIds: (ids) => d(client.get('/products', { params: { ids: ids.join(','), per_page: Math.min(100, Math.max(1, ids.length)) } })),
   facets: (params) => d(client.get('/products/facets', { params })),
   suggest: (q) => d(client.get('/products/suggest', { params: { q } })),
   product: (slug) => d(client.get(`/products/${slug}`)),

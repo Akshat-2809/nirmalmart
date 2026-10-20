@@ -7,9 +7,12 @@ export const setTokens = (t) => (t ? store.set(TOKENS, t) : store.remove(TOKENS)
 
 const client = axios.create({ baseURL: import.meta.env.VITE_API_BASE || '/api' });
 
+// Catalogue reads are the same for everyone; sending them without the login token lets the CDN cache them.
+const isPublicRead = (c) => (c.method || 'get') === 'get' && /^\/(categories|products)(\/|$|\?)/.test(c.url) && !c.url.includes('/reviews');
+
 client.interceptors.request.use((config) => {
   const t = getTokens();
-  if (t?.access) config.headers.Authorization = `Bearer ${t.access}`;
+  if (t?.access && !isPublicRead(config)) config.headers.Authorization = `Bearer ${t.access}`;
   return config;
 });
 

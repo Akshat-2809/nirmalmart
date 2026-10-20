@@ -52,6 +52,20 @@ app = FastAPI(title=f"{settings.APP_NAME} API", description="NirmalMart e-commer
               redoc_url=None)
 
 app.add_middleware(GZipMiddleware, minimum_size=1024)
+
+# Shopper-facing catalogue reads are identical for everyone, so let the CDN cache them briefly.
+# (Reviews are excluded: they depend on who is signed in.)
+PUBLIC_CACHE = "public, max-age=30, s-maxage=60, stale-while-revalidate=600"
+
+
+@app.middleware("http")
+async def cache_public_catalogue(request, call_next):
+    response = await call_next(request)
+    path = request.url.path
+    if (request.method == "GET" and response.status_code == 200 and "authorization" not in request.headers
+            and (path == "/api/categories" or (path.startswith("/api/products") and "/reviews" not in path))):
+        response.headers["Cache-Control"] = PUBLIC_CACHE
+    return response
 app.add_middleware(CORSMiddleware, allow_origins=settings.cors_origins_list, allow_credentials=True,
                    allow_methods=["*"], allow_headers=["*"])
 
