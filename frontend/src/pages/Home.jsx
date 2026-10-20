@@ -57,11 +57,13 @@ function PromoCarousel({ slides, loading }) {
   const [paused, setPaused] = useState(false);
   const n = slides.length;
   const go = useCallback((d) => setI((x) => (x + d + n) % n), [n]);
+  const [rounds, setRounds] = useState(0);
   useEffect(() => {
     if (n < 2 || paused) return undefined;
-    const t = setInterval(() => go(1), 5000);
-    return () => clearInterval(t);
-  }, [n, paused, go, i]);
+    // First slide stays a little longer so the first screen settles before anything moves
+    const t = setTimeout(() => { go(1); setRounds((r) => r + 1); }, rounds === 0 ? 10000 : 5000);
+    return () => clearTimeout(t);
+  }, [n, paused, go, i, rounds]);
   useEffect(() => { if (i >= n) setI(0); }, [n, i]);
 
   if (loading) return <div className="container pt-4"><div className="skeleton h-[180px] rounded-3xl sm:h-[240px] lg:h-[280px]" /></div>;
