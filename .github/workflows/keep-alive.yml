@@ -1,3 +1,5 @@
+# BACKUP ONLY. The primary keep-alive is a pg_cron job in Supabase ('nirmalmart-keep-alive', every
+# 5 min via pg_net), because GitHub's scheduler is unreliable on new/quiet repos.
 # Render's free plan sleeps after 15 idle minutes (first visitor then waits ~50 s).
 # Pinging the health check every 10 minutes keeps the backend (and the Supabase
 # free project, which pauses after a week without activity) awake.

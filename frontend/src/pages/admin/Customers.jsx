@@ -17,7 +17,7 @@ export default function Customers() {
   const [search, setSearch] = useState('');
   const [q, setQ] = useState('');
   useEffect(() => { const t = setTimeout(() => setQ(search), 250); return () => clearTimeout(t); }, [search]);
-  const { data: users, isLoading } = useQuery({ queryKey: ['admin', 'users', q], queryFn: () => adminApi.users(q || undefined) });
+  const { data: users, isPending } = useQuery({ queryKey: ['admin', 'users', q], queryFn: () => adminApi.users(q || undefined) });
   const update = useMutation({
     mutationFn: ({ id, body }) => adminApi.updateUser(id, body),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin', 'users'] }); toast.success('User updated'); },
@@ -32,7 +32,7 @@ export default function Customers() {
         <input className="input pl-10" placeholder="Search name or email" value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
       <div className="space-y-2 md:hidden">
-        {isLoading ? [...Array(4)].map((_, i) => <Skeleton key={i} className="h-24" />) : users.map((u) => (
+        {isPending ? [...Array(4)].map((_, i) => <Skeleton key={i} className="h-24" />) : users.map((u) => (
           <div key={u.id} className="card p-4">
             <div className="flex items-center gap-3">
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand-soft text-sm font-bold text-brand">{u.full_name[0]}</span>
@@ -59,7 +59,7 @@ export default function Customers() {
               <tr><th className="px-4 py-3">Customer</th><th className="px-4 py-3">Joined</th><th className="px-4 py-3">Orders</th><th className="px-4 py-3">Spend</th><th className="px-4 py-3">Role</th><th className="px-4 py-3">Status</th></tr>
             </thead>
             <tbody className="divide-y divide-line">
-              {isLoading ? [...Array(5)].map((_, i) => <tr key={i}><td colSpan={6} className="px-4 py-3"><Skeleton className="h-8" /></td></tr>) :
+              {isPending ? [...Array(5)].map((_, i) => <tr key={i}><td colSpan={6} className="px-4 py-3"><Skeleton className="h-8" /></td></tr>) :
                 users.map((u, i) => (
                   <motion.tr key={u.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.02 }} className="hover:bg-muted/40">
                     <td className="px-4 py-3">

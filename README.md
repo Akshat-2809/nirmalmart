@@ -48,6 +48,12 @@ To seed demo data once: Render Shell → `python seed_db.py`.
 `REPLACE-WITH-RENDER-SERVICE` with your Render service name. Vercel then proxies `/api` to the backend, so the browser
 talks to one origin. Add the custom domain in Vercel when it's ready, and add it to `CORS_ORIGINS` on Render.
 
+### Keeping the free backend awake
+
+Render's free plan sleeps after 15 idle minutes. A Supabase `pg_cron` job (`nirmalmart-keep-alive`) calls
+`/api/health` every 5 minutes via `pg_net`. Check it in Supabase → Integrations → Cron, or with
+`select * from cron.job_run_details order by start_time desc limit 5;`. If the backend URL changes, re-schedule it.
+
 ### Schema changes
 
 ```bash

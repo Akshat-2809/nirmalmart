@@ -77,7 +77,7 @@ export default function Orders() {
   const [open, setOpen] = useState(null);
   useEffect(() => { const t = setTimeout(() => { setQ(search); setPage(1); }, 250); return () => clearTimeout(t); }, [search]);
 
-  const { data, isLoading } = useQuery({
+  const { data, isPending } = useQuery({
     queryKey: ['admin', 'orders', status, q, page],
     queryFn: () => adminApi.orders({ status: status === 'all' ? undefined : status, search: q || undefined, page, per_page: 15 }),
     placeholderData: keepPreviousData,
@@ -101,7 +101,7 @@ export default function Orders() {
       </div>
 
       <div className="space-y-2 md:hidden">
-        {isLoading ? [...Array(4)].map((_, i) => <Skeleton key={i} className="h-24" />) :
+        {isPending ? [...Array(4)].map((_, i) => <Skeleton key={i} className="h-24" />) :
           data.items.length === 0 ? <p className="py-12 text-center text-ink-faint">No orders found</p> :
           data.items.map((o) => (
             <button key={o.id} onClick={() => setOpen(o)} className="card w-full p-4 text-left active:bg-muted/40">
@@ -121,7 +121,7 @@ export default function Orders() {
               <tr><th className="px-4 py-3">Order</th><th className="px-4 py-3">Customer</th><th className="px-4 py-3">Date</th><th className="px-4 py-3">Total</th><th className="px-4 py-3">Status</th><th className="px-4 py-3">Payment</th></tr>
             </thead>
             <tbody className="divide-y divide-line">
-              {isLoading ? [...Array(6)].map((_, i) => <tr key={i}><td colSpan={6} className="px-4 py-3"><Skeleton className="h-8" /></td></tr>) :
+              {isPending ? [...Array(6)].map((_, i) => <tr key={i}><td colSpan={6} className="px-4 py-3"><Skeleton className="h-8" /></td></tr>) :
                 data.items.length === 0 ? <tr><td colSpan={6} className="px-4 py-12 text-center text-ink-faint">No orders found</td></tr> :
                 data.items.map((o, i) => (
                   <motion.tr key={o.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.02 }}

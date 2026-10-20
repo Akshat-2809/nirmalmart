@@ -41,7 +41,7 @@ export default function Checkout() {
   const [adding, setAdding] = useState(false);
   const [notes, setNotes] = useState('');
 
-  const { data: addresses, isLoading } = useQuery({ queryKey: ['addresses'], queryFn: userApi.addresses });
+  const { data: addresses, isPending } = useQuery({ queryKey: ['addresses'], queryFn: userApi.addresses });
   useEffect(() => {
     if (addresses && !addressId) {
       const def = addresses.find((a) => a.is_default) || addresses[0];
@@ -94,7 +94,7 @@ export default function Checkout() {
               {step === 0 && (
                 <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                   <div className="pt-6">
-                    {isLoading ? <Skeleton className="h-28" /> : (
+                    {isPending ? <Skeleton className="h-28" /> : (
                       <div className="grid gap-3 sm:grid-cols-2">
                         {addresses.map((a) => (
                           <motion.button layout key={a.id} onClick={() => { setAddressId(a.id); setAdding(false); }}

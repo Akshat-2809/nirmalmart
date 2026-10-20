@@ -11,7 +11,7 @@ import { Modal } from '../../components/ui/Drawer';
 
 export default function Addresses() {
   const qc = useQueryClient();
-  const { data: list, isLoading } = useQuery({ queryKey: ['addresses'], queryFn: userApi.addresses });
+  const { data: list, isPending } = useQuery({ queryKey: ['addresses'], queryFn: userApi.addresses });
   const [editing, setEditing] = useState(null); // null | 'new' | address
   const done = (msg) => { qc.invalidateQueries({ queryKey: ['addresses'] }); setEditing(null); toast.success(msg); };
   const save = useMutation({
@@ -27,7 +27,7 @@ export default function Addresses() {
         <h2 className="font-display text-xl font-bold">Saved addresses</h2>
         <button className="btn-dark btn-sm" onClick={() => setEditing('new')}><Plus size={15} /> Add address</button>
       </div>
-      {isLoading ? <Skeleton className="h-32" /> : !list.length ? (
+      {isPending ? <Skeleton className="h-32" /> : !list.length ? (
         <Empty icon={MapPin} title="No saved addresses" text="Add an address for faster checkout." />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">

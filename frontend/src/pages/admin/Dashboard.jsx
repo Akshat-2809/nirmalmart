@@ -41,9 +41,9 @@ const STATUS_COLORS = { pending: 'bg-warning', confirmed: 'bg-brand', processing
 
 export default function Dashboard() {
   const [days, setDays] = useState(30);
-  const { data, isLoading } = useQuery({ queryKey: ['admin', 'dashboard', days], queryFn: () => adminApi.dashboard(days) });
+  const { data, isPending } = useQuery({ queryKey: ['admin', 'dashboard', days], queryFn: () => adminApi.dashboard(days) });
 
-  if (isLoading) return <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{[...Array(8)].map((_, i) => <Skeleton key={i} className="h-32" />)}</div>;
+  if (isPending) return <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{[...Array(8)].map((_, i) => <Skeleton key={i} className="h-32" />)}</div>;
   const s = data.stats;
   const totalOrders = Object.values(data.orders_by_status).reduce((a, b) => a + b, 0) || 1;
 

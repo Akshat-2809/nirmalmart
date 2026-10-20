@@ -197,7 +197,19 @@ export default function ProductDetail() {
   const buyRef = useRef(null);
   const [showSticky, setShowSticky] = useState(false);
 
-  const { data: product, isLoading, isError } = useQuery({ queryKey: ['product', slug], queryFn: () => catalogApi.product(slug) });
+  const qc = useQueryClient();
+  const { data: product, isPending, isError } = useQuery({
+    queryKey: ['product', slug],
+    queryFn: () => catalogApi.product(slug),
+    // Show name/photo/price straight away from any product list already loaded; details fill in after
+    placeholderData: () => {
+      for (const [, d] of qc.getQueriesData({ queryKey: ['products'] })) {
+        const hit = d?.items?.find((x) => x.slug === slug);
+        if (hit) return hit;
+      }
+      return undefined;
+    },
+  });
   const { data: related = [] } = useQuery({ queryKey: ['related', slug], queryFn: () => catalogApi.related(slug), enabled: !!product });
 
   useEffect(() => { if (product) { push(product); setQty(1); document.title = `${product.name} — NirmalMart`; } }, [product?.id]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -210,7 +222,7 @@ export default function ProductDetail() {
   }, [product?.id]);
 
   if (isError) return <NotFound />;
-  if (isLoading) {
+  if (isPending || !product) {   // also covers the brief pause while the saved catalogue is restored
     return (
       <div className="container grid gap-10 py-10 lg:grid-cols-2">
         <Skeleton className="aspect-square rounded-3xl" />

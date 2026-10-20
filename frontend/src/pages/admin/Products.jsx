@@ -271,7 +271,7 @@ export default function Products() {
   useEffect(() => { const t = setTimeout(() => { setQ(search); setPage(1); }, 250); return () => clearTimeout(t); }, [search]);
 
   const { data: categories = [] } = useQuery({ queryKey: ['admin', 'categories'], queryFn: adminApi.categories });
-  const { data, isLoading } = useQuery({
+  const { data, isPending } = useQuery({
     queryKey: ['admin', 'products', q, category, page],
     queryFn: () => adminApi.products({ search: q || undefined, category: category || undefined, page, per_page: 15 }),
     placeholderData: keepPreviousData,
@@ -303,7 +303,7 @@ export default function Products() {
       </div>
 
       <div className="space-y-2 md:hidden">
-        {isLoading ? [...Array(4)].map((_, i) => <Skeleton key={i} className="h-20" />) : data.items.map((p) => (
+        {isPending ? [...Array(4)].map((_, i) => <Skeleton key={i} className="h-20" />) : data.items.map((p) => (
           <div key={p.id} className="card flex items-center gap-3 p-3">
             <button onClick={() => setEditing(p.id)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
               <img src={sized(p.images[0]?.image_url, 100)} alt="" className="h-14 w-14 shrink-0 rounded-xl bg-muted object-cover" />
@@ -328,7 +328,7 @@ export default function Products() {
               <tr><th className="px-4 py-3">Product</th><th className="px-4 py-3">Price</th><th className="px-4 py-3">Stock</th><th className="px-4 py-3">Visible</th><th className="px-4 py-3" /></tr>
             </thead>
             <tbody className="divide-y divide-line">
-              {isLoading ? [...Array(6)].map((_, i) => <tr key={i}><td colSpan={5} className="px-4 py-3"><Skeleton className="h-10" /></td></tr>) :
+              {isPending ? [...Array(6)].map((_, i) => <tr key={i}><td colSpan={5} className="px-4 py-3"><Skeleton className="h-10" /></td></tr>) :
                 data.items.map((p, i) => (
                   <motion.tr key={p.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.02 }} className="transition hover:bg-muted/40">
                     <td className="px-4 py-3">

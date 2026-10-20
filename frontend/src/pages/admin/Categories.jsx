@@ -14,7 +14,7 @@ const EMPTY = { name: '', name_mr: '', description: '', image_url: '', sort_orde
 
 export default function Categories() {
   const qc = useQueryClient();
-  const { data: list, isLoading } = useQuery({ queryKey: ['admin', 'categories'], queryFn: adminApi.categories });
+  const { data: list, isPending } = useQuery({ queryKey: ['admin', 'categories'], queryFn: adminApi.categories });
   const [editing, setEditing] = useState(null);
   const [f, setF] = useState(EMPTY);
   const [file, setFile] = useState(null);
@@ -42,7 +42,7 @@ export default function Categories() {
       <PageHead title="Categories" subtitle="Organise how customers browse your store">
         <button className="btn-primary" onClick={() => setEditing('new')}><Plus size={16} /> Add category</button>
       </PageHead>
-      {isLoading ? <Skeleton className="h-48" /> : (
+      {isPending ? <Skeleton className="h-48" /> : (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <AnimatePresence>
             {list.map((c, i) => (

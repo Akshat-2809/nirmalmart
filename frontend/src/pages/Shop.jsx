@@ -150,7 +150,7 @@ export default function Shop() {
     per_page: PER_PAGE,
   }), [params]);
 
-  const { data, isLoading, isFetching } = useQuery({
+  const { data, isPending, isFetching } = useQuery({
     queryKey: ['products', query], queryFn: () => catalogApi.products(query), placeholderData: keepPreviousData,
   });
   const { data: facets } = useQuery({
@@ -213,7 +213,7 @@ export default function Shop() {
             </button>
             <p className="text-sm text-ink-soft">
               {data ? <><b className="text-ink">{data.total}</b> products</> : 'Loading…'}
-              {isFetching && !isLoading && <span className="ml-2 inline-block h-1.5 w-1.5 animate-ping rounded-full bg-brand" />}
+              {isFetching && !isPending && <span className="ml-2 inline-block h-1.5 w-1.5 animate-ping rounded-full bg-brand" />}
             </p>
             <label className="ml-auto flex items-center gap-2 text-sm">
               <span className="hidden text-ink-faint sm:inline">Sort by</span>
@@ -240,16 +240,16 @@ export default function Shop() {
             )}
           </AnimatePresence>
 
-          <div className={cn('transition-opacity', isFetching && !isLoading && 'opacity-60')}>
-            {!isLoading && data?.items.length === 0 && chips.length === 0 ? (
+          <div className={cn('transition-opacity', isFetching && !isPending && 'opacity-60')}>
+            {!isPending && data?.items.length === 0 && chips.length === 0 ? (
               <Empty icon={PackageOpen} title="New products are on the way"
                 text={category ? `We're stocking up ${category.name}. Check back soon!` : "We're stocking the shelves. Check back soon!"}
                 action={category ? <Link to="/shop" className="btn-outline">Browse all products</Link> : <Link to="/" className="btn-outline">Back to home</Link>} />
-            ) : !isLoading && data?.items.length === 0 ? (
+            ) : !isPending && data?.items.length === 0 ? (
               <Empty icon={SearchX} title="No products found" text="Try removing a filter or searching for something else."
                 action={<button className="btn-dark" onClick={() => setParams({})}>Reset filters</button>} />
             ) : (
-              <ProductGrid key={JSON.stringify(query)} products={data?.items || []} loading={isLoading} skeletons={PER_PAGE} cols="grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-5 md:grid-cols-3" />
+              <ProductGrid key={JSON.stringify(query)} products={data?.items || []} loading={isPending} skeletons={PER_PAGE} cols="grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-5 md:grid-cols-3" />
             )}
           </div>
 

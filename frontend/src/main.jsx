@@ -1,4 +1,6 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient } from '@tanstack/react-query';
+import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { MotionConfig } from 'framer-motion';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
@@ -26,13 +28,30 @@ window.addEventListener('error', (e) => {
   }
 }, true);
 
+// Retry while the backend wakes up or a request times out (no response / 5xx); never retry 4xx.
+const retry = (count, err) => count < 4 && (!err?.response || err.response.status >= 500);
+const retryDelay = (n) => Math.min(1500 * 2 ** n, 8000);
+
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { staleTime: 30_000, retry: 1, refetchOnWindowFocus: false } },
+  defaultOptions: { queries: { staleTime: 30_000, gcTime: 24 * 60 * 60 * 1000, retry, retryDelay, refetchOnWindowFocus: false } },
 });
+
+// Public catalogue data (products, categories) is remembered in the browser, so returning visitors
+// see the store instantly; fresh data replaces it in the background. Personal data is never stored.
+const PUBLIC_KEYS = new Set(['products', 'categories', 'product', 'related', 'facets']);
+let storage;
+try { storage = window.localStorage; } catch { storage = undefined; }
+const persister = createSyncStoragePersister({ storage, key: 'nm-catalog-cache', throttleTime: 2000 });
+const persistOptions = {
+  persister,
+  maxAge: 24 * 60 * 60 * 1000,
+  buster: 'v2',
+  dehydrateOptions: { shouldDehydrateQuery: (q) => q.state.status === 'success' && PUBLIC_KEYS.has(q.queryKey[0]) },
+};
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
       <BrowserRouter>
         <MotionConfig reducedMotion="user">
           <AuthProvider>
@@ -50,6 +69,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           </AuthProvider>
         </MotionConfig>
       </BrowserRouter>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   </React.StrictMode>,
 );

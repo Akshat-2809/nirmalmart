@@ -12,8 +12,8 @@ import { cn } from '../../lib/cn';
 import { date, dateTime, ORDER_STEPS, price, priceExact, sized } from '../../lib/format';
 
 export function Orders() {
-  const { data: orders, isLoading } = useQuery({ queryKey: ['orders'], queryFn: orderApi.list });
-  if (isLoading) return <div className="space-y-3">{[1, 2, 3].map((i) => <Skeleton key={i} className="h-28" />)}</div>;
+  const { data: orders, isPending } = useQuery({ queryKey: ['orders'], queryFn: orderApi.list });
+  if (isPending) return <div className="space-y-3">{[1, 2, 3].map((i) => <Skeleton key={i} className="h-28" />)}</div>;
   if (!orders.length) return <Empty icon={Package} title="No orders yet" text="When you place an order, it will show up here." action={<Link to="/shop" className="btn-primary">Start shopping</Link>} />;
   return (
     <motion.div variants={stagger(0.06)} initial="hidden" animate="show" className="space-y-3">
@@ -66,13 +66,13 @@ export function OrderDetail() {
   const { id } = useParams();
   const qc = useQueryClient();
   const { add } = useCart();
-  const { data: o, isLoading } = useQuery({ queryKey: ['orders', id], queryFn: () => orderApi.get(id) });
+  const { data: o, isPending } = useQuery({ queryKey: ['orders', id], queryFn: () => orderApi.get(id) });
   const cancel = useMutation({
     mutationFn: () => orderApi.cancel(id),
     onSuccess: (data) => { qc.setQueryData(['orders', id], data); qc.invalidateQueries({ queryKey: ['orders'] }); toast.success('Order cancelled'); },
     onError: (e) => toast.error(errorMessage(e)),
   });
-  if (isLoading) return <Skeleton className="h-96" />;
+  if (isPending) return <Skeleton className="h-96" />;
   const a = o.shipping_address || {};
 
   return (

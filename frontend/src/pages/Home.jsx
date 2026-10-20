@@ -341,7 +341,7 @@ function TrustStrip() {
 }
 
 export default function Home() {
-  const { data: categories = [], isLoading: catsLoading } = useQuery({ queryKey: ['categories'], queryFn: catalogApi.categories, staleTime: 300_000 });
+  const { data: categories = [], isPending: catsLoading } = useQuery({ queryKey: ['categories'], queryFn: catalogApi.categories, staleTime: 300_000 });
   // per_page 100 needs the current backend; fall back to 48 if an older one rejects it
   const allQ = useQuery({
     queryKey: ['products', { home: 'all' }],
@@ -354,18 +354,34 @@ export default function Home() {
   const all = allQ.data?.items || [];
   const trending = trendQ.data?.items || [];
   const slides = useSlides(all, trending, categories);
-  const loading = allQ.isLoading || trendQ.isLoading;
+  const loading = allQ.isPending || trendQ.isPending;
   const deals = [...all].filter((p) => p.stock_quantity > 0).sort(byDiscount);
+
+  const [slow, setSlow] = useState(false);
+  useEffect(() => {
+    if (!allQ.isPending) { setSlow(false); return undefined; }
+    const t = setTimeout(() => setSlow(true), 4000);
+    return () => clearTimeout(t);
+  }, [allQ.isPending]);
 
   return (
     <div className="pb-6">
+      <AnimatePresence>
+        {slow && (
+          <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            className="container mt-4 flex items-center justify-center gap-2 text-sm text-ink-soft">
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand border-r-transparent" />
+            Loading the latest deals… <span lang="mr" className="text-ink-faint">कृपया थोडा वेळ थांबा</span>
+          </motion.p>
+        )}
+      </AnimatePresence>
       <PromoCarousel slides={slides} loading={loading || catsLoading} />
       <CategoryStrip categories={categories} trendingImage={trending[0] ? productImage(trending[0]) : null} />
       <DealCards all={all} trending={trending} categories={categories} />
-      <TodaysDeals items={deals} loading={allQ.isLoading} />
-      <Trending items={trending} loading={trendQ.isLoading} />
+      <TodaysDeals items={deals} loading={allQ.isPending} />
+      <Trending items={trending} loading={trendQ.isPending} />
       <PriceBuckets all={all} />
-      <ExploreAll all={all} loading={allQ.isLoading} />
+      <ExploreAll all={all} loading={allQ.isPending} />
       {recent.length > 0 && <ProductRail eyebrow="Pick up where you left off" title="Recently viewed" products={recent} />}
       <TrustStrip />
     </div>
