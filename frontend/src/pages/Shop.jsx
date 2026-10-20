@@ -1,6 +1,6 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, SearchX, SlidersHorizontal, Star, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, PackageOpen, SearchX, SlidersHorizontal, Star, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { catalogApi } from '../api';
@@ -238,7 +238,11 @@ export default function Shop() {
           </AnimatePresence>
 
           <div className={cn('transition-opacity', isFetching && !isLoading && 'opacity-60')}>
-            {!isLoading && data?.items.length === 0 ? (
+            {!isLoading && data?.items.length === 0 && chips.length === 0 ? (
+              <Empty icon={PackageOpen} title="New products are on the way"
+                text={category ? `We're stocking up ${category.name}. Check back soon!` : "We're stocking the shelves. Check back soon!"}
+                action={category ? <Link to="/shop" className="btn-outline">Browse all products</Link> : <Link to="/" className="btn-outline">Back to home</Link>} />
+            ) : !isLoading && data?.items.length === 0 ? (
               <Empty icon={SearchX} title="No products found" text="Try removing a filter or searching for something else."
                 action={<button className="btn-dark" onClick={() => setParams({})}>Reset filters</button>} />
             ) : (

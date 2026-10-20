@@ -108,19 +108,19 @@ function Hero({ picks }) {
               <motion.div style={layers[0]} className="absolute left-[6%] top-[6%] w-[52%]">
                 <motion.div style={{ y: yFront }} initial={{ opacity: 0, scale: 0.8, rotate: -8 }} animate={{ opacity: 1, scale: 1, rotate: -4 }}
                   transition={{ duration: 0.9, ease, delay: 0.2 }} whileHover={{ rotate: 0, scale: 1.03 }}>
-                  <HeroCard product={picks[0]} tall />
+                  <HeroCard card={picks[0]} tall />
                 </motion.div>
               </motion.div>
               <motion.div style={layers[1]} className="absolute right-[4%] top-[18%] w-[42%]">
                 <motion.div initial={{ opacity: 0, scale: 0.8, rotate: 10 }} animate={{ opacity: 1, scale: 1, rotate: 5 }}
                   transition={{ duration: 0.9, ease, delay: 0.35 }} whileHover={{ rotate: 0, scale: 1.03 }}>
-                  <HeroCard product={picks[1]} />
+                  <HeroCard card={picks[1]} />
                 </motion.div>
               </motion.div>
               <motion.div style={layers[2]} className="absolute bottom-[4%] left-[30%] w-[44%]">
                 <motion.div initial={{ opacity: 0, scale: 0.8, rotate: -6 }} animate={{ opacity: 1, scale: 1, rotate: 3 }}
                   transition={{ duration: 0.9, ease, delay: 0.5 }} whileHover={{ rotate: 0, scale: 1.03 }}>
-                  <HeroCard product={picks[2]} />
+                  <HeroCard card={picks[2]} />
                 </motion.div>
               </motion.div>
               <motion.div initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.9, type: 'spring' }}
@@ -139,21 +139,28 @@ function Hero({ picks }) {
   );
 }
 
-function HeroCard({ product, tall }) {
+/** Hero collage card: a product (with price) or, before any products exist, a category. */
+const toHeroCard = (item) => (item.slug && item.price != null
+  ? { to: `/product/${item.slug}`, image: productImage(item), title: item.name, tag: `₹${Math.round(item.price).toLocaleString('en-IN')}` }
+  : { to: `/shop?category=${item.slug}`, image: item.image_url, title: item.name, tag: 'Shop' });
+
+function HeroCard({ card, tall }) {
   return (
-    <Link to={`/product/${product.slug}`} className="block overflow-hidden rounded-3xl border border-line bg-surface p-2 shadow-lift">
-      <img src={sized(productImage(product), 600)} alt={product.name}
-        className={cn('w-full rounded-2xl object-cover', tall ? 'aspect-[4/5]' : 'aspect-square')} />
+    <Link to={card.to} className="block overflow-hidden rounded-3xl border border-line bg-surface p-2 shadow-lift">
+      <img src={sized(card.image, 600)} alt={card.title}
+        className={cn('w-full rounded-2xl bg-muted object-cover', tall ? 'aspect-[4/5]' : 'aspect-square')} />
       <div className="flex items-center justify-between gap-2 px-2 py-2.5">
-        <p className="truncate text-xs font-semibold">{product.name}</p>
-        <span className="shrink-0 rounded-full bg-ink px-2 py-0.5 text-[11px] font-bold text-bg">₹{Math.round(product.price).toLocaleString('en-IN')}</span>
+        <p className="truncate text-xs font-semibold">{card.title}</p>
+        <span className="shrink-0 rounded-full bg-ink px-2 py-0.5 text-[11px] font-bold text-bg">{card.tag}</span>
       </div>
     </Link>
   );
 }
 
 function BrandMarquee() {
-  const brands = ['Sonora', 'Voltix', 'Pixora', 'Urban Loom', 'Thread & Co', 'Stride', 'Casa Nirmal', 'Aura Botanics', 'FitForge', 'Estate Roast'];
+  const { data } = useQuery({ queryKey: ['facets', undefined, undefined], queryFn: () => catalogApi.facets({}), staleTime: 300_000 });
+  const brands = data?.brands || [];
+  if (brands.length < 4) return null; // a strip of one or two names looks empty
   return (
     <div className="border-y border-line bg-surface py-5">
       <div className="relative overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_10%,black_90%,transparent)]">
@@ -366,19 +373,22 @@ export default function Home() {
   const { items: recent } = useRecentlyViewed();
 
   const featuredItems = featured.data?.items || [];
+  const hasProducts = (topRated.data?.total ?? 1) > 0;
   const heroPicks = [featuredItems.find((p) => p.category?.slug === 'fashion'), featuredItems.find((p) => p.category?.slug === 'electronics'), featuredItems.find((p) => p.category?.slug === 'home-living')]
     .filter(Boolean);
   const deal = deals.data?.items?.find((p) => p.price > 1500) || deals.data?.items?.[0];
 
   return (
     <>
-      <Hero picks={heroPicks.length === 3 ? heroPicks : featuredItems.slice(0, 3)} />
+      <Hero picks={(heroPicks.length === 3 ? heroPicks
+        : featuredItems.length >= 3 ? featuredItems.slice(0, 3)
+          : categories.filter((c) => c.image_url).slice(0, 3)).map(toHeroCard)} />
       <BrandMarquee />
       <Categories categories={categories} />
       <ProductRail eyebrow="Customer favourites" title="Bestsellers" products={featuredItems.slice(0, 12)} loading={featured.isLoading} href="/shop?sort_by=popular" />
       <DealOfTheDay product={deal} />
       <ProductRail eyebrow="Limited time" title="Biggest discounts" products={deals.data?.items} loading={deals.isLoading} href="/shop?sort_by=discount" />
-      <Trending categories={categories} />
+      {hasProducts && <Trending categories={categories} />}
       <ValueProps />
       <ProductRail eyebrow="Rated 4★ and above" title="Top rated" products={topRated.data?.items} loading={topRated.isLoading} href="/shop?sort_by=rating" />
       <Testimonials />
