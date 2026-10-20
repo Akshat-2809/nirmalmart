@@ -82,7 +82,7 @@ export function CartProvider({ children }) {
     }
     if (existing) existing.quantity = next;
     else items.unshift({
-      id: `g-${product.id}`, product_id: product.id, product_name: product.name, product_slug: product.slug,
+      id: `g-${product.id}`, product_id: product.id, product_name: product.name, product_name_mr: product.name_mr, product_slug: product.slug,
       product_brand: product.brand, product_price: product.price, compare_at_price: product.compare_at_price,
       product_image: productImage(product), stock_quantity: product.stock_quantity, quantity,
     });

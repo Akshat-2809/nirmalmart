@@ -6,8 +6,10 @@ from app.schemas.common import Money
 
 class ProductBase(BaseModel):
     name: str = Field(..., min_length=2, max_length=255)
+    name_mr: Optional[str] = Field(None, max_length=255)
     brand: Optional[str] = None
     description: Optional[str] = None
+    description_mr: Optional[str] = None
     highlights: Optional[List[str]] = None
     specifications: Optional[Dict[str, str]] = None
     price: float = Field(..., gt=0)
@@ -17,6 +19,7 @@ class ProductBase(BaseModel):
     category_id: Optional[int] = None
     is_active: bool = True
     is_featured: bool = False
+    is_trending: bool = False
     ai_tags: Optional[List[str]] = None
 
 
@@ -26,8 +29,10 @@ class ProductCreate(ProductBase):
 
 class ProductUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=2, max_length=255)
+    name_mr: Optional[str] = Field(None, max_length=255)
     brand: Optional[str] = None
     description: Optional[str] = None
+    description_mr: Optional[str] = None
     highlights: Optional[List[str]] = None
     specifications: Optional[Dict[str, str]] = None
     price: Optional[float] = Field(None, gt=0)
@@ -37,6 +42,7 @@ class ProductUpdate(BaseModel):
     category_id: Optional[int] = None
     is_active: Optional[bool] = None
     is_featured: Optional[bool] = None
+    is_trending: Optional[bool] = None
     ai_tags: Optional[List[str]] = None
 
 
@@ -53,6 +59,7 @@ class CategoryBrief(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     name: str
+    name_mr: Optional[str] = None
     slug: str
 
 
@@ -60,6 +67,7 @@ class ProductListResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     name: str
+    name_mr: Optional[str] = None
     slug: str
     brand: Optional[str] = None
     price: Money
@@ -67,6 +75,7 @@ class ProductListResponse(BaseModel):
     stock_quantity: int
     is_active: bool
     is_featured: bool
+    is_trending: bool = False
     rating_avg: Money
     rating_count: int
     sold_count: int
@@ -80,6 +89,7 @@ class ProductListResponse(BaseModel):
 class ProductResponse(ProductListResponse):
     sku: str
     description: Optional[str] = None
+    description_mr: Optional[str] = None
     highlights: Optional[List[str]] = None
     specifications: Optional[Dict[str, str]] = None
     ai_generated_description: Optional[str] = None

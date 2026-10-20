@@ -25,6 +25,7 @@ def get_cart(db: Session, user_id: int) -> dict:
             "id": item.id,
             "product_id": p.id,
             "product_name": p.name,
+            "product_name_mr": p.name_mr,
             "product_slug": p.slug,
             "product_brand": p.brand,
             "product_price": p.price,

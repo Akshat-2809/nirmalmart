@@ -8,6 +8,7 @@ class Category(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String(100), nullable=False)
+    name_mr = Column(String(100), nullable=True)
     slug = Column(String(100), unique=True, index=True, nullable=False)
     description = Column(Text, nullable=True)
     image_url = Column(String(512), nullable=True)

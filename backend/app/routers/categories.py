@@ -24,7 +24,8 @@ def categories_with_counts(db: Session, active_only: bool = True) -> list:
 
 @router.get("", response_model=List[CategoryResponse])
 def list_categories(db: Session = Depends(get_db)):
-    return categories_with_counts(db)
+    # Shoppers only see categories that have something to buy; admins see all via /api/admin/categories
+    return [c for c in categories_with_counts(db) if c.product_count > 0]
 
 
 @router.get("/{slug}", response_model=CategoryResponse)

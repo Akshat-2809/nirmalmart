@@ -10,7 +10,7 @@ import { Skeleton, Spinner } from '../../components/ui/bits';
 import { Modal } from '../../components/ui/Drawer';
 import { sized } from '../../lib/format';
 
-const EMPTY = { name: '', description: '', image_url: '', sort_order: 0 };
+const EMPTY = { name: '', name_mr: '', description: '', image_url: '', sort_order: 0 };
 
 export default function Categories() {
   const qc = useQueryClient();
@@ -21,14 +21,14 @@ export default function Categories() {
   useEffect(() => {
     if (!editing) return;
     setFile(null);
-    setF(editing === 'new' ? EMPTY : { ...EMPTY, ...editing, description: editing.description || '', image_url: editing.image_url || '' });
+    setF(editing === 'new' ? EMPTY : { ...EMPTY, ...editing, description: editing.description || '', image_url: editing.image_url || '', name_mr: editing.name_mr || '' });
   }, [editing]);
   const preview = file ? URL.createObjectURL(file) : f.image_url;
 
   const refresh = () => { qc.invalidateQueries({ queryKey: ['admin', 'categories'] }); qc.invalidateQueries({ queryKey: ['categories'] }); };
   const save = useMutation({
     mutationFn: async () => {
-      const body = { name: f.name, description: f.description || null, image_url: f.image_url || null, sort_order: Number(f.sort_order) || 0 };
+      const body = { name: f.name, name_mr: f.name_mr || null, description: f.description || null, image_url: f.image_url || null, sort_order: Number(f.sort_order) || 0 };
       const saved = editing === 'new' ? await adminApi.createCategory(body) : await adminApi.updateCategory(editing.id, body);
       return file ? adminApi.uploadCategoryImage(saved.id, file) : saved;
     },
@@ -52,7 +52,7 @@ export default function Categories() {
                   {c.image_url ? <img src={sized(c.image_url, 600)} alt="" className="h-full w-full object-cover transition duration-700 group-hover:scale-105" /> : <FolderTree className="absolute inset-0 m-auto text-ink-faint" />}
                 </div>
                 <div className="flex items-start justify-between gap-3 p-4">
-                  <div className="min-w-0"><p className="font-semibold">{c.name}</p><p className="text-xs text-ink-faint">{c.product_count} products · /{c.slug}</p></div>
+                  <div className="min-w-0"><p className="font-semibold">{c.name}{c.name_mr && <span lang="mr" className="ml-1.5 font-medium text-ink-soft">· {c.name_mr}</span>}</p><p className="text-xs text-ink-faint">{c.product_count} products · /{c.slug}</p></div>
                   <div className="flex shrink-0">
                     <button className="btn-icon h-8 w-8" onClick={() => setEditing(c)} aria-label="Edit"><Pencil size={15} /></button>
                     <button className="btn-icon h-8 w-8 hover:text-danger" aria-label="Delete"
@@ -66,7 +66,10 @@ export default function Categories() {
       )}
       <Modal open={!!editing} onClose={() => setEditing(null)} title={editing === 'new' ? 'New category' : 'Edit category'}>
         <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); save.mutate(); }}>
-          <div><label className="label">Name</label><input className="input" required minLength={2} value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} /></div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div><label className="label">Name (English)</label><input className="input" required minLength={2} value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} /></div>
+            <div><label className="label">नाव (मराठी)</label><input lang="mr" className="input" value={f.name_mr} onChange={(e) => setF({ ...f, name_mr: e.target.value })} /></div>
+          </div>
           <div><label className="label">Description</label><textarea className="input h-20 py-3" value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} /></div>
           <div>
             <label className="label">Cover image</label>

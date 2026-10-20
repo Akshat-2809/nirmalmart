@@ -8,11 +8,14 @@ from app.schemas.ai_product import AIProductGenerationResponse
 
 logger = logging.getLogger("nirmalmart.ai")
 
-PROMPT = """You are a merchandiser for an Indian online marketplace. Analyse the product photo and
-write listing data. Respond with JSON only, matching this shape:
-{{"title": str (50-80 chars, SEO friendly),
+PROMPT = """You are a merchandiser for an online store whose customers are mostly in Maharashtra.
+Analyse the product photo and write listing data in English AND Marathi (Devanagari script, natural
+everyday Marathi, not word-for-word). Respond with JSON only, matching this shape:
+{{"title": str (50-80 chars, SEO friendly, English),
+  "title_mr": str (the same product name in Marathi),
   "brand": str or null (only if clearly visible),
-  "description": str (120-250 words, benefit-led, short paragraphs),
+  "description": str (120-250 words, benefit-led, short paragraphs, English),
+  "description_mr": str (the description in Marathi, 60-150 words),
   "highlights": [4-6 short bullet strings],
   "suggested_category": one of {categories},
   "tags": [5-8 search tags],
@@ -23,7 +26,9 @@ write listing data. Respond with JSON only, matching this shape:
 def _sample(categories: List[str]) -> AIProductGenerationResponse:
     return AIProductGenerationResponse(
         title="Sample Product Title (add GEMINI_API_KEY for real AI)",
+        title_mr="नमुना उत्पादन (खरा AI वापरण्यासाठी GEMINI_API_KEY जोडा)",
         brand=None,
+        description_mr="हा नमुना मजकूर आहे.",
         description="This is placeholder copy. Add a GEMINI_API_KEY to .env and the AI will write a real "
                     "title, description, highlights and specs from the photo you upload.",
         highlights=["Placeholder highlight one", "Placeholder highlight two", "Placeholder highlight three"],

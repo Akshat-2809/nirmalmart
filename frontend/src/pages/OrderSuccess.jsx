@@ -15,7 +15,7 @@ export default function OrderSuccess() {
 
   useEffect(() => {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const colors = ['#5816d2', '#b528b5', '#ec4837', '#f59e0b', '#16a34a'];
+    const colors = ['#317239', '#d8ab54', '#46080c', '#4ca35e', '#f3e2b7'];
     const fire = (x, angle) => confetti({ particleCount: 70, spread: 70, startVelocity: 55, origin: { x, y: 0.7 }, angle, colors });
     const t = setTimeout(() => { fire(0.2, 60); fire(0.8, 120); }, 450);
     return () => clearTimeout(t);

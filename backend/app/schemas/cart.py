@@ -25,6 +25,7 @@ class CartItemResponse(BaseModel):
     id: int
     product_id: int
     product_name: str
+    product_name_mr: Optional[str] = None
     product_slug: str
     product_brand: Optional[str] = None
     product_price: Money

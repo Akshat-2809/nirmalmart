@@ -37,7 +37,7 @@ function Gallery({ images, name, imgRef }) {
         </div>
       )}
       <div
-        className="relative aspect-[4/5] flex-1 cursor-zoom-in overflow-hidden rounded-3xl bg-muted"
+        className="relative aspect-square flex-1 cursor-zoom-in overflow-hidden rounded-3xl bg-muted"
         onMouseMove={(e) => {
           const r = e.currentTarget.getBoundingClientRect();
           setZoom({ x: ((e.clientX - r.left) / r.width) * 100, y: ((e.clientY - r.top) / r.height) * 100 });
@@ -213,7 +213,7 @@ export default function ProductDetail() {
   if (isLoading) {
     return (
       <div className="container grid gap-10 py-10 lg:grid-cols-2">
-        <Skeleton className="aspect-[4/5] rounded-3xl" />
+        <Skeleton className="aspect-square rounded-3xl" />
         <div className="space-y-4"><Skeleton className="h-4 w-24" /><Skeleton className="h-10 w-3/4" /><Skeleton className="h-6 w-40" /><Skeleton className="h-32" /></div>
       </div>
     );
@@ -258,9 +258,13 @@ export default function ProductDetail() {
             {[
               product.brand && <Link key="b" to={`/shop?search=${encodeURIComponent(product.brand)}`} className="text-xs font-bold uppercase tracking-[0.15em] text-brand hover:underline">{product.brand}</Link>,
               <h1 key="h" className="mt-2 font-display text-3xl font-extrabold leading-tight sm:text-4xl">{product.name}</h1>,
+              product.name_mr && <p key="hmr" lang="mr" className="mt-1.5 text-xl font-semibold text-ink-soft sm:text-2xl">{product.name_mr}</p>,
               <button key="r" onClick={() => { setTab('Reviews'); document.getElementById('details')?.scrollIntoView({ behavior: 'smooth' }); }}
                 className="mt-3 flex items-center gap-2 text-sm text-ink-soft hover:text-ink">
-                <Stars value={Number(product.rating_avg)} /> <b className="text-ink">{Number(product.rating_avg).toFixed(1)}</b> · {product.rating_count} reviews · {product.sold_count}+ sold
+                {product.rating_count > 0 ? (
+                  <><Stars value={Number(product.rating_avg)} /> <b className="text-ink">{Number(product.rating_avg).toFixed(1)}</b> · {product.rating_count} review{product.rating_count > 1 && 's'}</>
+                ) : <span>No reviews yet · be the first</span>}
+                {product.sold_count > 0 && <> · {product.sold_count}+ sold</>}
               </button>,
               <div key="p" className="mt-6">
                 <Price value={product.price} mrp={product.compare_at_price} size="xl" />
@@ -330,6 +334,12 @@ export default function ProductDetail() {
               {tab === 'Description' && (
                 <div className="max-w-3xl space-y-4 text-[15px] leading-relaxed text-ink-soft">
                   {(product.description || '').split('\n').filter(Boolean).map((p, i) => <p key={i}>{p}</p>)}
+                  {product.description_mr && (
+                    <div lang="mr" className="rounded-2xl bg-muted/60 p-5">
+                      <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-faint">मराठी</p>
+                      {product.description_mr.split('\n').filter(Boolean).map((p, i) => <p key={i} className="text-ink">{p}</p>)}
+                    </div>
+                  )}
                   <p className="flex items-center gap-2 pt-2 text-sm"><PackageCheck size={16} className="text-success" /> SKU: {product.sku}</p>
                 </div>
               )}

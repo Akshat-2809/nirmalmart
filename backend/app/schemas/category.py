@@ -4,6 +4,7 @@ from typing import Optional
 
 class CategoryCreate(BaseModel):
     name: str = Field(..., min_length=2, max_length=100)
+    name_mr: Optional[str] = Field(None, max_length=100)
     description: Optional[str] = None
     image_url: Optional[str] = None
     parent_id: Optional[int] = None
@@ -12,6 +13,7 @@ class CategoryCreate(BaseModel):
 
 class CategoryUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=2, max_length=100)
+    name_mr: Optional[str] = Field(None, max_length=100)
     description: Optional[str] = None
     image_url: Optional[str] = None
     parent_id: Optional[int] = None
@@ -22,6 +24,7 @@ class CategoryResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     name: str
+    name_mr: Optional[str] = None
     slug: str
     description: Optional[str] = None
     image_url: Optional[str] = None

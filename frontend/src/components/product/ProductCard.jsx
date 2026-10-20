@@ -57,7 +57,7 @@ export default function ProductCard({ product, className }) {
   return (
     <motion.article variants={fadeUp} className={cn('group relative', className)}>
       <Link to={`/product/${product.slug}`} className="block">
-        <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-muted">
+        <div className="relative aspect-square overflow-hidden rounded-2xl bg-muted">
           {first && (
             <img ref={imgRef} src={sized(first.image_url, 600)} alt={product.name} loading="lazy"
               className={cn('h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.06]',
@@ -101,6 +101,7 @@ export default function ProductCard({ product, className }) {
         <div className="mt-3 space-y-1 px-0.5">
           {product.brand && <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-faint">{product.brand}</p>}
           <h3 className="line-clamp-2 text-sm font-medium leading-snug text-ink transition group-hover:text-brand">{product.name}</h3>
+          {product.name_mr && <p lang="mr" className="line-clamp-1 text-[13px] leading-snug text-ink-soft">{product.name_mr}</p>}
           <RatingPill value={product.rating_avg} count={product.rating_count} />
           <Price value={product.price} mrp={product.compare_at_price} size="sm" className="pt-0.5" />
         </div>
@@ -112,7 +113,7 @@ export default function ProductCard({ product, className }) {
 export function ProductCardSkeleton() {
   return (
     <div>
-      <div className="skeleton aspect-[4/5] rounded-2xl" />
+      <div className="skeleton aspect-square rounded-2xl" />
       <div className="mt-3 space-y-2">
         <div className="skeleton h-3 w-16" />
         <div className="skeleton h-4 w-full" />

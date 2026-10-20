@@ -37,7 +37,7 @@ function Stat({ icon: Icon, label, value, format, hint, tone = 'brand' }) {
   );
 }
 
-const STATUS_COLORS = { pending: 'bg-warning', confirmed: 'bg-brand', processing: 'bg-violet-400', shipped: 'bg-sky-500', delivered: 'bg-success', cancelled: 'bg-danger' };
+const STATUS_COLORS = { pending: 'bg-warning', confirmed: 'bg-brand', processing: 'bg-gold', shipped: 'bg-sky-500', delivered: 'bg-success', cancelled: 'bg-danger' };
 
 export default function Dashboard() {
   const [days, setDays] = useState(30);

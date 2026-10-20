@@ -21,12 +21,13 @@ def list_products(
     in_stock: bool = False,
     min_rating: Optional[float] = Query(None, ge=0, le=5),
     featured: Optional[bool] = None,
+    trending: Optional[bool] = None,
     sort_by: str = Query("newest", pattern=f"^({'|'.join(SORTS)})$"),
     db: Session = Depends(get_db),
 ):
     return get_products(db, page, per_page, sort_by, category=category or category_id, search=search,
                         brands=brand, min_price=min_price, max_price=max_price, in_stock=in_stock,
-                        min_rating=min_rating, featured=featured)
+                        min_rating=min_rating, featured=featured, trending=trending)
 
 
 @router.get("/facets", response_model=ProductFacets)

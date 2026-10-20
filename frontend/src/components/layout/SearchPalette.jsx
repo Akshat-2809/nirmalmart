@@ -94,7 +94,7 @@ export default function SearchPalette() {
                       <img src={sized(productImage(p), 120)} alt="" className="h-12 w-12 shrink-0 rounded-xl bg-muted object-cover" />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-medium">{p.name}</span>
-                        <span className="text-xs text-ink-faint">{p.category?.name}</span>
+                        <span className="block truncate text-xs text-ink-faint">{p.name_mr || p.category?.name}</span>
                       </span>
                       <span className="text-sm font-semibold">{price(p.price)}</span>
                       <ArrowRight size={14} className="text-ink-faint" />

@@ -11,22 +11,24 @@ import { Drawer, Modal } from '../../components/ui/Drawer';
 import { cn } from '../../lib/cn';
 import { price, sized } from '../../lib/format';
 
-const EMPTY = { name: '', brand: '', sku: '', price: '', compare_at_price: '', stock_quantity: 0, category_id: '', description: '',
-  highlights: '', specifications: '', ai_tags: '', is_active: true, is_featured: false };
+const EMPTY = { name: '', name_mr: '', brand: '', sku: '', price: '', compare_at_price: '', stock_quantity: 0, category_id: '', description: '',
+  description_mr: '', highlights: '', specifications: '', ai_tags: '', is_active: true, is_featured: false, is_trending: false };
 
 const toForm = (p) => ({
   ...EMPTY, ...p,
   brand: p.brand || '', compare_at_price: p.compare_at_price ?? '', category_id: p.category_id ?? '', description: p.description || '',
+  name_mr: p.name_mr || '', description_mr: p.description_mr || '',
   highlights: (p.highlights || []).join('\n'),
   specifications: Object.entries(p.specifications || {}).map(([k, v]) => `${k}: ${v}`).join('\n'),
   ai_tags: (p.ai_tags || []).join(', '),
 });
 
 const toPayload = (f) => ({
-  name: f.name.trim(), brand: f.brand.trim() || null, sku: f.sku.trim(), description: f.description || null,
+  name: f.name.trim(), name_mr: f.name_mr.trim() || null, brand: f.brand.trim() || null, sku: f.sku.trim(),
+  description: f.description || null, description_mr: f.description_mr || null,
   price: Number(f.price), compare_at_price: f.compare_at_price ? Number(f.compare_at_price) : null,
   stock_quantity: Number(f.stock_quantity) || 0, category_id: f.category_id ? Number(f.category_id) : null,
-  is_active: f.is_active, is_featured: f.is_featured,
+  is_active: f.is_active, is_featured: f.is_featured, is_trending: f.is_trending,
   highlights: f.highlights.split('\n').map((s) => s.trim()).filter(Boolean),
   specifications: Object.fromEntries(f.specifications.split('\n').map((l) => l.split(':')).filter((p) => p.length > 1 && p[0].trim())
     .map(([k, ...v]) => [k.trim(), v.join(':').trim()])),
@@ -56,7 +58,8 @@ function AiAssist({ open, onClose, onApply, categories }) {
   const apply = () => {
     const cat = categories.find((c) => c.name.toLowerCase() === r.suggested_category?.toLowerCase());
     onApply({
-      name: r.title, brand: r.brand || '', description: r.description, price: Math.round(r.estimated_price),
+      name: r.title, name_mr: r.title_mr || '', brand: r.brand || '', description: r.description, description_mr: r.description_mr || '',
+      price: Math.round(r.estimated_price),
       highlights: r.highlights.join('\n'), specifications: Object.entries(r.specifications).map(([k, v]) => `${k}: ${v}`).join('\n'),
       ai_tags: r.tags.join(', '), ...(cat ? { category_id: cat.id } : {}),
     }, file);
@@ -205,7 +208,7 @@ function Editor({ productId, open, onClose, categories }) {
       footer={<div className="flex gap-2"><button className="btn-outline" onClick={onClose}>Cancel</button><button className="btn-primary flex-1" onClick={submit} disabled={save.isPending}>{save.isPending ? <><Spinner /> Saving…</> : 'Save product'}</button></div>}>
       {!isNew && !product ? <div className="space-y-3 p-6"><Skeleton className="h-24" /><Skeleton className="h-40" /></div> : (
         <form onSubmit={submit} className="space-y-5 p-6">
-          <button type="button" onClick={() => setAi(true)} className="group flex w-full items-center gap-3 rounded-2xl bg-gradient-to-r from-brand to-fuchsia-500 p-4 text-left text-white">
+          <button type="button" onClick={() => setAi(true)} className="group flex w-full items-center gap-3 rounded-2xl bg-gradient-to-r from-brand to-maroon p-4 text-left text-white">
             <motion.span animate={{ rotate: [0, 15, -10, 0] }} transition={{ duration: 2, repeat: Infinity, repeatDelay: 2 }}><Sparkles size={22} /></motion.span>
             <span className="flex-1"><b className="block text-sm">Fill with AI</b><span className="text-xs text-white/80">Upload a photo and let AI write the title, description and specs</span></span>
             <ChevronRight size={18} className="transition group-hover:translate-x-1" />
@@ -214,7 +217,8 @@ function Editor({ productId, open, onClose, categories }) {
           <ImageManager product={isNew ? null : product} pendingFiles={pending} setPendingFiles={setPending} />
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="sm:col-span-2"><label className="label">Product name *</label><input className="input" value={f.name} onChange={set('name')} /></div>
+            <div><label className="label">Product name (English) *</label><input className="input" value={f.name} onChange={set('name')} /></div>
+            <div><label className="label">उत्पादनाचे नाव (मराठी)</label><input lang="mr" className="input" placeholder="उदा. पोर्टेबल गॅस शेगडी" value={f.name_mr} onChange={set('name_mr')} /></div>
             <div><label className="label">Brand</label><input className="input" value={f.brand} onChange={set('brand')} /></div>
             <div><label className="label">SKU *</label><input className="input" value={f.sku} onChange={set('sku')} /></div>
             <div><label className="label">Selling price (₹, incl. GST) *</label><input className="input" type="number" min="1" step="0.01" value={f.price} onChange={set('price')} /></div>
@@ -235,7 +239,10 @@ function Editor({ productId, open, onClose, categories }) {
               )}
             </div>
           </div>
-          <div><label className="label">Description</label><textarea className="input h-32 py-3" value={f.description} onChange={set('description')} /></div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div><label className="label">Description (English)</label><textarea className="input h-32 py-3" value={f.description} onChange={set('description')} /></div>
+            <div><label className="label">वर्णन (मराठी)</label><textarea lang="mr" className="input h-32 py-3" value={f.description_mr} onChange={set('description_mr')} /></div>
+          </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div><label className="label">Highlights (one per line)</label><textarea className="input h-28 py-3" value={f.highlights} onChange={set('highlights')} /></div>
             <div><label className="label">Specifications (Key: Value per line)</label><textarea className="input h-28 py-3 font-mono text-xs" value={f.specifications} onChange={set('specifications')} /></div>
@@ -244,6 +251,7 @@ function Editor({ productId, open, onClose, categories }) {
           <div className="card space-y-4 p-4">
             <Toggle label="Visible in store" checked={f.is_active} onChange={(v) => setF({ ...f, is_active: v })} />
             <Toggle label="Featured (shows in Bestsellers)" checked={f.is_featured} onChange={(v) => setF({ ...f, is_featured: v })} />
+            <Toggle label="Show in Trending Gadgets (home page)" checked={f.is_trending} onChange={(v) => setF({ ...f, is_trending: v })} />
           </div>
         </form>
       )}
@@ -301,6 +309,7 @@ export default function Products() {
               <img src={sized(p.images[0]?.image_url, 100)} alt="" className="h-14 w-14 shrink-0 rounded-xl bg-muted object-cover" />
               <span className="min-w-0">
                 <span className="line-clamp-1 text-sm font-medium">{p.name}</span>
+                {p.name_mr && <span lang="mr" className="line-clamp-1 text-xs text-ink-soft">{p.name_mr}</span>}
                 <span className="mt-0.5 flex items-center gap-2 text-xs"><b>{price(p.price)}</b>
                   <span className={cn('badge', p.stock_quantity === 0 ? 'bg-danger/10 text-danger' : p.stock_quantity <= 10 ? 'bg-warning/10 text-warning' : 'bg-success/10 text-success')}>{p.stock_quantity} in stock</span>
                 </span>
@@ -325,7 +334,7 @@ export default function Products() {
                     <td className="px-4 py-3">
                       <button onClick={() => setEditing(p.id)} className="flex items-center gap-3 text-left">
                         <img src={sized(p.images[0]?.image_url, 100)} alt="" className="h-11 w-11 rounded-lg bg-muted object-cover" />
-                        <span className="min-w-0"><span className="line-clamp-1 font-medium hover:text-brand">{p.name}</span><span className="text-xs text-ink-faint">{p.category?.name || 'Uncategorised'}{p.is_featured && ' · ★ Featured'}</span></span>
+                        <span className="min-w-0"><span className="line-clamp-1 font-medium hover:text-brand">{p.name}</span><span className="text-xs text-ink-faint">{p.name_mr && <span lang="mr" className="text-ink-soft">{p.name_mr} · </span>}{p.category?.name || 'Uncategorised'}{p.is_featured && ' · ★ Featured'}{p.is_trending && ' · 🔥 Trending'}</span></span>
                       </button>
                     </td>
                     <td className="px-4 py-3"><b>{price(p.price)}</b>{p.compare_at_price && <span className="ml-1.5 text-xs text-ink-faint line-through">{price(p.compare_at_price)}</span>}</td>

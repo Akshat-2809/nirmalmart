@@ -10,17 +10,22 @@ import { discountPct, price } from '../../lib/format';
  * gives way to the square "N" icon so the header still fits.
  */
 export function Logo({ className, onDark = false, to = '/' }) {
-  const img = 'h-7 w-auto select-none sm:h-8';
+  const full = 'h-7 w-auto select-none max-[379px]:hidden sm:h-9';
+  const mark = 'h-9 w-auto select-none min-[380px]:hidden';
   return (
-    <Link to={to} className={cn('group inline-flex shrink-0 items-center', className)} aria-label="NirmalMart home">
+    <Link to={to} className={cn('group inline-flex shrink-0 items-center', className)} aria-label="Nirmal Mart home">
       <motion.span whileHover={{ y: -1, scale: 1.02 }} transition={{ type: 'spring', stiffness: 400, damping: 20 }} className="inline-flex">
-        <img src="/android-chrome-192x192.png" alt="NirmalMart" className="h-9 w-9 rounded-xl min-[360px]:hidden" />
         {onDark ? (
-          <img src="/logo-dark.png" alt="NirmalMart" className={cn(img, 'max-[359px]:hidden')} />
+          <>
+            <img src="/logo-dark.svg" alt="Nirmal Mart" className={full} />
+            <img src="/logo-mark-dark.svg" alt="Nirmal Mart" className={mark} />
+          </>
         ) : (
           <>
-            <img src="/logo.png" alt="NirmalMart" className={cn(img, 'max-[359px]:hidden dark:hidden')} />
-            <img src="/logo-dark.png" alt="" aria-hidden className={cn(img, 'hidden dark:block max-[359px]:!hidden')} />
+            <img src="/logo.svg" alt="Nirmal Mart" className={cn(full, 'dark:hidden')} />
+            <img src="/logo-dark.svg" alt="" aria-hidden className={cn(full, 'hidden dark:block max-[379px]:!hidden')} />
+            <img src="/logo-mark.svg" alt="Nirmal Mart" className={cn(mark, 'dark:hidden')} />
+            <img src="/logo-mark-dark.svg" alt="" aria-hidden className={cn(mark, 'hidden dark:block min-[380px]:!hidden')} />
           </>
         )}
       </motion.span>

@@ -16,14 +16,16 @@ export default {
         'ink-faint': v('ink-faint'),
         line: v('line'),
         brand: { DEFAULT: v('brand'), soft: v('brand-soft'), ink: v('brand-ink') },
+        gold: v('gold'),
+        maroon: v('maroon'),
         deal: v('deal'),
         success: v('success'),
         warning: v('warning'),
         danger: v('danger'),
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['"Bricolage Grotesque"', 'Inter', 'sans-serif'],
+        sans: ['Inter', '"Noto Sans Devanagari"', 'system-ui', 'sans-serif'],
+        display: ['"Bricolage Grotesque"', 'Inter', '"Noto Sans Devanagari"', 'sans-serif'],
       },
       borderRadius: { xl: '0.875rem', '2xl': '1.25rem', '3xl': '1.75rem' },
       boxShadow: {

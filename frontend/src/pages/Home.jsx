@@ -69,7 +69,7 @@ function Hero({ picks }) {
             ))}
             <span className="relative inline-flex h-[1.1em] overflow-hidden align-bottom">
               <AnimatePresence mode="wait">
-                <motion.span key={ROTATING[word]} className="inline-block bg-gradient-to-r from-brand via-fuchsia-500 to-deal bg-clip-text pb-2 text-transparent"
+                <motion.span key={ROTATING[word]} className="inline-block bg-gradient-to-r from-brand via-gold to-maroon bg-clip-text pb-2 text-transparent"
                   initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '-100%' }} transition={{ duration: 0.5, ease }}>
                   {ROTATING[word]}.
                 </motion.span>
@@ -104,7 +104,7 @@ function Hero({ picks }) {
         <div className="relative mx-auto aspect-square w-full max-w-[560px]">
           {picks.length >= 3 && (
             <>
-              <motion.div style={{ y: yBack }} className="absolute inset-[8%] rounded-[40%_60%_55%_45%/55%_45%_55%_45%] bg-gradient-to-br from-brand/25 via-fuchsia-400/20 to-deal/25" />
+              <motion.div style={{ y: yBack }} className="absolute inset-[8%] rounded-[40%_60%_55%_45%/55%_45%_55%_45%] bg-gradient-to-br from-brand/25 via-gold/25 to-maroon/20" />
               <motion.div style={layers[0]} className="absolute left-[6%] top-[6%] w-[52%]">
                 <motion.div style={{ y: yFront }} initial={{ opacity: 0, scale: 0.8, rotate: -8 }} animate={{ opacity: 1, scale: 1, rotate: -4 }}
                   transition={{ duration: 0.9, ease, delay: 0.2 }} whileHover={{ rotate: 0, scale: 1.03 }}>
@@ -175,7 +175,7 @@ function BrandMarquee() {
 }
 
 function Categories({ categories }) {
-  if (!categories.length) return null;
+  if (categories.length < 2) return null; // a single tile isn't worth a whole section
   const spans = ['md:col-span-2 md:row-span-2', '', '', 'md:col-span-2', '', '', 'col-span-2'];
   return (
     <section className="container py-14 sm:py-20">
@@ -197,6 +197,7 @@ function Categories({ categories }) {
               <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-4 sm:p-5">
                 <div>
                   <h3 className={cn('font-display font-bold text-white', i === 0 ? 'text-2xl sm:text-3xl' : 'text-lg')}>{c.name}</h3>
+                  {c.name_mr && <p lang="mr" className="text-sm font-medium text-white/90">{c.name_mr}</p>}
                   <p className="text-xs text-white/75">{c.product_count} products</p>
                 </div>
                 <span className="grid h-9 w-9 -translate-x-2 place-items-center rounded-full bg-white text-ink opacity-0 transition duration-300 group-hover:translate-x-0 group-hover:opacity-100">
@@ -236,6 +237,7 @@ function DealOfTheDay({ product }) {
             <div>
               <span className="badge bg-deal text-white"><Clock size={12} /> Deal of the day</span>
               <h2 className="mt-4 font-display text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl">{product.name}</h2>
+              {product.name_mr && <p lang="mr" className="mt-2 text-xl font-semibold text-bg/80">{product.name_mr}</p>}
               <div className="mt-5 flex items-baseline gap-3">
                 <span className="font-display text-4xl font-bold">₹{Math.round(product.price).toLocaleString('en-IN')}</span>
                 <span className="text-lg text-bg/50 line-through">₹{Math.round(product.compare_at_price).toLocaleString('en-IN')}</span>
@@ -258,11 +260,13 @@ function DealOfTheDay({ product }) {
             </div>
             <motion.div whileHover={{ scale: 1.02, rotate: -1 }} className="relative mx-auto w-full max-w-sm">
               <img src={sized(productImage(product), 800)} alt={product.name} className="aspect-square w-full rounded-3xl object-cover shadow-2xl" />
-              <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity }}
-                className="absolute -bottom-4 -left-4 flex items-center gap-2 rounded-2xl bg-surface px-4 py-3 text-ink shadow-lift">
-                <Star size={18} className="text-amber-400" fill="currentColor" />
-                <div><p className="text-sm font-bold">{Number(product.rating_avg).toFixed(1)} rating</p><p className="text-[11px] text-ink-faint">{product.sold_count}+ sold</p></div>
-              </motion.div>
+              {product.rating_count > 0 && (
+                <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity }}
+                  className="absolute -bottom-4 -left-4 flex items-center gap-2 rounded-2xl bg-surface px-4 py-3 text-ink shadow-lift">
+                  <Star size={18} className="text-amber-400" fill="currentColor" />
+                  <div><p className="text-sm font-bold">{Number(product.rating_avg).toFixed(1)} rating</p>{product.sold_count > 0 && <p className="text-[11px] text-ink-faint">{product.sold_count}+ sold</p>}</div>
+                </motion.div>
+              )}
             </motion.div>
           </div>
         </div>
@@ -271,31 +275,29 @@ function DealOfTheDay({ product }) {
   );
 }
 
-function Trending({ categories }) {
-  const [tab, setTab] = useState(null);
-  const { data, isLoading } = useQuery({
-    queryKey: ['products', { trending: tab }],
-    queryFn: () => catalogApi.products({ category: tab || undefined, sort_by: 'popular', per_page: 8 }),
+function Trending() {
+  const curated = useQuery({ queryKey: ['products', { trending: true }], queryFn: () => catalogApi.products({ trending: true, sort_by: 'newest', per_page: 12 }) });
+  const fallback = useQuery({
+    queryKey: ['products', { popular: true }], queryFn: () => catalogApi.products({ sort_by: 'popular', per_page: 8 }),
+    enabled: curated.data?.total === 0,
   });
+  const hasCurated = curated.data?.total > 0;
+  const items = (hasCurated ? curated.data?.items : fallback.data?.items) || [];
   return (
     <section className="container py-14">
-      <Reveal className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-        <div><p className="eyebrow mb-2">Popular right now</p><h2 className="section-title">Trending this week</h2></div>
-        <div className="no-scrollbar -mx-4 flex gap-1 overflow-x-auto px-4">
-          {[{ slug: null, name: 'All' }, ...categories.slice(0, 5)].map((c) => (
-            <button key={c.slug ?? 'all'} onClick={() => setTab(c.slug)}
-              className={cn('relative shrink-0 rounded-full px-4 py-2 text-sm font-medium transition', tab === c.slug ? 'text-bg' : 'text-ink-soft hover:text-ink')}>
-              {tab === c.slug && <motion.span layoutId="trend-tab" className="absolute inset-0 rounded-full bg-ink" transition={{ type: 'spring', stiffness: 400, damping: 32 }} />}
-              <span className="relative">{c.name}</span>
-            </button>
-          ))}
+      <Reveal className="mb-8 flex items-end justify-between gap-4">
+        <div>
+          <p className="eyebrow mb-2">Popular right now</p>
+          <h2 className="section-title">Trending Gadgets</h2>
+          <p lang="mr" className="mt-1 text-lg font-semibold text-ink-soft">ट्रेंडिंग गॅझेट्स</p>
         </div>
+        {hasCurated && (
+          <Link to="/shop?trending=true" className="group flex shrink-0 items-center gap-1 text-sm font-semibold text-ink-soft hover:text-ink">
+            View all <ArrowRight size={16} className="transition group-hover:translate-x-1" />
+          </Link>
+        )}
       </Reveal>
-      <AnimatePresence mode="wait">
-        <motion.div key={tab ?? 'all'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-          <ProductGrid products={data?.items || []} loading={isLoading} />
-        </motion.div>
-      </AnimatePresence>
+      <ProductGrid products={items} loading={curated.isLoading || (curated.data?.total === 0 && fallback.isLoading)} />
     </section>
   );
 }
@@ -350,7 +352,7 @@ function CtaBand() {
   return (
     <section className="container py-10">
       <Reveal>
-        <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-brand via-violet-600 to-fuchsia-600 px-6 py-14 text-center text-white sm:px-12">
+        <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-brand via-[#26592c] to-maroon px-6 py-14 text-center text-white sm:px-12">
           <motion.div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'radial-gradient(circle at 20% 20%, white 1px, transparent 1px)', backgroundSize: '28px 28px' }}
             animate={{ backgroundPosition: ['0px 0px', '28px 28px'] }} transition={{ duration: 4, repeat: Infinity, ease: 'linear' }} />
           <div className="relative">
@@ -382,15 +384,18 @@ export default function Home() {
     <>
       <Hero picks={(heroPicks.length === 3 ? heroPicks
         : featuredItems.length >= 3 ? featuredItems.slice(0, 3)
-          : categories.filter((c) => c.image_url).slice(0, 3)).map(toHeroCard)} />
+          : (deals.data?.items?.length ?? 0) >= 3 ? deals.data.items.slice(0, 3)
+            : categories.filter((c) => c.image_url).slice(0, 3)).map(toHeroCard)} />
       <BrandMarquee />
       <Categories categories={categories} />
       <ProductRail eyebrow="Customer favourites" title="Bestsellers" products={featuredItems.slice(0, 12)} loading={featured.isLoading} href="/shop?sort_by=popular" />
       <DealOfTheDay product={deal} />
       <ProductRail eyebrow="Limited time" title="Biggest discounts" products={deals.data?.items} loading={deals.isLoading} href="/shop?sort_by=discount" />
-      {hasProducts && <Trending categories={categories} />}
+      {hasProducts && <Trending />}
       <ValueProps />
-      <ProductRail eyebrow="Rated 4★ and above" title="Top rated" products={topRated.data?.items} loading={topRated.isLoading} href="/shop?sort_by=rating" />
+      {topRated.data?.items?.some((p) => p.rating_count > 0) && (
+        <ProductRail eyebrow="Loved by customers" title="Top rated" products={topRated.data.items.filter((p) => p.rating_count > 0)} href="/shop?sort_by=rating" />
+      )}
       <Testimonials />
       {recent.length > 0 && <ProductRail eyebrow="Pick up where you left off" title="Recently viewed" products={recent} />}
       <CtaBand />

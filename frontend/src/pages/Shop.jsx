@@ -144,6 +144,7 @@ export default function Shop() {
     max_price: params.get('max_price') || undefined,
     min_rating: params.get('min_rating') || undefined,
     in_stock: params.get('in_stock') || undefined,
+    trending: params.get('trending') || undefined,
     sort_by: params.get('sort_by') || 'newest',
     page: Number(params.get('page') || 1),
     per_page: PER_PAGE,
@@ -169,7 +170,8 @@ export default function Shop() {
   };
 
   const category = categories.find((c) => c.slug === query.category);
-  const title = query.search ? `Results for “${query.search}”` : category?.name || 'All products';
+  const title = query.search ? `Results for “${query.search}”` : query.trending ? 'Trending Gadgets' : category?.name || 'All products';
+  const titleMr = query.search ? null : query.trending ? 'ट्रेंडिंग गॅझेट्स' : category?.name_mr;
 
   const chips = [
     query.search && ['search', `“${query.search}”`],
@@ -197,6 +199,7 @@ export default function Shop() {
 
       <motion.div key={title} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
         <h1 className="font-display text-3xl font-extrabold sm:text-4xl">{title}</h1>
+        {titleMr && <p lang="mr" className="mt-1 text-xl font-semibold text-ink-soft">{titleMr}</p>}
         {category?.description && <p className="mt-2 text-ink-soft">{category.description}</p>}
       </motion.div>
 

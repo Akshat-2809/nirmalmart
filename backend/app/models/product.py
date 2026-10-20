@@ -9,9 +9,11 @@ class Product(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String(255), nullable=False)
+    name_mr = Column(String(255), nullable=True)            # Marathi name, shown under the English one
     slug = Column(String(255), unique=True, index=True, nullable=False)
     brand = Column(String(100), nullable=True, index=True)
     description = Column(Text, nullable=True)
+    description_mr = Column(Text, nullable=True)
     highlights = Column(JSON, nullable=True)        # list[str]
     specifications = Column(JSON, nullable=True)    # dict[str, str]
     price = Column(Numeric(12, 2), nullable=False)
@@ -21,6 +23,7 @@ class Product(Base):
     category_id = Column(Integer, ForeignKey("categories.id", ondelete="SET NULL"), nullable=True, index=True)
     is_active = Column(Boolean, default=True, nullable=False)
     is_featured = Column(Boolean, default=False, nullable=False)
+    is_trending = Column(Boolean, default=False, nullable=False, index=True)  # curated "Trending" section on the home page
     rating_avg = Column(Numeric(3, 2), default=0, nullable=False)
     rating_count = Column(Integer, default=0, nullable=False)
     sold_count = Column(Integer, default=0, nullable=False)

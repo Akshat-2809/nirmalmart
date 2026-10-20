@@ -44,14 +44,16 @@ def _base_query(db: Session, include_inactive: bool = False):
 
 
 def _apply_filters(db, query, category=None, search=None, brands=None, min_price=None,
-                   max_price=None, in_stock=False, min_rating=None, featured=None):
+                   max_price=None, in_stock=False, min_rating=None, featured=None, trending=None):
     if category:
         query = query.filter(Product.category_id.in_(_category_ids(db, str(category))))
     if search:
         term = f"%{search.strip()}%"
         query = query.filter(or_(
             Product.name.ilike(term),
+            Product.name_mr.ilike(term),
             Product.brand.ilike(term),
+            Product.description_mr.ilike(term),
             Product.description.ilike(term),
             cast(Product.ai_tags, String).ilike(term),
         ))
@@ -67,6 +69,8 @@ def _apply_filters(db, query, category=None, search=None, brands=None, min_price
         query = query.filter(Product.rating_avg >= min_rating)
     if featured is not None:
         query = query.filter(Product.is_featured.is_(featured))
+    if trending is not None:
+        query = query.filter(Product.is_trending.is_(trending))
     return query
 
 

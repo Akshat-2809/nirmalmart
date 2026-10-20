@@ -37,6 +37,7 @@ export function CartLine({ item, compact }) {
           <div className="min-w-0">
             {item.product_brand && <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-faint">{item.product_brand}</p>}
             <Link to={`/product/${item.product_slug}`} className="line-clamp-2 text-sm font-medium hover:text-brand">{item.product_name}</Link>
+            {item.product_name_mr && <p lang="mr" className="line-clamp-1 text-xs text-ink-soft">{item.product_name_mr}</p>}
           </div>
           <button onClick={() => remove(item)} className="btn-icon -mr-2 -mt-1 h-8 w-8 shrink-0 hover:text-danger" aria-label="Remove item"><Trash2 size={15} /></button>
         </div>
