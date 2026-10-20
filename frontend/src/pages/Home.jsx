@@ -149,12 +149,13 @@ function CategoryStrip({ categories, trendingImage }) {
   return (
     <section className="container pt-6">
       <Stagger key={items.length} className={cn('no-scrollbar -mx-4 flex gap-3 overflow-x-auto overflow-y-hidden px-4 sm:gap-6 lg:justify-center', STRIP_H)}>
-        {items.map((c) => (
+        {items.map((c, idx) => (
           <motion.div key={c.key} variants={fadeUp} className="shrink-0">
             <Link to={c.to} className="group flex w-[76px] flex-col items-center text-center sm:w-24">
               <span className={cn('relative grid h-16 w-16 place-items-center overflow-hidden rounded-full border-2 bg-surface shadow-soft transition group-hover:-translate-y-1 group-hover:shadow-lift sm:h-20 sm:w-20',
                 c.hot ? 'border-deal' : 'border-line group-hover:border-brand')}>
-                {c.image ? <img src={sized(c.image, 200)} alt="" className="h-full w-full object-cover" /> : <Flame className="text-deal" />}
+                {c.image ? <img src={sized(c.image, 200)} alt="" width="80" height="80" loading={idx < 4 ? 'eager' : 'lazy'} decoding="async"
+                  className="h-full w-full object-cover" /> : <Flame className="text-deal" />}
                 {c.hot && <span className="absolute -bottom-0.5 rounded-full bg-deal px-1.5 text-[9px] font-bold uppercase text-white">Hot</span>}
               </span>
               <span className="mt-2 line-clamp-2 text-[12px] font-semibold leading-tight text-ink sm:text-[13px]">{c.name}</span>
