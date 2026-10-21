@@ -7,8 +7,9 @@ from app.models.order import Order, OrderItem
 from app.models.review import Review
 from app.models.payment import Payment
 from app.models.wishlist import WishlistItem
+from app.models.setting import StoreSetting
 
 __all__ = [
     "User", "Address", "Category", "Product", "ProductImage",
-    "CartItem", "Order", "OrderItem", "Review", "Payment", "WishlistItem"
+    "CartItem", "Order", "OrderItem", "Review", "Payment", "WishlistItem", "StoreSetting"
 ]

@@ -30,6 +30,7 @@ const AdminProducts = lazy(() => import('./pages/admin/Products'));
 const AdminOrders = lazy(() => import('./pages/admin/Orders'));
 const AdminCategories = lazy(() => import('./pages/admin/Categories'));
 const AdminCustomers = lazy(() => import('./pages/admin/Customers'));
+const AdminSettings = lazy(() => import('./pages/admin/Settings'));
 
 const FullPageSpinner = () => <div className="grid min-h-[60vh] place-items-center text-brand"><Spinner className="h-6 w-6" /></div>;
 
@@ -77,6 +78,7 @@ export default function App() {
           <Route path="orders" element={<AdminOrders />} />
           <Route path="categories" element={<AdminCategories />} />
           <Route path="customers" element={<AdminCustomers />} />
+          <Route path="settings" element={<AdminSettings />} />
         </Route>
       </Routes>
     </Suspense>

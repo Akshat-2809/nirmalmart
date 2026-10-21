@@ -11,6 +11,7 @@ import { useRecentlyViewed } from '../hooks/useRecentlyViewed';
 import { cn } from '../lib/cn';
 import { discountPct, price, productImage, sized } from '../lib/format';
 import { takePrefetched } from '../lib/prefetch';
+import { store } from '../lib/storage';
 
 const maxOff = (items) => Math.max(0, ...items.map((p) => discountPct(p.price, p.compare_at_price)));
 const byDiscount = (a, b) => discountPct(b.price, b.compare_at_price) - discountPct(a.price, a.compare_at_price);
@@ -375,6 +376,17 @@ export default function Home() {
     queryKey: ['products', { trending: true }],
     queryFn: () => takePrefetched('/api/products?trending=true&sort_by=newest&per_page=24', () => catalogApi.products({ trending: true, sort_by: 'newest', per_page: 24 })),
   });
+  // The owner can hide the banner from Admin → Settings. Until the answer arrives, use the last one seen.
+  const settingsQ = useQuery({
+    queryKey: ['settings'],
+    queryFn: () => takePrefetched('/api/settings', catalogApi.settings),
+    placeholderData: () => ({ show_banner: store.get('nm-show-banner', true) }),
+    staleTime: 60_000,
+  });
+  const showBanner = settingsQ.data?.show_banner !== false;
+  useEffect(() => {
+    if (settingsQ.isSuccess && !settingsQ.isPlaceholderData) store.set('nm-show-banner', showBanner);
+  }, [settingsQ.isSuccess, settingsQ.isPlaceholderData, showBanner]);
   const { items: recent } = useRecentlyViewed();
 
   const all = allQ.data?.items || [];
@@ -401,7 +413,7 @@ export default function Home() {
           </motion.p>
         )}
       </AnimatePresence>
-      <PromoCarousel slides={slides} loading={loading || catsLoading} />
+      {showBanner && <PromoCarousel slides={slides} loading={loading || catsLoading} />}
       {loading || catsLoading ? <CategoryStripSkeleton /> : (
         <>
           <CategoryStrip categories={categories} trendingImage={trending[0] ? productImage(trending[0]) : null} />

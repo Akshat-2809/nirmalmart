@@ -36,6 +36,7 @@
       (function () {
         const get = (u) => { window.__nmPrefetch[u] = fetch(u).then((r) => (r.ok ? r.json() : Promise.reject(r))); window.__nmPrefetch[u].catch(() => {}); };
         get('/api/categories');
+        get('/api/settings');
         if (location.pathname === '/') {
           get('/api/products?sort_by=newest&per_page=48');
           get('/api/products?trending=true&sort_by=newest&per_page=24');
@@ -52,7 +53,7 @@
           <img id="nm-shell-logo" src="/logo.svg" alt="Nirmal Mart" width="154" height="35" class="h-7 w-auto sm:h-9" />
         </div>
       </div>
-      <div class="container pt-4"><div class="skeleton h-[180px] rounded-3xl sm:h-[240px] lg:h-[280px]"></div></div>
+      <div id="nm-shell-banner" class="container pt-4"><div class="skeleton h-[180px] rounded-3xl sm:h-[240px] lg:h-[280px]"></div></div>
       <div class="container pt-6"><div class="flex h-[124px] gap-3 overflow-hidden sm:h-[142px] sm:gap-6 lg:justify-center">
         <div class="flex w-[76px] shrink-0 flex-col items-center sm:w-24"><div class="skeleton h-16 w-16 rounded-full sm:h-20 sm:w-20"></div></div>
         <div class="flex w-[76px] shrink-0 flex-col items-center sm:w-24"><div class="skeleton h-16 w-16 rounded-full sm:h-20 sm:w-20"></div></div>
@@ -63,6 +64,8 @@
     </div></div>
     <script>
       if (document.documentElement.classList.contains('dark')) document.getElementById('nm-shell-logo').src = '/logo-dark.svg';
+      // The owner can switch the homepage banner off; remember that so the placeholder matches
+      try { if (localStorage.getItem('nm-show-banner') === 'false' || location.pathname !== '/') document.getElementById('nm-shell-banner').remove(); } catch (e) {}
     </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>

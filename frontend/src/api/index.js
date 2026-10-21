@@ -11,6 +11,7 @@ export const authApi = {
 
 export const catalogApi = {
   categories: () => d(client.get('/categories')),
+  settings: () => d(client.get('/settings')),
   products: (params) => d(client.get('/products', { params, paramsSerializer: { indexes: null } })),
   byIds: (ids) => d(client.get('/products', { params: { ids: ids.join(','), per_page: Math.min(100, Math.max(1, ids.length)) } })),
   facets: (params) => d(client.get('/products/facets', { params })),
@@ -77,6 +78,8 @@ export const adminApi = {
   orders: (params) => d(client.get('/admin/orders', { params })),
   setOrderStatus: (id, status) => d(client.put(`/admin/orders/${id}/status`, { status })),
   categories: () => d(client.get('/admin/categories')),
+  settings: () => d(client.get('/admin/settings')),
+  updateSettings: (body) => d(client.put('/admin/settings', body)),
   createCategory: (body) => d(client.post('/admin/categories', body)),
   updateCategory: (id, body) => d(client.put(`/admin/categories/${id}`, body)),
   deleteCategory: (id) => d(client.delete(`/admin/categories/${id}`)),

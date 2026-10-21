@@ -14,6 +14,8 @@ from app.services.auth import require_admin
 from app.services import product as product_service
 from app.services.order import get_all_orders, update_order_status, _with_customer
 from app.services.ai import generate_product_listing
+from app.services.settings import get_settings, update_settings
+from app.schemas.setting import StoreSettings, StoreSettingsUpdate
 from app.services.storage import read_image, save_image, delete_image
 from app.routers.categories import categories_with_counts
 from app.models.user import User
@@ -289,3 +291,15 @@ def delete_category(category_id: int, db: Session = Depends(get_db)):
     db.delete(category)
     db.commit()
     return {"message": "Category deleted"}
+
+
+# ─── Store settings ───
+
+@router.get("/settings", response_model=StoreSettings)
+def admin_settings(db: Session = Depends(get_db)):
+    return get_settings(db)
+
+
+@router.put("/settings", response_model=StoreSettings)
+def admin_update_settings(body: StoreSettingsUpdate, db: Session = Depends(get_db)):
+    return update_settings(db, body)
