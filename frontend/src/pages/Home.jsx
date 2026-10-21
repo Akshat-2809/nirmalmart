@@ -67,26 +67,26 @@ function PromoCarousel({ slides, loading }) {
   }, [n, paused, go, i, rounds]);
   useEffect(() => { if (i >= n) setI(0); }, [n, i]);
 
-  if (loading) return <div className="container pt-4"><div className="skeleton h-[180px] rounded-3xl sm:h-[240px] lg:h-[280px]" /></div>;
+  if (loading) return <div className="container pt-4"><div className="skeleton h-[200px] rounded-3xl sm:h-[240px] lg:h-[280px]" /></div>;
   if (!n) return null;
   const s = slides[Math.min(i, n - 1)];
 
   return (
     <section className="container pt-4" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} aria-roledescription="carousel">
-      <div className="relative h-[180px] overflow-hidden rounded-3xl sm:h-[240px] lg:h-[280px]">
+      <div className="relative h-[200px] overflow-hidden rounded-3xl sm:h-[240px] lg:h-[280px]">
         <AnimatePresence initial={false} mode="popLayout">
           <motion.div key={s.key}
             initial={{ opacity: 0, x: 60 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -60 }} transition={{ duration: 0.5, ease }}
             drag={n > 1 ? 'x' : false} dragConstraints={{ left: 0, right: 0 }} dragElastic={0.2}
             onDragEnd={(_, info) => { if (info.offset.x < -50) go(1); if (info.offset.x > 50) go(-1); }}
             className={cn('absolute inset-0 flex items-center', THEMES[s.theme])}>
-            <Link to={s.href} className="flex h-full w-full items-center gap-4 px-5 sm:px-14 lg:px-16" draggable={false}>
+            <Link to={s.href} className="flex h-full w-full items-center gap-3 px-5 sm:gap-4 sm:px-14 lg:px-16" draggable={false}>
               <div className="min-w-0 flex-1">
-                <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider backdrop-blur sm:text-[11px]">
+                <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-0.5 text-[10px] sm:py-1 font-bold uppercase tracking-wider backdrop-blur sm:text-[11px]">
                   <Flame size={12} /> {s.badge}
                 </span>
-                <h2 className="mt-2 font-display text-2xl font-extrabold leading-tight sm:mt-3 sm:text-4xl lg:text-5xl">{s.title}</h2>
-                {s.mr && <p lang="mr" className="mt-0.5 text-sm font-semibold opacity-90 sm:text-lg">{s.mr}</p>}
+                <h2 className="mt-2 line-clamp-2 font-display text-[22px] font-extrabold leading-tight sm:mt-3 sm:text-4xl lg:text-5xl">{s.title}</h2>
+                {s.mr && <p lang="mr" className="mt-0.5 truncate text-sm font-semibold opacity-90 sm:text-lg">{s.mr}</p>}
                 <p className="mt-1.5 text-sm font-medium opacity-90 sm:mt-2 sm:text-lg">{s.line}</p>
                 <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-bold text-ink shadow-sm sm:mt-5 sm:px-5 sm:text-sm">
                   Shop now <ArrowRight size={15} />
@@ -95,8 +95,8 @@ function PromoCarousel({ slides, loading }) {
               <div className="flex shrink-0 items-center gap-3 lg:gap-4">
                 {s.images.map((p, k) => (
                   <motion.div key={p.id} initial={i === 0 ? false : { y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.12 + k * 0.08, ease }}
-                    className={cn('h-28 w-28 overflow-hidden rounded-2xl bg-white p-1.5 shadow-lift sm:h-36 sm:w-36 lg:h-44 lg:w-44',
-                      k === 1 && 'hidden md:block', k === 2 && 'hidden lg:block')}>
+                    className={cn('h-[88px] w-[88px] overflow-hidden rounded-2xl bg-white p-1 shadow-lift sm:h-36 sm:p-1.5 sm:w-36 lg:h-44 lg:w-44',
+                      k === 1 && 'hidden lg:block', k === 2 && 'hidden lg:block')}>
                     <img src={sized(productImage(p), 400)} alt="" width="176" height="176" fetchpriority={i === 0 && k === 0 ? 'high' : undefined}
                       className="h-full w-full rounded-xl object-cover" draggable={false} />
                   </motion.div>
@@ -110,7 +110,7 @@ function PromoCarousel({ slides, loading }) {
           <>
             <button onClick={() => go(-1)} aria-label="Previous offer" className="absolute left-2 top-1/2 hidden h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/80 text-ink shadow backdrop-blur transition hover:bg-white sm:grid"><ChevronLeft size={20} /></button>
             <button onClick={() => go(1)} aria-label="Next offer" className="absolute right-2 top-1/2 hidden h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/80 text-ink shadow backdrop-blur transition hover:bg-white sm:grid"><ChevronRight size={20} /></button>
-            <div className="absolute bottom-1 left-1/2 flex -translate-x-1/2 gap-0.5">
+            <div className="absolute bottom-1 right-3 flex gap-0.5 sm:right-auto sm:left-1/2 sm:-translate-x-1/2">
               {slides.map((x, k) => (
                 <button key={x.key} onClick={() => setI(k)} aria-label={`Offer ${k + 1}`} className="grid h-6 min-w-6 place-items-center">
                   <span className={cn('block h-1.5 rounded-full bg-white/90 transition-all', k === i ? 'w-6' : 'w-1.5 opacity-50')} />
