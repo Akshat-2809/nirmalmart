@@ -1,32 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { ArrowRight, Instagram, Youtube, Facebook } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import { catalogApi } from '../../api';
+import { SOCIAL } from '../../lib/contact';
 import { Logo } from '../ui/bits';
-
-// Google Play "play" mark (lucide has no store logos)
-function PlayStore({ size = 17 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M4.6 2.2a1.3 1.3 0 0 0-.6 1.1v17.4c0 .5.2.9.6 1.1l9.6-9.8-9.6-9.8Zm10.8 11-2.3 2.3-7.1 7.2 9.7-5.4-.3-4.1Zm4.2-3.2-3-1.7-2.6 2.7 2.6 2.7 3-1.7c.9-.5.9-1.5 0-2Zm-14.6-9 7.1 7.2 2.3 2.3.3-4.1-9.7-5.4Z" />
-    </svg>
-  );
-}
-
-const SOCIAL = [
-  ['Instagram', Instagram, 'https://www.instagram.com/nirmalmart09'],
-  ['Facebook', Facebook, 'https://www.facebook.com/share/1GUyQxBTdf/'],
-  ['YouTube', Youtube, 'https://www.youtube.com/@NirmalMart'],
-];
-// Set once the Android app is published; until then the icon shows as "coming soon"
-const PLAY_STORE_URL = '';
 
 const STATIC_COLS = [
   { title: 'Account', links: [['My account', '/account'], ['Orders', '/account/orders'], ['Wishlist', '/wishlist'], ['Bag', '/cart']] },
-  { title: 'Help', links: [['Shipping', '/shop'], ['Returns', '/shop'], ['Contact us', '/shop'], ['FAQs', '/shop']] },
+  { title: 'Help', links: [['Shipping', '/shop'], ['Returns', '/shop'], ['Contact us', '/contact'], ['FAQs', '/shop']] },
 ];
 
 export default function Footer() {
@@ -53,13 +37,6 @@ export default function Footer() {
               <motion.a key={name} href={url} target="_blank" rel="noopener noreferrer" whileHover={{ y: -3 }}
                 className="btn-icon border border-line" aria-label={`Nirmal Mart on ${name}`} title={name}><Icon size={17} /></motion.a>
             ))}
-            {PLAY_STORE_URL ? (
-              <motion.a href={PLAY_STORE_URL} target="_blank" rel="noopener noreferrer" whileHover={{ y: -3 }}
-                className="btn-icon border border-line" aria-label="Get the Nirmal Mart app on Google Play" title="Google Play"><PlayStore /></motion.a>
-            ) : (
-              <span className="btn-icon cursor-default border border-line opacity-60 hover:bg-transparent" title="Android app coming soon on Google Play"
-                role="img" aria-label="Android app coming soon on Google Play"><PlayStore /></span>
-            )}
           </div>
         </div>
         <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
