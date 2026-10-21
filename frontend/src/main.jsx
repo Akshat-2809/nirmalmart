@@ -12,6 +12,9 @@ import { CartProvider } from './context/CartContext';
 import { UIProvider } from './context/UIContext';
 import { WishlistProvider } from './context/WishlistContext';
 import './index.css';
+import { watchForNewVersion } from './lib/version';
+
+watchForNewVersion();
 
 // Any image that fails to load (deleted/renamed file, flaky network) shows a soft placeholder
 // instead of the browser's broken-image icon.

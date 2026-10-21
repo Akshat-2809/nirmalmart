@@ -10,7 +10,7 @@ import { Logo } from '../ui/bits';
 
 const STATIC_COLS = [
   { title: 'Account', links: [['My account', '/account'], ['Orders', '/account/orders'], ['Wishlist', '/wishlist'], ['Bag', '/cart']] },
-  { title: 'Help', links: [['Shipping', '/shop'], ['Returns', '/shop'], ['Contact us', '/contact'], ['FAQs', '/shop']] },
+  { title: 'Help', links: [['Shipping', '/shipping'], ['Returns', '/faq#returns'], ['Contact us', '/contact'], ['FAQs', '/faq']] },
 ];
 
 export default function Footer() {

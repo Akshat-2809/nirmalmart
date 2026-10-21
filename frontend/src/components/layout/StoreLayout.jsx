@@ -1,5 +1,6 @@
-import { Suspense, useEffect } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 import { useLocation, useOutlet } from 'react-router-dom';
+import { newVersionReady } from '../../lib/version';
 import { PageTransition } from '../ui/motion';
 import CartDrawer from './CartDrawer';
 import Footer from './Footer';
@@ -21,6 +22,13 @@ export default function StoreLayout() {
 
   // Scroll to top on page change, but not when only filters (query string) change
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, [location.pathname]);
+
+  // If the site was updated while this tab was open, load the new version on this page change
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) { first.current = false; return; }
+    newVersionReady().then((ready) => ready && window.location.reload());
+  }, [location.pathname]);
 
   return (
     <div className="flex min-h-screen flex-col">
