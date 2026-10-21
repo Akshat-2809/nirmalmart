@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
+import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { cn } from '../lib/cn';
 import { store } from '../lib/storage';
 
@@ -38,6 +39,10 @@ const PAGES = [
 export default function InfoPage({ lang, setLang, eyebrow, title, intro, children }) {
   return (
     <div className="container max-w-4xl py-10" lang={lang}>
+      <Link to="/" className="group mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline">
+        <ArrowLeft size={16} className="transition group-hover:-translate-x-0.5" />
+        {lang === 'mr' ? 'मुख्य पानावर परत जा' : 'Back to home'}
+      </Link>
       <nav aria-label="Help pages" className="no-scrollbar -mx-4 mb-8 flex gap-1 overflow-x-auto px-4">
         {PAGES.map(([to, label]) => (
           <NavLink key={to} to={to}
