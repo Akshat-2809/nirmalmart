@@ -12,7 +12,7 @@ const NAV = [
   ['/account/security', KeyRound, 'Password'],
 ];
 
-export default function AccountLayout() {
+export default function AccountLayout({ children }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   return (
@@ -44,7 +44,7 @@ export default function AccountLayout() {
             <LogOut size={17} /> Sign out
           </button>
         </nav>
-        <div className="min-w-0"><Outlet /></div>
+        <div className="min-w-0">{children ?? <Outlet />}</div>
       </div>
     </div>
   );

@@ -90,7 +90,7 @@ export default function ProductCard({ product, className }) {
           ) : (
             <motion.button
               type="button" onClick={quickAdd} whileTap={{ scale: 0.95 }}
-              className="absolute inset-x-3 bottom-3 flex h-11 items-center justify-center gap-2 rounded-full bg-ink/90 text-sm font-semibold text-bg backdrop-blur transition duration-300 ease-out sm:translate-y-[130%] sm:group-hover:translate-y-0 sm:group-focus-within:translate-y-0"
+              className="absolute inset-x-3 bottom-3 flex h-11 items-center justify-center gap-2 rounded-full bg-brand text-sm font-semibold text-brand-ink shadow-soft transition duration-300 ease-out sm:translate-y-[130%] sm:group-hover:translate-y-0 sm:group-focus-within:translate-y-0"
             >
               <AnimatePresence mode="wait" initial={false}>
                 {added ? (

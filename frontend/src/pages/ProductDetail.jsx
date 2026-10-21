@@ -298,7 +298,7 @@ export default function ProductDetail() {
               ),
               <div key="buy" ref={buyRef} className="mt-8 flex flex-wrap items-center gap-3">
                 {!soldOut && <Qty value={qty} max={maxQty} onChange={(q) => setQty(Math.max(1, Math.min(maxQty, q)))} />}
-                <motion.button whileTap={{ scale: 0.97 }} onClick={addToBag} disabled={soldOut || busy} className="btn-dark btn-lg flex-1">
+                <motion.button whileTap={{ scale: 0.97 }} onClick={addToBag} disabled={soldOut || busy} className="btn-primary btn-lg flex-1">
                   <AnimatePresence mode="wait" initial={false}>
                     <motion.span key={String(added)} className="flex items-center gap-2" initial={{ y: 14, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -14, opacity: 0 }}>
                       {added ? <><Check size={18} /> Added to bag</> : <><ShoppingBag size={18} /> Add to bag</>}
@@ -309,7 +309,7 @@ export default function ProductDetail() {
                 <button onClick={share} className="btn-icon hidden h-13 w-13 border border-line sm:inline-flex" aria-label="Share"><Share2 size={18} /></button>
               </div>,
               !soldOut && (
-                <motion.button key="now" whileTap={{ scale: 0.98 }} onClick={buyNow} className="btn-primary btn-lg mt-3 w-full">
+                <motion.button key="now" whileTap={{ scale: 0.98 }} onClick={buyNow} className="btn-buy btn-lg mt-3 w-full">
                   <Zap size={18} /> Buy now
                 </motion.button>
               ),
@@ -381,8 +381,8 @@ export default function ProductDetail() {
                 <p className="truncate text-sm font-semibold">{product.name}</p>
                 <p className="text-sm font-bold">{price(product.price)}</p>
               </div>
-              <button onClick={addToBag} className="btn-dark"><ShoppingBag size={16} /> Add</button>
-              <button onClick={buyNow} className="btn-primary hidden sm:inline-flex">Buy now</button>
+              <button onClick={addToBag} className="btn-primary"><ShoppingBag size={16} /> Add</button>
+              <button onClick={buyNow} className="btn-buy hidden sm:inline-flex">Buy now</button>
             </div>
           </motion.div>
         )}

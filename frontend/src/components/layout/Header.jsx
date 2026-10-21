@@ -131,14 +131,11 @@ export default function Header() {
   const { items: wish } = useWishlist();
   const { setCartOpen, setSearchOpen, theme, toggleTheme, cartIconRef, cartPulse } = useUI();
   const { pathname, search } = useLocation();
-  const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, 'change', (y) => {
-    const prev = scrollY.getPrevious() ?? 0;
-    setHidden(y > prev && y > 220);
     setScrolled(y > 10);
   });
   useEffect(() => setMobileOpen(false), [pathname, search]);
@@ -149,8 +146,7 @@ export default function Header() {
   return (
     <>
       <AnnouncementBar />
-      <motion.header
-        animate={{ y: hidden ? '-100%' : 0 }} transition={{ duration: 0.3, ease: 'easeOut' }}
+      <header
         className={cn('sticky top-0 z-40 border-b transition-colors duration-300',
           scrolled ? 'border-line bg-bg/80 backdrop-blur-xl' : 'border-transparent bg-bg')}
       >
@@ -211,7 +207,7 @@ export default function Header() {
           {categories.length > MAX_NAV && <MoreMenu categories={categories.slice(MAX_NAV)} />}
           <Link to="/shop?sort_by=discount" className="ml-auto text-[13px] font-semibold text-deal">Today’s Deals</Link>
         </nav>
-      </motion.header>
+      </header>
 
       <Drawer open={mobileOpen} onClose={() => setMobileOpen(false)} title="Menu" side="left" width="max-w-xs">
         <nav className="p-3">

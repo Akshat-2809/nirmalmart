@@ -71,6 +71,8 @@
   }
   .btn-primary { @apply btn bg-brand text-brand-ink hover:shadow-glow hover:brightness-110; }
   .btn-dark { @apply btn bg-ink text-bg hover:bg-ink/90; }
+  /* Buy now: the same strong red in light and dark mode so white text stays readable */
+  .btn-buy { @apply btn bg-[#B92418] text-white hover:brightness-110; }
   .btn-outline { @apply btn border border-line bg-surface text-ink hover:border-ink/40; }
   .btn-ghost { @apply btn text-ink-soft hover:bg-muted hover:text-ink; }
   .btn-sm { @apply h-9 px-4 text-[13px]; }

@@ -126,11 +126,11 @@ function PromoCarousel({ slides, loading }) {
 
 /* ───────────── Category circles (Amazon-app style) ───────────── */
 
-const STRIP_H = 'h-[124px] sm:h-[142px]';   // same for the placeholder and the real strip, so nothing jumps
+const STRIP_H = 'h-[130px] pt-1.5 sm:h-[148px]';   // same for the placeholder and the real strip, so nothing jumps
 
 function CategoryStripSkeleton() {
   return (
-    <section className="container pt-6">
+    <section className="container pt-[18px]">
       <div className={cn('no-scrollbar -mx-4 flex gap-3 overflow-hidden px-4 sm:gap-6 lg:justify-center', STRIP_H)}>
         {Array.from({ length: 8 }, (_, i) => (
           <div key={i} className="flex w-[76px] shrink-0 flex-col items-center sm:w-24">
@@ -150,7 +150,7 @@ function CategoryStrip({ categories, trendingImage }) {
     ...categories.map((c) => ({ key: c.id, to: `/shop?category=${c.slug}`, name: c.name, mr: c.name_mr, image: c.image_url })),
   ];
   return (
-    <section className="container pt-6">
+    <section className="container pt-[18px]">
       <Stagger key={items.length} className={cn('no-scrollbar -mx-4 flex gap-3 overflow-x-auto overflow-y-hidden px-4 sm:gap-6 lg:justify-center', STRIP_H)}>
         {items.map((c, idx) => (
           <motion.div key={c.key} variants={fadeUp} className="shrink-0">
@@ -173,10 +173,13 @@ function CategoryStrip({ categories, trendingImage }) {
 
 /* ───────────── Amazon-style quad deal cards ───────────── */
 
-function QuadCard({ title, mr, items, href, cta = 'See all' }) {
+// Thin borders cycling through the logo's green, maroon and gold
+const CARD_BORDERS = ['border-brand/60', 'border-maroon/50', 'border-gold/80'];
+
+function QuadCard({ title, mr, items, href, cta = 'See all', border }) {
   const shown = items.slice(0, 4);
   return (
-    <motion.div variants={fadeUp} className="card flex w-[78%] shrink-0 snap-start flex-col p-4 transition hover:shadow-lift sm:w-[46%] lg:w-auto">
+    <motion.div variants={fadeUp} className={cn('card flex w-[78%] shrink-0 snap-start flex-col p-4 transition hover:shadow-lift sm:w-[46%] lg:w-auto', border)}>
       <h3 className="font-display text-lg font-bold leading-tight">{title}</h3>
       {mr && <p lang="mr" className="text-sm text-ink-soft">{mr}</p>}
       <div className={cn('mt-3 grid flex-1 content-start gap-3', shown.length > 1 ? 'grid-cols-2' : 'grid-cols-1')}>
@@ -213,7 +216,7 @@ function DealCards({ all, trending, categories }) {
   return (
     <section className="container pt-8">
       <Stagger key={cards.length} className="no-scrollbar -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto px-4 pb-1 lg:mx-0 lg:grid lg:grid-cols-4 lg:overflow-visible lg:px-0">
-        {cards.map(({ key, ...c }) => <QuadCard key={key} {...c} />)}
+        {cards.map(({ key, ...c }, i) => <QuadCard key={key} {...c} border={CARD_BORDERS[i % CARD_BORDERS.length]} />)}
       </Stagger>
     </section>
   );
