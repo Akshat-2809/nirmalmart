@@ -128,6 +128,8 @@ def update_order_status(db: Session, order_id: int, new_status: str) -> Order:
         return order
     if new_status not in TRANSITIONS[order.status]:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, f"Cannot move an order from {order.status} to {new_status}")
+    if new_status == "cancelled" and order.awb_code:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Cancel the courier shipment first, then cancel the order")
     if new_status == "cancelled":
         _restock(order)
     order.status = new_status

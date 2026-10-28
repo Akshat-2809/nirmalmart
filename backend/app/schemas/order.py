@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, computed_field
 from typing import Optional, List, Literal
 from datetime import datetime
 from app.schemas.common import Money, NAME_PATTERN, CITY_PATTERN, MOBILE_PATTERN, PINCODE_PATTERN
@@ -47,13 +47,33 @@ class OrderResponse(BaseModel):
     shipping_address: Optional[dict] = None
     notes: Optional[str] = None
     items: List[OrderItemResponse] = []
+    awb_code: Optional[str] = None
+    courier_name: Optional[str] = None
+    tracking_status: Optional[str] = None
     created_at: datetime
     updated_at: datetime
+
+    @computed_field
+    @property
+    def tracking_url(self) -> Optional[str]:
+        return f"https://shiprocket.co/tracking/{self.awb_code}" if self.awb_code else None
 
 
 class AdminOrderResponse(OrderResponse):
     customer_name: Optional[str] = None
     customer_email: Optional[str] = None
+    shiprocket_order_id: Optional[str] = None
+    shiprocket_shipment_id: Optional[str] = None
+    shipping_label_url: Optional[str] = None
+
+
+class ShipOrderRequest(BaseModel):
+    weight: float = Field(..., gt=0, le=100)        # kg
+    length: float = Field(..., gt=0, le=300)        # cm
+    breadth: float = Field(..., gt=0, le=300)
+    height: float = Field(..., gt=0, le=300)
+    cod: bool = False
+    courier_id: Optional[int] = None
 
 
 class OrderStatusUpdate(BaseModel):

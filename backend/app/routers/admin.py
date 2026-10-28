@@ -7,12 +7,13 @@ from slugify import slugify
 from app.database import get_db
 from app.schemas.product import ProductCreate, ProductUpdate, ProductResponse, PaginatedProducts, ProductImageResponse
 from app.schemas.category import CategoryCreate, CategoryUpdate, CategoryResponse
-from app.schemas.order import AdminOrderResponse, OrderStatusUpdate, PaginatedOrders
+from app.schemas.order import AdminOrderResponse, OrderStatusUpdate, PaginatedOrders, ShipOrderRequest
 from app.schemas.user import AdminUserUpdate
 from app.schemas.ai_product import AIProductGenerationResponse
 from app.services.auth import require_admin
 from app.services import product as product_service
-from app.services.order import get_all_orders, update_order_status, _with_customer
+from app.services.order import get_all_orders, get_order_by_id, update_order_status, _with_customer
+from app.services import shiprocket
 from app.services.ai import generate_product_listing
 from app.services.settings import get_settings, update_settings
 from app.schemas.setting import StoreSettings, StoreSettingsUpdate
@@ -218,6 +219,57 @@ def list_orders(page: int = Query(1, ge=1), per_page: int = Query(20, ge=1, le=1
 @router.put("/orders/{order_id}/status", response_model=AdminOrderResponse)
 def set_order_status(order_id: int, body: OrderStatusUpdate, db: Session = Depends(get_db)):
     return _with_customer(update_order_status(db, order_id, body.status))
+
+
+# ───────────── Shiprocket shipping ─────────────
+
+def _order_or_404(db: Session, order_id: int):
+    order = get_order_by_id(db, order_id)
+    if not order:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Order not found")
+    return order
+
+
+def _shiprocket(fn, *args):
+    try:
+        return fn(*args)
+    except shiprocket.ShiprocketError as e:
+        raise HTTPException(status.HTTP_502_BAD_GATEWAY, str(e))
+
+
+@router.get("/shipping/status")
+def shipping_status():
+    return shiprocket.connection_status()
+
+
+@router.get("/orders/{order_id}/couriers")
+def order_couriers(order_id: int, weight: float = Query(..., gt=0, le=100), cod: bool = False, db: Session = Depends(get_db)):
+    order = _order_or_404(db, order_id)
+    pincode = (order.shipping_address or {}).get("postal_code")
+    if not pincode:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "This order has no delivery pincode")
+    return _shiprocket(shiprocket.courier_options, pincode, weight, cod)
+
+
+@router.post("/orders/{order_id}/ship", response_model=AdminOrderResponse)
+def ship_order(order_id: int, body: ShipOrderRequest, db: Session = Depends(get_db)):
+    pkg = body.model_dump(include={"weight", "length", "breadth", "height"})
+    return _with_customer(shiprocket.ship_order(db, _order_or_404(db, order_id), pkg, body.cod, body.courier_id))
+
+
+@router.post("/orders/{order_id}/shipment/label", response_model=AdminOrderResponse)
+def shipment_label(order_id: int, db: Session = Depends(get_db)):
+    return _with_customer(shiprocket.retry_label_and_pickup(db, _order_or_404(db, order_id)))
+
+
+@router.post("/orders/{order_id}/shipment/refresh", response_model=AdminOrderResponse)
+def shipment_refresh(order_id: int, db: Session = Depends(get_db)):
+    return _with_customer(shiprocket.refresh_tracking(db, _order_or_404(db, order_id)))
+
+
+@router.post("/orders/{order_id}/shipment/cancel", response_model=AdminOrderResponse)
+def shipment_cancel(order_id: int, db: Session = Depends(get_db)):
+    return _with_customer(shiprocket.cancel_shipment(db, _order_or_404(db, order_id)))
 
 
 # ─── Categories ───

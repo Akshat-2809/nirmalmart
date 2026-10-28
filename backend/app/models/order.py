@@ -22,6 +22,13 @@ class Order(Base):
     total_amount = Column(Numeric(12, 2), nullable=False)
     shipping_address = Column(JSON, nullable=True)
     notes = Column(Text, nullable=True)
+    # Courier shipment (Shiprocket); empty until the admin ships the order
+    shiprocket_order_id = Column(String(30), nullable=True)
+    shiprocket_shipment_id = Column(String(30), nullable=True)
+    awb_code = Column(String(40), nullable=True, index=True)
+    courier_name = Column(String(100), nullable=True)
+    shipping_label_url = Column(String(512), nullable=True)
+    tracking_status = Column(String(60), nullable=True)   # courier's own wording, e.g. "IN TRANSIT"
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), index=True)
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 

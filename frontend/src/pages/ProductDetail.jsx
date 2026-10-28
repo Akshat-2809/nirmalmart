@@ -70,9 +70,18 @@ function Gallery({ images, name, imgRef }) {
 function DeliveryCheck() {
   const [pin, setPin] = useState('');
   const [result, setResult] = useState(null);
-  const check = (e) => {
+  const [checking, setChecking] = useState(false);
+  const check = async (e) => {
     e.preventDefault();
     if (!/^[1-9]\d{5}$/.test(pin)) return setResult({ ok: false });
+    // Real courier times from Shiprocket when it's connected; otherwise a rough built-in estimate
+    setChecking(true);
+    const est = await catalogApi.deliveryEstimate(pin).catch(() => null);
+    setChecking(false);
+    if (est?.available) {
+      if (!est.serviceable) return setResult({ ok: false, unserviceable: true });
+      if (est.min_days) return setResult({ ok: true, date: deliveryDate(est.min_days) });
+    }
     const metro = ['11', '40', '56', '60', '70', '50'].includes(pin.slice(0, 2));
     setResult({ ok: true, date: deliveryDate(metro ? 2 : 4) });
   };
@@ -82,13 +91,14 @@ function DeliveryCheck() {
         <MapPin size={18} className="shrink-0 text-ink-faint" />
         <input value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 6))} inputMode="numeric"
           placeholder="Enter delivery pincode" className="h-9 flex-1 bg-transparent text-sm outline-none" aria-label="Pincode" />
-        <button className="text-sm font-semibold text-brand">Check</button>
+        <button className="text-sm font-semibold text-brand" disabled={checking}>{checking ? 'Checking…' : 'Check'}</button>
       </form>
       <AnimatePresence mode="wait">
         {result && (
           <motion.p key={JSON.stringify(result)} initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
             className={cn('mt-2 border-t border-line pt-2 text-sm', result.ok ? 'text-success' : 'text-danger')}>
-            {result.ok ? <>Delivery by <b>{result.date}</b> · Free above ₹499</> : 'Please enter a valid 6-digit pincode'}
+            {result.ok ? <>Delivery by <b>{result.date}</b> · Free above ₹499</>
+              : result.unserviceable ? 'Sorry, we don’t deliver to this pincode yet' : 'Please enter a valid 6-digit pincode'}
           </motion.p>
         )}
       </AnimatePresence>

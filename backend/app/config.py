@@ -40,6 +40,14 @@ class Settings(BaseSettings):
     SUPABASE_SERVICE_KEY: str = ""
     SUPABASE_BUCKET: str = "product-images"
 
+    # Shiprocket courier integration. Use a dedicated API user (Shiprocket → Settings → API),
+    # not the main account login. Leave the email empty to keep shipping manual.
+    SHIPROCKET_EMAIL: str = ""
+    SHIPROCKET_PASSWORD: str = ""
+    SHIPROCKET_PICKUP_LOCATION: str = ""      # pickup address nickname in Shiprocket; first one if empty
+    SHIPROCKET_WEBHOOK_TOKEN: str = ""        # same value as the token set on the tracking webhook
+    SHIPROCKET_API_URL: str = "https://apiv2.shiprocket.in/v1/external"
+
     # Pricing rules (INR)
     GST_RATE: float = 0.18
     FREE_SHIPPING_THRESHOLD: float = 499.0

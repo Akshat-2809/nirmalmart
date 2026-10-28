@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Check, ChevronRight, Package, X } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Check, ChevronRight, Package, Truck, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Link, useParams } from 'react-router-dom';
 import { orderApi } from '../../api';
@@ -87,6 +87,16 @@ export function OrderDetail() {
           <div className="flex gap-2"><StatusBadge status={o.status} /><StatusBadge payment status={o.payment_status} /></div>
         </div>
         <div className="mt-8"><Timeline status={o.status} createdAt={o.created_at} updatedAt={o.updated_at} /></div>
+        {o.awb_code && o.status !== 'cancelled' && (
+          <div className="mt-6 flex flex-wrap items-center gap-4 rounded-2xl bg-brand-soft p-4 text-sm">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-surface text-brand"><Truck size={19} /></span>
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold">{o.courier_name || 'Courier'} · AWB {o.awb_code}</p>
+              {o.tracking_status && <p className="text-ink-soft capitalize">{o.tracking_status.toLowerCase()}</p>}
+            </div>
+            <a href={o.tracking_url} target="_blank" rel="noopener noreferrer" className="btn-primary btn-sm">Track package <ArrowUpRight size={14} /></a>
+          </div>
+        )}
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">

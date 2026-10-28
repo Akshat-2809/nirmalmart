@@ -7,6 +7,7 @@ import { useSearchParams } from 'react-router-dom';
 import { adminApi } from '../../api';
 import { errorMessage } from '../../api/client';
 import { PageHead } from '../../components/admin/AdminLayout';
+import ShippingPanel from '../../components/admin/ShippingPanel';
 import { Skeleton, StatusBadge } from '../../components/ui/bits';
 import { Drawer } from '../../components/ui/Drawer';
 import { cn } from '../../lib/cn';
@@ -20,7 +21,7 @@ const NEXT = {
   shipped: [['delivered', 'Mark delivered']],
 };
 
-function OrderDrawer({ order, onClose }) {
+function OrderDrawer({ order, onClose, onChange }) {
   const qc = useQueryClient();
   const setStatus = useMutation({
     mutationFn: (status) => adminApi.setOrderStatus(order.id, status),
@@ -28,11 +29,13 @@ function OrderDrawer({ order, onClose }) {
     onError: (e) => toast.error(errorMessage(e)),
   });
   const a = order?.shipping_address || {};
+  // With a courier booked, cancelling happens through the shipment first
+  const actions = order && NEXT[order.status]?.filter(([s]) => !(s === 'cancelled' && order.awb_code));
   return (
     <Drawer open={!!order} onClose={onClose} title={order?.order_number} width="max-w-lg"
-      footer={order && NEXT[order.status] && (
+      footer={actions?.length > 0 && (
         <div className="flex flex-wrap gap-2">
-          {NEXT[order.status].map(([s, label]) => (
+          {actions.map(([s, label]) => (
             <button key={s} disabled={setStatus.isPending}
               onClick={() => (s !== 'cancelled' || window.confirm('Cancel this order and restock its items?')) && setStatus.mutate(s)}
               className={s === 'cancelled' ? 'btn-outline text-danger' : 'btn-primary flex-1'}>{label}</button>
@@ -45,6 +48,7 @@ function OrderDrawer({ order, onClose }) {
           <div><p className="text-xs uppercase tracking-wider text-ink-faint">Customer</p><p className="mt-1 font-semibold">{order.customer_name}</p><p className="text-ink-soft">{order.customer_email}</p></div>
           <div><p className="text-xs uppercase tracking-wider text-ink-faint">Ship to</p>
             <p className="mt-1">{a.full_name} · {a.phone}<br />{a.address_line1}{a.address_line2 && `, ${a.address_line2}`}<br />{a.city}, {a.state} – {a.postal_code}</p></div>
+          <ShippingPanel key={order.id} order={order} onChange={onChange} />
           {order.notes && <div><p className="text-xs uppercase tracking-wider text-ink-faint">Notes</p><p className="mt-1">{order.notes}</p></div>}
           <ul className="divide-y divide-line rounded-2xl border border-line">
             {order.items.map((i) => (
@@ -147,7 +151,7 @@ export default function Orders() {
           </div>
         </div>
       )}
-      <OrderDrawer order={open} onClose={() => setOpen(null)} />
+      <OrderDrawer order={open} onClose={() => setOpen(null)} onChange={setOpen} />
     </div>
   );
 }
