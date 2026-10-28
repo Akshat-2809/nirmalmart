@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import confetti from 'canvas-confetti';
 import { motion } from 'framer-motion';
-import { ArrowRight, Package } from 'lucide-react';
-import { useEffect } from 'react';
+import { ArrowDown, ArrowRight, Package } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { orderApi } from '../api';
 import UpiPayment, { awaitingUpi } from '../components/order/UpiPayment';
@@ -13,6 +13,17 @@ import { deliveryDate, price } from '../lib/format';
 export default function OrderSuccess() {
   const { id } = useParams();
   const { data: order } = useQuery({ queryKey: ['orders', id], queryFn: () => orderApi.get(id) });
+  const payRef = useRef(null);
+  const needsPayment = awaitingUpi(order);
+  const scrollToPay = () => payRef.current?.scrollIntoView({
+    behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+
+  // Bring the UPI payment panel into view once the success animation has played
+  useEffect(() => {
+    if (!needsPayment) return;
+    const t = setTimeout(scrollToPay, 1400);
+    return () => clearTimeout(t);
+  }, [needsPayment]);
 
   useEffect(() => {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -35,10 +46,15 @@ export default function OrderSuccess() {
         Order placed!
       </motion.h1>
       <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }} className="mt-3 max-w-md text-ink-soft">
-        {awaitingUpi(order)
+        {needsPayment
           ? 'One last step: pay by UPI below and send us the payment proof on WhatsApp.'
           : 'Thank you for shopping with NirmalMart. We’ll send you updates as your order makes its way to you.'}
       </motion.p>
+      {needsPayment && (
+        <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.65 }} onClick={scrollToPay} className="btn-primary btn-lg mt-6">
+          Pay {price(order.total_amount)} now <ArrowDown size={18} className="animate-bounce" />
+        </motion.button>
+      )}
 
       <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7, ease }} className="card mt-10 w-full max-w-md p-6 text-left">
         {!order ? <Skeleton className="h-24" /> : (
@@ -56,8 +72,8 @@ export default function OrderSuccess() {
           </>
         )}
       </motion.div>
-      {awaitingUpi(order) && (
-        <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8, ease }} className="mt-6 w-full max-w-2xl">
+      {needsPayment && (
+        <motion.div ref={payRef} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8, ease }} className="mt-6 w-full max-w-2xl scroll-mt-28">
           <UpiPayment order={order} />
         </motion.div>
       )}
