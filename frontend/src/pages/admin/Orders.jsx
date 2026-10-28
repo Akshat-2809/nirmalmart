@@ -11,6 +11,7 @@ import ShippingPanel from '../../components/admin/ShippingPanel';
 import { Skeleton, StatusBadge } from '../../components/ui/bits';
 import { Drawer } from '../../components/ui/Drawer';
 import { cn } from '../../lib/cn';
+import { PAYMENT } from '../../lib/contact';
 import { dateTime, price, priceExact, sized } from '../../lib/format';
 
 const TABS = ['all', 'pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
@@ -20,6 +21,33 @@ const NEXT = {
   processing: [['shipped', 'Mark shipped'], ['cancelled', 'Cancel']],
   shipped: [['delivered', 'Mark delivered']],
 };
+
+// UPI QR payments are checked by hand against the WhatsApp screenshot and the bank app
+function PaymentPanel({ order, onChange }) {
+  const qc = useQueryClient();
+  const setPayment = useMutation({
+    mutationFn: (s) => adminApi.setPaymentStatus(order.id, s),
+    onSuccess: (o) => { toast.success(o.payment_status === 'paid' ? 'Payment marked received' : `Payment marked ${o.payment_status}`); qc.invalidateQueries({ queryKey: ['admin'] }); onChange(o); },
+    onError: (e) => toast.error(errorMessage(e)),
+  });
+  const ps = order.payment_status;
+  return (
+    <div className="rounded-2xl border border-line p-4">
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-xs uppercase tracking-wider text-ink-faint">Payment · UPI QR</p>
+        <StatusBadge payment status={ps} />
+      </div>
+      {ps === 'pending' && (
+        <p className="mt-2 text-ink-soft">Look for the customer’s screenshot on WhatsApp ({PAYMENT.waDisplay}) and check that <b className="text-ink">{priceExact(order.total_amount)}</b> for <b className="text-ink">{order.order_number}</b> has reached the bank account.</p>
+      )}
+      <div className="mt-3 flex flex-wrap gap-2">
+        {ps !== 'paid' && <button disabled={setPayment.isPending} onClick={() => setPayment.mutate('paid')} className="btn-primary btn-sm">Payment received</button>}
+        {ps === 'pending' && <button disabled={setPayment.isPending} onClick={() => setPayment.mutate('failed')} className="btn-outline btn-sm text-danger">Not received</button>}
+        {ps !== 'pending' && <button disabled={setPayment.isPending} onClick={() => window.confirm('Set this payment back to pending?') && setPayment.mutate('pending')} className="btn-ghost btn-sm">Undo</button>}
+      </div>
+    </div>
+  );
+}
 
 function OrderDrawer({ order, onClose, onChange }) {
   const qc = useQueryClient();
@@ -37,7 +65,11 @@ function OrderDrawer({ order, onClose, onChange }) {
         <div className="flex flex-wrap gap-2">
           {actions.map(([s, label]) => (
             <button key={s} disabled={setStatus.isPending}
-              onClick={() => (s !== 'cancelled' || window.confirm('Cancel this order and restock its items?')) && setStatus.mutate(s)}
+              onClick={() => {
+                const ok = s === 'cancelled' ? window.confirm('Cancel this order and restock its items?')
+                  : s !== 'confirmed' || order.payment_status === 'paid' || window.confirm('The payment hasn’t been marked received yet. Confirm the order anyway?');
+                if (ok) setStatus.mutate(s);
+              }}
               className={s === 'cancelled' ? 'btn-outline text-danger' : 'btn-primary flex-1'}>{label}</button>
           ))}
         </div>
@@ -48,6 +80,7 @@ function OrderDrawer({ order, onClose, onChange }) {
           <div><p className="text-xs uppercase tracking-wider text-ink-faint">Customer</p><p className="mt-1 font-semibold">{order.customer_name}</p><p className="text-ink-soft">{order.customer_email}</p></div>
           <div><p className="text-xs uppercase tracking-wider text-ink-faint">Ship to</p>
             <p className="mt-1">{a.full_name} · {a.phone}<br />{a.address_line1}{a.address_line2 && `, ${a.address_line2}`}<br />{a.city}, {a.state} – {a.postal_code}</p></div>
+          <PaymentPanel order={order} onChange={onChange} />
           <ShippingPanel key={order.id} order={order} onChange={onChange} />
           {order.notes && <div><p className="text-xs uppercase tracking-wider text-ink-faint">Notes</p><p className="mt-1">{order.notes}</p></div>}
           <ul className="divide-y divide-line rounded-2xl border border-line">

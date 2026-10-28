@@ -72,7 +72,7 @@ def create_order_from_cart(db: Session, user: User, order_data: OrderCreate) -> 
     totals = compute_totals(subtotal)
     order = Order(
         order_number=generate_order_number(), user_id=user.id, status="pending",
-        payment_status="pending", subtotal_amount=totals["subtotal"], tax_amount=totals["tax_amount"],
+        payment_method="upi_qr", payment_status="pending", subtotal_amount=totals["subtotal"], tax_amount=totals["tax_amount"],
         shipping_amount=totals["shipping_amount"], total_amount=totals["total_amount"],
         shipping_address=address, notes=order_data.notes,
     )
@@ -133,6 +133,16 @@ def update_order_status(db: Session, order_id: int, new_status: str) -> Order:
     if new_status == "cancelled":
         _restock(order)
     order.status = new_status
+    db.commit()
+    return get_order_by_id(db, order_id)
+
+
+def set_payment_status(db: Session, order_id: int, payment_status: str) -> Order:
+    """UPI QR payments are checked by hand, so the admin records the outcome here."""
+    order = get_order_by_id(db, order_id)
+    if not order:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Order not found")
+    order.payment_status = payment_status
     db.commit()
     return get_order_by_id(db, order_id)
 

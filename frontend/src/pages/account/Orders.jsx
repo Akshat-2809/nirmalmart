@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { Link, useParams } from 'react-router-dom';
 import { orderApi } from '../../api';
 import { errorMessage } from '../../api/client';
+import UpiPayment, { awaitingUpi } from '../../components/order/UpiPayment';
 import { Empty, Skeleton, StatusBadge } from '../../components/ui/bits';
 import { ease, fadeUp, stagger } from '../../components/ui/motion';
 import { useCart } from '../../context/CartContext';
@@ -27,7 +28,7 @@ export function Orders() {
               ))}
             </div>
             <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2"><p className="font-semibold">{o.order_number}</p><StatusBadge status={o.status} /></div>
+              <div className="flex flex-wrap items-center gap-2"><p className="font-semibold">{o.order_number}</p><StatusBadge status={o.status} />{awaitingUpi(o) && <StatusBadge payment status="pending" />}</div>
               <p className="mt-1 text-sm text-ink-soft">{date(o.created_at)} · {o.items.reduce((s, i) => s + i.quantity, 0)} items · {price(o.total_amount)}</p>
             </div>
             <ChevronRight size={18} className="text-ink-faint transition group-hover:translate-x-1" />
@@ -98,6 +99,8 @@ export function OrderDetail() {
           </div>
         )}
       </div>
+
+      {awaitingUpi(o) && <UpiPayment order={o} />}
 
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
         <div className="card p-6">

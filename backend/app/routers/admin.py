@@ -7,12 +7,12 @@ from slugify import slugify
 from app.database import get_db
 from app.schemas.product import ProductCreate, ProductUpdate, ProductResponse, PaginatedProducts, ProductImageResponse
 from app.schemas.category import CategoryCreate, CategoryUpdate, CategoryResponse
-from app.schemas.order import AdminOrderResponse, OrderStatusUpdate, PaginatedOrders, ShipOrderRequest
+from app.schemas.order import AdminOrderResponse, OrderStatusUpdate, PaymentStatusUpdate, PaginatedOrders, ShipOrderRequest
 from app.schemas.user import AdminUserUpdate
 from app.schemas.ai_product import AIProductGenerationResponse
 from app.services.auth import require_admin
 from app.services import product as product_service
-from app.services.order import get_all_orders, get_order_by_id, update_order_status, _with_customer
+from app.services.order import get_all_orders, get_order_by_id, update_order_status, set_payment_status, _with_customer
 from app.services import shiprocket
 from app.services.ai import generate_product_listing
 from app.services.settings import get_settings, update_settings
@@ -219,6 +219,11 @@ def list_orders(page: int = Query(1, ge=1), per_page: int = Query(20, ge=1, le=1
 @router.put("/orders/{order_id}/status", response_model=AdminOrderResponse)
 def set_order_status(order_id: int, body: OrderStatusUpdate, db: Session = Depends(get_db)):
     return _with_customer(update_order_status(db, order_id, body.status))
+
+
+@router.put("/orders/{order_id}/payment", response_model=AdminOrderResponse)
+def set_order_payment(order_id: int, body: PaymentStatusUpdate, db: Session = Depends(get_db)):
+    return _with_customer(set_payment_status(db, order_id, body.payment_status))
 
 
 # ───────────── Shiprocket shipping ─────────────

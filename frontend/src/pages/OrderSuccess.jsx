@@ -5,6 +5,7 @@ import { ArrowRight, Package } from 'lucide-react';
 import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { orderApi } from '../api';
+import UpiPayment, { awaitingUpi } from '../components/order/UpiPayment';
 import { Skeleton } from '../components/ui/bits';
 import { ease } from '../components/ui/motion';
 import { deliveryDate, price } from '../lib/format';
@@ -34,7 +35,9 @@ export default function OrderSuccess() {
         Order placed!
       </motion.h1>
       <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }} className="mt-3 max-w-md text-ink-soft">
-        Thank you for shopping with NirmalMart. We’ll send you updates as your order makes its way to you.
+        {awaitingUpi(order)
+          ? 'One last step: pay by UPI below and send us the payment proof on WhatsApp.'
+          : 'Thank you for shopping with NirmalMart. We’ll send you updates as your order makes its way to you.'}
       </motion.p>
 
       <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7, ease }} className="card mt-10 w-full max-w-md p-6 text-left">
@@ -53,6 +56,11 @@ export default function OrderSuccess() {
           </>
         )}
       </motion.div>
+      {awaitingUpi(order) && (
+        <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8, ease }} className="mt-6 w-full max-w-2xl">
+          <UpiPayment order={order} />
+        </motion.div>
+      )}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }} className="mt-8 flex flex-wrap justify-center gap-3">
         <Link to={`/account/orders/${id}`} className="btn-dark">Track order</Link>
         <Link to="/shop" className="btn-outline group">Continue shopping <ArrowRight size={16} className="transition group-hover:translate-x-1" /></Link>

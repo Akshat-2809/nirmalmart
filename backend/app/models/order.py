@@ -14,7 +14,7 @@ class Order(Base):
     order_number = Column(String(50), unique=True, index=True, nullable=False)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     status = Column(String(20), default="pending", nullable=False, index=True)
-    payment_method = Column(String(20), nullable=True)   # decided at checkout; e.g. "razorpay"
+    payment_method = Column(String(20), nullable=True)   # "upi_qr": customer scans the store QR, admin marks it paid
     payment_status = Column(String(20), default="pending", nullable=False)
     subtotal_amount = Column(Numeric(12, 2), nullable=False, default=0)
     tax_amount = Column(Numeric(12, 2), default=0)

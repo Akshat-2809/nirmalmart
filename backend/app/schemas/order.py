@@ -80,6 +80,10 @@ class OrderStatusUpdate(BaseModel):
     status: Literal["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"]
 
 
+class PaymentStatusUpdate(BaseModel):
+    payment_status: Literal["pending", "paid", "failed", "refunded"]
+
+
 class PaginatedOrders(BaseModel):
     items: List[AdminOrderResponse]
     total: int
