@@ -6,6 +6,7 @@ from typing import Optional
 from sqlalchemy.orm import Session, selectinload, joinedload
 from fastapi import HTTPException, status
 from app.models.order import Order, OrderItem
+from app.models.return_request import ReturnRequest, OPEN_RETURN_STATUSES
 from app.models.cart import CartItem
 from app.models.product import Product
 from app.models.address import Address
@@ -106,12 +107,12 @@ def _restock(order: Order):
 
 
 def get_user_orders(db: Session, user_id: int) -> list:
-    return (db.query(Order).options(selectinload(Order.items))
+    return (db.query(Order).options(selectinload(Order.items), selectinload(Order.returns))
             .filter(Order.user_id == user_id).order_by(Order.created_at.desc()).all())
 
 
 def get_order_by_id(db: Session, order_id: int, user_id: Optional[int] = None) -> Optional[Order]:
-    q = db.query(Order).options(selectinload(Order.items)).filter(Order.id == order_id)
+    q = db.query(Order).options(selectinload(Order.items), selectinload(Order.returns)).filter(Order.id == order_id)
     if user_id:
         q = q.filter(Order.user_id == user_id)
     return q.first()
@@ -161,6 +162,8 @@ def update_order_status(db: Session, order_id: int, new_status: str) -> Order:
         _cancel(db, order, "Cancelled by store")
         return get_order_by_id(db, order_id)
     order.status = new_status
+    if new_status == "delivered":
+        order.delivered_at = datetime.now(timezone.utc)
     db.commit()
     return get_order_by_id(db, order_id)
 
@@ -207,8 +210,10 @@ def _with_customer(order: Order) -> Order:
 
 def get_all_orders(db: Session, page: int = 1, per_page: int = 20, status_filter: Optional[str] = None,
                    search: Optional[str] = None) -> dict:
-    q = db.query(Order).options(selectinload(Order.items), joinedload(Order.user))
-    if status_filter:
+    q = db.query(Order).options(selectinload(Order.items), selectinload(Order.returns), joinedload(Order.user))
+    if status_filter == "returns":
+        q = q.filter(Order.returns.any(ReturnRequest.status.in_(OPEN_RETURN_STATUSES)))
+    elif status_filter:
         q = q.filter(Order.status == status_filter)
     if search:
         term = f"%{search.strip()}%"

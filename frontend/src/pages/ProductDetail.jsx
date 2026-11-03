@@ -331,7 +331,7 @@ export default function ProductDetail() {
               <div key="del" className="mt-8 space-y-3">
                 <DeliveryCheck />
                 <div className="grid grid-cols-3 gap-2 text-center text-xs text-ink-soft">
-                  {[[Truck, 'Free delivery above ₹499'], [RotateCcw, '7-day easy returns'], [ShieldCheck, 'Secure checkout']].map(([Icon, t]) => (
+                  {[[Truck, 'Free delivery above ₹499'], [RotateCcw, '5-day return / exchange'], [ShieldCheck, 'Secure checkout']].map(([Icon, t]) => (
                     <div key={t} className="rounded-2xl bg-muted px-2 py-3"><Icon size={18} className="mx-auto mb-1.5 text-ink" />{t}</div>
                   ))}
                 </div>

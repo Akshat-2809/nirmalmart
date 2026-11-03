@@ -7,13 +7,14 @@ from slugify import slugify
 from app.database import get_db
 from app.schemas.product import ProductCreate, ProductUpdate, ProductResponse, PaginatedProducts, ProductImageResponse
 from app.schemas.category import CategoryCreate, CategoryUpdate, CategoryResponse
-from app.schemas.order import AdminOrderResponse, OrderStatusUpdate, PaymentStatusUpdate, PaginatedOrders, ShipOrderRequest
+from app.schemas.order import (AdminOrderResponse, OrderStatusUpdate, PackageIn, PaymentStatusUpdate, PaginatedOrders,
+                               ReturnMark, ReturnRefund, ReturnReject, ShipOrderRequest)
 from app.schemas.user import AdminUserUpdate
 from app.schemas.ai_product import AIProductGenerationResponse
 from app.services.auth import require_admin
 from app.services import product as product_service
 from app.services.order import get_all_orders, get_order_by_id, update_order_status, set_payment_status, delete_order, _with_customer
-from app.services import shiprocket
+from app.services import shiprocket, returns
 from app.services.ai import generate_product_listing
 from app.services.settings import get_settings, update_settings
 from app.schemas.setting import StoreSettings, StoreSettingsUpdate
@@ -281,6 +282,49 @@ def shipment_refresh(order_id: int, db: Session = Depends(get_db)):
 @router.post("/orders/{order_id}/shipment/cancel", response_model=AdminOrderResponse)
 def shipment_cancel(order_id: int, db: Session = Depends(get_db)):
     return _with_customer(shiprocket.cancel_shipment(db, _order_or_404(db, order_id)))
+
+
+# ───────────── Returns & exchanges ─────────────
+
+def _after(db: Session, order_id: int):
+    db.expire_all()
+    return _with_customer(_order_or_404(db, order_id))
+
+
+@router.post("/orders/{order_id}/returns/{return_id}/approve", response_model=AdminOrderResponse)
+def approve_return(order_id: int, return_id: int, body: PackageIn, db: Session = Depends(get_db)):
+    returns.approve(db, _order_or_404(db, order_id), return_id, body.model_dump())
+    return _after(db, order_id)
+
+
+@router.post("/orders/{order_id}/returns/{return_id}/reject", response_model=AdminOrderResponse)
+def reject_return(order_id: int, return_id: int, body: ReturnReject, db: Session = Depends(get_db)):
+    returns.reject(db, _order_or_404(db, order_id), return_id, body.note)
+    return _after(db, order_id)
+
+
+@router.post("/orders/{order_id}/returns/{return_id}/status", response_model=AdminOrderResponse)
+def mark_return(order_id: int, return_id: int, body: ReturnMark, db: Session = Depends(get_db)):
+    returns.mark(db, _order_or_404(db, order_id), return_id, body.status)
+    return _after(db, order_id)
+
+
+@router.post("/orders/{order_id}/returns/{return_id}/refund", response_model=AdminOrderResponse)
+def refund_return(order_id: int, return_id: int, body: ReturnRefund, db: Session = Depends(get_db)):
+    returns.refund(db, _order_or_404(db, order_id), return_id, body.reference)
+    return _after(db, order_id)
+
+
+@router.post("/orders/{order_id}/returns/{return_id}/replacement", response_model=AdminOrderResponse)
+def replace_return(order_id: int, return_id: int, body: PackageIn, db: Session = Depends(get_db)):
+    returns.send_replacement(db, _order_or_404(db, order_id), return_id, body.model_dump())
+    return _after(db, order_id)
+
+
+@router.post("/orders/{order_id}/returns/{return_id}/refresh", response_model=AdminOrderResponse)
+def refresh_return(order_id: int, return_id: int, db: Session = Depends(get_db)):
+    returns.refresh(db, _order_or_404(db, order_id), return_id)
+    return _after(db, order_id)
 
 
 # ─── Categories ───

@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict, Field, computed_field
 from typing import Optional, List, Literal
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
+from app.models.return_request import RETURN_WINDOW_DAYS
 from app.schemas.common import Money, NAME_PATTERN, CITY_PATTERN, MOBILE_PATTERN, PINCODE_PATTERN
 
 
@@ -33,6 +34,56 @@ class OrderItemResponse(BaseModel):
     subtotal: Money
 
 
+class ReturnItemIn(BaseModel):
+    order_item_id: int
+    quantity: int = Field(..., ge=1, le=1000)
+
+
+class ReturnCreate(BaseModel):
+    kind: Literal["return", "exchange"]
+    items: List[ReturnItemIn] = Field(..., min_length=1)
+    reason: str = Field(..., min_length=2, max_length=100)
+    comment: Optional[str] = Field(None, max_length=500)
+
+
+class ReturnResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    kind: str
+    items: List[dict]
+    reason: str
+    comment: Optional[str] = None
+    status: str
+    admin_note: Optional[str] = None
+    refund_amount: Optional[Money] = None
+    refund_reference: Optional[str] = None
+    return_awb: Optional[str] = None
+    return_courier: Optional[str] = None
+    return_tracking: Optional[str] = None
+    repl_awb: Optional[str] = None
+    repl_courier: Optional[str] = None
+    repl_tracking: Optional[str] = None
+    created_at: datetime
+    approved_at: Optional[datetime] = None
+    picked_up_at: Optional[datetime] = None
+    received_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+
+    @computed_field
+    @property
+    def return_tracking_url(self) -> Optional[str]:
+        return f"https://shiprocket.co/tracking/{self.return_awb}" if self.return_awb else None
+
+    @computed_field
+    @property
+    def repl_tracking_url(self) -> Optional[str]:
+        return f"https://shiprocket.co/tracking/{self.repl_awb}" if self.repl_awb else None
+
+
+class AdminReturnResponse(ReturnResponse):
+    repl_label_url: Optional[str] = None
+
+
 class OrderResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
@@ -51,6 +102,8 @@ class OrderResponse(BaseModel):
     courier_name: Optional[str] = None
     tracking_status: Optional[str] = None
     cancelled_at: Optional[datetime] = None
+    delivered_at: Optional[datetime] = None
+    returns: List[ReturnResponse] = []
     cancel_reason: Optional[str] = None
     refunded_at: Optional[datetime] = None
     refund_reference: Optional[str] = None
@@ -62,8 +115,20 @@ class OrderResponse(BaseModel):
     def tracking_url(self) -> Optional[str]:
         return f"https://shiprocket.co/tracking/{self.awb_code}" if self.awb_code else None
 
+    @computed_field
+    @property
+    def return_until(self) -> Optional[datetime]:
+        """Last moment to ask for a return/exchange (only for delivered orders)"""
+        if self.status != "delivered":
+            return None
+        delivered = self.delivered_at or self.updated_at
+        if delivered.tzinfo is None:
+            delivered = delivered.replace(tzinfo=timezone.utc)
+        return delivered + timedelta(days=RETURN_WINDOW_DAYS)
+
 
 class AdminOrderResponse(OrderResponse):
+    returns: List[AdminReturnResponse] = []
     customer_name: Optional[str] = None
     customer_email: Optional[str] = None
     shiprocket_order_id: Optional[str] = None
@@ -71,11 +136,14 @@ class AdminOrderResponse(OrderResponse):
     shipping_label_url: Optional[str] = None
 
 
-class ShipOrderRequest(BaseModel):
+class PackageIn(BaseModel):
     weight: float = Field(..., gt=0, le=100)        # kg
     length: float = Field(..., gt=0, le=300)        # cm
     breadth: float = Field(..., gt=0, le=300)
     height: float = Field(..., gt=0, le=300)
+
+
+class ShipOrderRequest(PackageIn):
     cod: bool = False
     courier_id: Optional[int] = None
 
@@ -91,6 +159,18 @@ class PaymentStatusUpdate(BaseModel):
 
 class OrderCancel(BaseModel):
     reason: Optional[str] = Field(None, max_length=200)
+
+
+class ReturnReject(BaseModel):
+    note: Optional[str] = Field(None, max_length=300)
+
+
+class ReturnMark(BaseModel):
+    status: Literal["picked_up", "received"]
+
+
+class ReturnRefund(BaseModel):
+    reference: Optional[str] = Field(None, max_length=100)
 
 
 class PaginatedOrders(BaseModel):

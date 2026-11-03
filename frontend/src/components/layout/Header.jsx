@@ -15,7 +15,7 @@ import { Drawer } from '../ui/Drawer';
 
 const MESSAGES = [
   'Free delivery on orders above ₹499',
-  'Easy 7-day returns on most items',
+  'Easy 5-day return or exchange',
   'New arrivals every week — shop the latest drops',
 ];
 

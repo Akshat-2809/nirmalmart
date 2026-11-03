@@ -7,14 +7,17 @@ import { useSearchParams } from 'react-router-dom';
 import { adminApi } from '../../api';
 import { errorMessage } from '../../api/client';
 import { PageHead } from '../../components/admin/AdminLayout';
+import ReturnsPanel from '../../components/admin/ReturnsPanel';
 import ShippingPanel from '../../components/admin/ShippingPanel';
+import { OPEN_RETURNS } from '../../components/order/Returns';
 import { Skeleton, StatusBadge } from '../../components/ui/bits';
 import { Drawer } from '../../components/ui/Drawer';
 import { cn } from '../../lib/cn';
 import { PAYMENT } from '../../lib/contact';
 import { dateTime, price, priceExact, sized } from '../../lib/format';
 
-const TABS = ['all', 'pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+const hasOpenReturn = (o) => o.returns?.some((r) => OPEN_RETURNS.includes(r.status));
+const TABS = ['all', 'pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'returns'];
 const NEXT = {
   pending: [['confirmed', 'Confirm order'], ['cancelled', 'Cancel']],
   confirmed: [['processing', 'Start processing'], ['shipped', 'Mark shipped'], ['cancelled', 'Cancel']],
@@ -112,6 +115,7 @@ function OrderDrawer({ order, onClose, onChange }) {
           <div><p className="text-xs uppercase tracking-wider text-ink-faint">Ship to</p>
             <p className="mt-1">{a.full_name} · {a.phone}<br />{a.address_line1}{a.address_line2 && `, ${a.address_line2}`}<br />{a.city}, {a.state} – {a.postal_code}</p></div>
           <PaymentPanel order={order} onChange={onChange} />
+          <ReturnsPanel order={order} onChange={onChange} />
           <ShippingPanel key={order.id} order={order} onChange={onChange} />
           {order.notes && <div><p className="text-xs uppercase tracking-wider text-ink-faint">Notes</p><p className="mt-1">{order.notes}</p></div>}
           <ul className="divide-y divide-line rounded-2xl border border-line">
@@ -177,7 +181,7 @@ export default function Orders() {
                 <div className="min-w-0"><p className="font-semibold">{o.order_number}</p><p className="truncate text-xs text-ink-faint">{o.customer_name} · {dateTime(o.created_at)}</p></div>
                 <p className="shrink-0 font-semibold">{price(o.total_amount)}</p>
               </div>
-              <div className="mt-3 flex gap-2"><StatusBadge status={o.status} /><StatusBadge payment status={o.payment_status} /></div>
+              <div className="mt-3 flex flex-wrap gap-2"><StatusBadge status={o.status} /><StatusBadge payment status={o.payment_status} />{hasOpenReturn(o) && <span className="badge bg-warning/10 text-warning">Return</span>}</div>
             </button>
           ))}
       </div>
@@ -198,7 +202,7 @@ export default function Orders() {
                     <td className="px-4 py-3">{o.customer_name}<span className="block text-xs text-ink-faint">{o.customer_email}</span></td>
                     <td className="px-4 py-3 text-ink-soft">{dateTime(o.created_at)}</td>
                     <td className="px-4 py-3 font-semibold">{price(o.total_amount)}</td>
-                    <td className="px-4 py-3"><StatusBadge status={o.status} /></td>
+                    <td className="px-4 py-3"><StatusBadge status={o.status} />{hasOpenReturn(o) && <span className="badge ml-1.5 bg-warning/10 text-warning">Return</span>}</td>
                     <td className="px-4 py-3"><StatusBadge status={o.payment_status} /></td>
                   </motion.tr>
                 ))}

@@ -43,6 +43,8 @@ export const orderApi = {
   list: () => d(client.get('/orders')),
   get: (id) => d(client.get(`/orders/${id}`)),
   cancel: (id, reason) => d(client.post(`/orders/${id}/cancel`, { reason })),
+  requestReturn: (id, body) => d(client.post(`/orders/${id}/returns`, body)),
+  cancelReturn: (id, rid) => d(client.post(`/orders/${id}/returns/${rid}/cancel`)),
 };
 
 export const userApi = {
@@ -86,6 +88,7 @@ export const adminApi = {
   shipmentLabel: (id) => d(client.post(`/admin/orders/${id}/shipment/label`)),
   refreshShipment: (id) => d(client.post(`/admin/orders/${id}/shipment/refresh`)),
   cancelShipment: (id) => d(client.post(`/admin/orders/${id}/shipment/cancel`)),
+  returnAction: (id, rid, action, body = {}) => d(client.post(`/admin/orders/${id}/returns/${rid}/${action}`, body)),
   categories: () => d(client.get('/admin/categories')),
   settings: () => d(client.get('/admin/settings')),
   updateSettings: (body) => d(client.put('/admin/settings', body)),

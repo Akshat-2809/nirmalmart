@@ -357,7 +357,7 @@ function ExploreAll({ all, loading }) {
 /* ───────────── Slim trust strip ───────────── */
 
 function TrustStrip() {
-  const items = [[Truck, 'Free delivery above ₹499'], [RotateCcw, '7-day easy returns'], [ShieldCheck, 'Secure payments']];
+  const items = [[Truck, 'Free delivery above ₹499'], [RotateCcw, '5-day return / exchange'], [ShieldCheck, 'Secure payments']];
   return (
     <section className="container pt-12">
       <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 rounded-2xl border border-line bg-surface px-4 py-4 text-sm text-ink-soft">

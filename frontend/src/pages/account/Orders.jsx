@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowUpRight, Check, ChevronRight, Package, Truck } from 'lu
 import { Link, useParams } from 'react-router-dom';
 import { orderApi } from '../../api';
 import { CancelOrder, CancellationStatus } from '../../components/order/Cancellation';
+import Returns, { OPEN_RETURNS } from '../../components/order/Returns';
 import UpiPayment, { awaitingUpi } from '../../components/order/UpiPayment';
 import { Empty, Skeleton, StatusBadge } from '../../components/ui/bits';
 import { ease, fadeUp, stagger } from '../../components/ui/motion';
@@ -27,7 +28,7 @@ export function Orders() {
               ))}
             </div>
             <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2"><p className="font-semibold">{o.order_number}</p><StatusBadge status={o.status} />{awaitingUpi(o) && <StatusBadge payment status="pending" />}{['refund_pending', 'refunded'].includes(o.payment_status) && <StatusBadge payment status={o.payment_status} />}</div>
+              <div className="flex flex-wrap items-center gap-2"><p className="font-semibold">{o.order_number}</p><StatusBadge status={o.status} />{awaitingUpi(o) && <StatusBadge payment status="pending" />}{['refund_pending', 'refunded'].includes(o.payment_status) && <StatusBadge payment status={o.payment_status} />}{o.returns?.some((r) => OPEN_RETURNS.includes(r.status)) && <span className="badge bg-warning/10 text-warning">Return in progress</span>}</div>
               <p className="mt-1 text-sm text-ink-soft">{date(o.created_at)} · {o.items.reduce((s, i) => s + i.quantity, 0)} items · {price(o.total_amount)}</p>
             </div>
             <ChevronRight size={18} className="text-ink-faint transition group-hover:translate-x-1" />
@@ -93,6 +94,7 @@ export function OrderDetail() {
       </div>
 
       {awaitingUpi(o) && <UpiPayment order={o} />}
+      <Returns order={o} />
 
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
         <div className="card p-6">

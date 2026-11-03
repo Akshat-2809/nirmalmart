@@ -8,7 +8,7 @@ import hmac
 import logging
 import threading
 import time
-from datetime import timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 import httpx
@@ -17,6 +17,7 @@ from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.models.order import Order
+from app.models.return_request import ReturnRequest
 from app.models.product import Product
 
 logger = logging.getLogger("nirmalmart")
@@ -103,7 +104,10 @@ def pickup_locations(force: bool = False) -> list[dict]:
         return _pickup_cache["value"]
     data = _call("GET", "/settings/company/pickup").get("data") or {}
     locations = [{"name": a.get("pickup_location"), "pincode": str(a.get("pin_code") or ""),
-                  "city": a.get("city"), "address": a.get("address"), "verified": bool(a.get("phone_verified"))}
+                  "city": a.get("city"), "address": a.get("address"), "verified": bool(a.get("phone_verified")),
+                  # used as the destination of return pickups
+                  "address_2": a.get("address_2") or "", "state": a.get("state"), "contact": a.get("name"),
+                  "phone": str(a.get("phone") or ""), "email": a.get("email") or ""}
                  for a in data.get("shipping_address") or []]
     _pickup_cache.update(value=locations, expires=time.time() + PICKUP_TTL)
     return locations
@@ -186,19 +190,33 @@ def _int(v) -> Optional[int]:
 
 # ───────────── Shipping an order ─────────────
 
-def _order_payload(db: Session, order: Order, pkg: dict, cod: bool, pickup_name: str) -> dict:
+def _items_payload(db: Session, lines: list) -> list[dict]:
+    """lines: (OrderItem, units) pairs"""
+    ids = [i.product_id for i, _ in lines if i.product_id]
+    skus = dict(db.query(Product.id, Product.sku).filter(Product.id.in_(ids)).all()) if ids else {}
+    return [{"name": i.product_name[:250], "sku": skus.get(i.product_id) or f"NM-ITEM-{i.id}",
+             "units": units, "selling_price": float(i.unit_price)} for i, units in lines]
+
+
+def _customer_name(order: Order) -> tuple[str, str]:
     a = order.shipping_address or {}
     first, _, last = (a.get("full_name") or (order.user.full_name if order.user else "") or "Customer").strip().partition(" ")
-    skus = {}
-    ids = [i.product_id for i in order.items if i.product_id]
-    if ids:
-        skus = dict(db.query(Product.id, Product.sku).filter(Product.id.in_(ids)).all())
+    return first, last or "."
+
+
+def _order_payload(db: Session, order: Order, pkg: dict, cod: bool, pickup_name: str,
+                   lines: Optional[list] = None, ref: Optional[str] = None) -> dict:
+    """Forward shipment of the whole order, or of `lines` only (an exchange replacement, sent free)."""
+    a = order.shipping_address or {}
+    first, last = _customer_name(order)
+    partial = lines is not None
+    lines = lines if partial else [(i, i.quantity) for i in order.items]
     return {
-        "order_id": order.order_number,
+        "order_id": ref or order.order_number,
         "order_date": order.created_at.astimezone(IST).strftime("%Y-%m-%d %H:%M"),
         "pickup_location": pickup_name,
         "billing_customer_name": first,
-        "billing_last_name": last or ".",
+        "billing_last_name": last,
         "billing_address": a.get("address_line1") or "",
         "billing_address_2": a.get("address_line2") or "",
         "billing_city": a.get("city") or "",
@@ -208,15 +226,10 @@ def _order_payload(db: Session, order: Order, pkg: dict, cod: bool, pickup_name:
         "billing_email": order.user.email if order.user else "",
         "billing_phone": (a.get("phone") or "")[-10:],
         "shipping_is_billing": True,
-        "order_items": [{
-            "name": i.product_name[:250],
-            "sku": skus.get(i.product_id) or f"NM-ITEM-{i.id}",
-            "units": i.quantity,
-            "selling_price": float(i.unit_price),
-        } for i in order.items],
+        "order_items": _items_payload(db, lines),
         "payment_method": "COD" if cod else "Prepaid",
-        "shipping_charges": float(order.shipping_amount or 0),
-        "sub_total": float(order.subtotal_amount),
+        "shipping_charges": 0 if partial else float(order.shipping_amount or 0),
+        "sub_total": sum(float(i.unit_price) * u for i, u in lines) if partial else float(order.subtotal_amount),
         "length": pkg["length"], "breadth": pkg["breadth"], "height": pkg["height"], "weight": pkg["weight"],
     }
 
@@ -325,6 +338,8 @@ def apply_tracking(db: Session, order: Order, courier_status: str) -> None:
         target = "shipped"
     if target and order.status in STATUS_RANK and STATUS_RANK[target] > STATUS_RANK[order.status]:
         order.status = target
+        if target == "delivered":
+            order.delivered_at = datetime.now(timezone.utc)
     db.commit()
 
 
@@ -353,9 +368,166 @@ def handle_webhook(db: Session, payload: dict) -> bool:
     order = None
     if awb:
         order = db.query(Order).filter(Order.awb_code == awb).first()
+        if not order:
+            ret = db.query(ReturnRequest).filter((ReturnRequest.return_awb == awb) | (ReturnRequest.repl_awb == awb)).first()
+            if ret:
+                apply_return_tracking(db, ret, awb, payload.get("current_status") or payload.get("shipment_status") or "")
+                return True
     if not order and ref:
         order = db.query(Order).filter(Order.order_number == ref).first()
     if not order:
         return False
     apply_tracking(db, order, payload.get("current_status") or payload.get("shipment_status") or "")
     return True
+
+
+# ───────────── Returns & exchanges ─────────────
+
+def _return_lines(order: Order, ret: ReturnRequest) -> list:
+    by_id = {i.id: i for i in order.items}
+    return [(by_id[x["order_item_id"]], x["quantity"]) for x in ret.items if x["order_item_id"] in by_id]
+
+
+def _assign_awb(shipment_id: str, is_return: bool = False) -> dict:
+    body = {"shipment_id": int(shipment_id)}
+    if is_return:
+        body["is_return"] = 1
+    res = _call("POST", "/courier/assign/awb", json=body)
+    data = (res.get("response") or {}).get("data") or {}
+    if res.get("awb_assign_status") != 1 or not data.get("awb_code"):
+        raise ShiprocketError(data.get("awb_assign_error") or res.get("message")
+                              or "No courier could take this shipment; check the Shiprocket wallet balance and try again")
+    return data
+
+
+def _best_effort(path: str, shipment_id: str) -> dict:
+    try:
+        return _call("POST", path, json={"shipment_id": [int(shipment_id)]})
+    except ShiprocketError as e:
+        logger.warning("Shiprocket %s failed for shipment %s: %s", path, shipment_id, e)
+        return {}
+
+
+def book_return_pickup(db: Session, order: Order, ret: ReturnRequest, pkg: dict) -> ReturnRequest:
+    """Reverse pickup: the courier collects the items from the customer and brings them to our pickup address."""
+    try:
+        if not ret.return_shipment_id:
+            store = _pickup()
+            a = order.shipping_address or {}
+            first, last = _customer_name(order)
+            lines = _return_lines(order, ret)
+            res = _call("POST", "/orders/create/return", json={
+                "order_id": f"{order.order_number}-R{ret.id}",
+                "order_date": datetime.now(IST).strftime("%Y-%m-%d"),
+                "pickup_customer_name": first, "pickup_last_name": last,
+                "pickup_address": a.get("address_line1") or "", "pickup_address_2": a.get("address_line2") or "",
+                "pickup_city": a.get("city") or "", "pickup_state": a.get("state") or "",
+                "pickup_country": a.get("country") or "India", "pickup_pincode": a.get("postal_code") or "",
+                "pickup_email": order.user.email if order.user else "", "pickup_phone": (a.get("phone") or "")[-10:],
+                "shipping_customer_name": store.get("contact") or store["name"], "shipping_last_name": ".",
+                "shipping_address": store.get("address") or "", "shipping_address_2": store.get("address_2") or "",
+                "shipping_city": store.get("city") or "", "shipping_state": store.get("state") or "",
+                "shipping_country": "India", "shipping_pincode": store["pincode"],
+                "shipping_email": store.get("email") or "", "shipping_phone": (store.get("phone") or "")[-10:],
+                "order_items": _items_payload(db, lines),
+                "payment_method": "PREPAID",
+                "sub_total": sum(float(i.unit_price) * u for i, u in lines),
+                "length": pkg["length"], "breadth": pkg["breadth"], "height": pkg["height"], "weight": pkg["weight"],
+            })
+            if not res.get("shipment_id"):
+                raise ShiprocketError(res.get("message") or "Shiprocket did not create the return")
+            ret.return_sr_order_id = str(res.get("order_id"))
+            ret.return_shipment_id = str(res["shipment_id"])
+            ret.return_tracking = "RETURN CREATED"
+            db.commit()
+        data = _assign_awb(ret.return_shipment_id, is_return=True)
+        ret.return_awb = str(data["awb_code"])
+        ret.return_courier = data.get("courier_name")
+        ret.return_tracking = "PICKUP SCHEDULED"
+        ret.status = "pickup_scheduled"
+        db.commit()
+    except ShiprocketError as e:
+        db.commit()
+        raise HTTPException(status.HTTP_502_BAD_GATEWAY, str(e))
+    _best_effort("/courier/generate/pickup", ret.return_shipment_id)
+    return ret
+
+
+def cancel_return_pickup(db: Session, ret: ReturnRequest) -> None:
+    if not ret.return_sr_order_id:
+        return
+    _call("POST", "/orders/cancel", json={"ids": [int(ret.return_sr_order_id)]})
+    ret.return_sr_order_id = ret.return_shipment_id = ret.return_awb = ret.return_courier = None
+    ret.return_tracking = "PICKUP CANCELLED"
+    db.commit()
+
+
+def ship_replacement(db: Session, order: Order, ret: ReturnRequest, pkg: dict) -> ReturnRequest:
+    """Exchange: send the same items again, free of charge."""
+    try:
+        if not ret.repl_shipment_id:
+            payload = _order_payload(db, order, pkg, False, _pickup()["name"], lines=_return_lines(order, ret),
+                                     ref=f"{order.order_number}-EX{ret.id}")
+            res = _call("POST", "/orders/create/adhoc", json=payload)
+            if not res.get("shipment_id"):
+                raise ShiprocketError(res.get("message") or "Shiprocket did not create the replacement shipment")
+            ret.repl_sr_order_id = str(res.get("order_id"))
+            ret.repl_shipment_id = str(res["shipment_id"])
+            db.commit()
+        data = _assign_awb(ret.repl_shipment_id)
+        ret.repl_awb = str(data["awb_code"])
+        ret.repl_courier = data.get("courier_name")
+        ret.repl_tracking = "AWB ASSIGNED"
+        db.commit()
+    except ShiprocketError as e:
+        db.commit()
+        raise HTTPException(status.HTTP_502_BAD_GATEWAY, str(e))
+    if _best_effort("/courier/generate/pickup", ret.repl_shipment_id).get("pickup_status") == 1:
+        ret.repl_tracking = "PICKUP SCHEDULED"
+    label = _best_effort("/courier/generate/label", ret.repl_shipment_id).get("label_url")
+    if label:
+        ret.repl_label_url = label
+    db.commit()
+    return ret
+
+
+RETURN_RANK = {s: n for n, s in enumerate(["requested", "approved", "pickup_scheduled", "picked_up", "received"])}
+
+
+def apply_return_tracking(db: Session, ret: ReturnRequest, awb: str, courier_status: str) -> None:
+    """Courier updates for a return pickup move it forward (never back); replacement updates are shown as text."""
+    text = (courier_status or "").strip().upper()
+    if not text:
+        return
+    if awb == ret.repl_awb:
+        ret.repl_tracking = text[:60]
+        db.commit()
+        return
+    ret.return_tracking = text[:60]
+    target = None
+    if "DELIVERED" in text and "UNDELIVERED" not in text:
+        target = "received"            # delivered back to our pickup address
+    elif any(w in text for w in SHIPPED_WORDS):
+        target = "picked_up"
+    now = datetime.now(timezone.utc)
+    if target and ret.status in RETURN_RANK and RETURN_RANK[target] > RETURN_RANK[ret.status]:
+        ret.picked_up_at = ret.picked_up_at or now
+        if target == "received":
+            ret.received_at = now
+        ret.status = target
+    db.commit()
+
+
+def refresh_return_tracking(db: Session, ret: ReturnRequest) -> ReturnRequest:
+    for awb in (ret.return_awb, ret.repl_awb):
+        if not awb:
+            continue
+        try:
+            data = _call("GET", f"/courier/track/awb/{awb}").get("tracking_data") or {}
+        except ShiprocketError as e:
+            raise HTTPException(status.HTTP_502_BAD_GATEWAY, str(e))
+        scans = data.get("shipment_track") or []
+        current = (scans[0].get("current_status") if scans else None) or (data.get("shipment_track_activities") or [{}])[0].get("sr-status-label")
+        if current:
+            apply_return_tracking(db, ret, awb, current)
+    return ret

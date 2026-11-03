@@ -31,6 +31,7 @@ class Order(Base):
     shipping_label_url = Column(String(512), nullable=True)
     tracking_status = Column(String(60), nullable=True)   # courier's own wording, e.g. "IN TRANSIT"
     cancelled_at = Column(DateTime(timezone=True), nullable=True)
+    delivered_at = Column(DateTime(timezone=True), nullable=True)   # starts the return/exchange window
     cancel_reason = Column(String(200), nullable=True)
     refunded_at = Column(DateTime(timezone=True), nullable=True)
     refund_reference = Column(String(100), nullable=True)   # UPI reference of the refund, entered by the admin
@@ -40,6 +41,7 @@ class Order(Base):
     user = relationship("User", back_populates="orders")
     items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
     payment = relationship("Payment", back_populates="order", uselist=False)
+    returns = relationship("ReturnRequest", back_populates="order", cascade="all, delete-orphan", order_by="ReturnRequest.id")
 
 
 class OrderItem(Base):
