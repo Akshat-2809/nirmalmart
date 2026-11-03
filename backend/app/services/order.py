@@ -11,6 +11,7 @@ from app.models.product import Product
 from app.models.address import Address
 from app.models.user import User
 from app.schemas.order import OrderCreate
+from app.services import shiprocket
 from app.services.pricing import to_money, compute_totals
 
 # Which status changes an admin may make
@@ -89,6 +90,13 @@ def create_order_from_cart(db: Session, user: User, order_data: OrderCreate) -> 
     return get_order_by_id(db, order.id)
 
 
+def _drop_unfinished_shipment(db: Session, order: Order):
+    """If booking a courier failed after Shiprocket created the order, that order sits there as NEW;
+    cancel it too so Shiprocket's list matches ours."""
+    if order.shiprocket_order_id and not order.awb_code:
+        shiprocket.cancel_shipment(db, order)
+
+
 def _restock(order: Order):
     for item in order.items:
         if item.product:
@@ -114,6 +122,9 @@ def cancel_order_by_customer(db: Session, order_id: int, user_id: int) -> Order:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Order not found")
     if order.status not in CUSTOMER_CANCELLABLE:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, f"An order that is {order.status} can no longer be cancelled")
+    if order.awb_code:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "This order is already with the courier; please contact us to cancel it")
+    _drop_unfinished_shipment(db, order)
     _restock(order)
     order.status = "cancelled"
     db.commit()
@@ -131,6 +142,7 @@ def update_order_status(db: Session, order_id: int, new_status: str) -> Order:
     if new_status == "cancelled" and order.awb_code:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Cancel the courier shipment first, then cancel the order")
     if new_status == "cancelled":
+        _drop_unfinished_shipment(db, order)
         _restock(order)
     order.status = new_status
     db.commit()
