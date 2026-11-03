@@ -63,17 +63,17 @@ function OrderDrawer({ order, onClose, onChange }) {
   });
   const a = order?.shipping_address || {};
   // With a courier booked, cancelling happens through the shipment first
-  const actions = order && NEXT[order.status]?.filter(([s]) => !(s === 'cancelled' && order.awb_code));
+  const actions = (order && NEXT[order.status]?.filter(([s]) => !(s === 'cancelled' && order.awb_code))) || [];
   // Only orders whose payment hasn't been confirmed can be deleted
   const canDelete = order && !['paid', 'refunded'].includes(order.payment_status) && !order.awb_code;
   return (
     <Drawer open={!!order} onClose={onClose} title={order?.order_number} width="max-w-lg"
-      footer={(actions?.length > 0 || canDelete) && (
+      footer={(actions.length > 0 || canDelete) && (
         <div className="flex flex-wrap gap-2">
           {canDelete && (
             <button disabled={remove.isPending} aria-label="Delete order" title="Delete order"
               onClick={() => window.confirm(`Delete order ${order.order_number} permanently? Its items go back into stock. This can't be undone.`) && remove.mutate()}
-              className="btn-outline px-3.5 text-danger hover:border-danger"><Trash2 size={16} />{!actions?.length && ' Delete order'}</button>
+              className="btn-outline px-3.5 text-danger hover:border-danger"><Trash2 size={16} />{!actions.length && ' Delete order'}</button>
           )}
           {actions.map(([s, label]) => (
             <button key={s} disabled={setStatus.isPending}
