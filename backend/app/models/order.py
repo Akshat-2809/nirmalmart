@@ -4,7 +4,8 @@ from datetime import datetime, timezone
 from app.database import Base
 
 ORDER_STATUSES = ["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"]
-PAYMENT_STATUSES = ["pending", "paid", "failed", "refunded"]
+# refund_pending: a paid order was cancelled and the money is still to be sent back
+PAYMENT_STATUSES = ["pending", "paid", "failed", "refund_pending", "refunded"]
 
 
 class Order(Base):
@@ -29,6 +30,10 @@ class Order(Base):
     courier_name = Column(String(100), nullable=True)
     shipping_label_url = Column(String(512), nullable=True)
     tracking_status = Column(String(60), nullable=True)   # courier's own wording, e.g. "IN TRANSIT"
+    cancelled_at = Column(DateTime(timezone=True), nullable=True)
+    cancel_reason = Column(String(200), nullable=True)
+    refunded_at = Column(DateTime(timezone=True), nullable=True)
+    refund_reference = Column(String(100), nullable=True)   # UPI reference of the refund, entered by the admin
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), index=True)
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 

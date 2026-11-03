@@ -50,6 +50,10 @@ class OrderResponse(BaseModel):
     awb_code: Optional[str] = None
     courier_name: Optional[str] = None
     tracking_status: Optional[str] = None
+    cancelled_at: Optional[datetime] = None
+    cancel_reason: Optional[str] = None
+    refunded_at: Optional[datetime] = None
+    refund_reference: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 
@@ -81,7 +85,12 @@ class OrderStatusUpdate(BaseModel):
 
 
 class PaymentStatusUpdate(BaseModel):
-    payment_status: Literal["pending", "paid", "failed", "refunded"]
+    payment_status: Literal["pending", "paid", "failed", "refund_pending", "refunded"]
+    refund_reference: Optional[str] = Field(None, max_length=100)
+
+
+class OrderCancel(BaseModel):
+    reason: Optional[str] = Field(None, max_length=200)
 
 
 class PaginatedOrders(BaseModel):

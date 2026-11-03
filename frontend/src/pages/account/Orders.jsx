@@ -1,10 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowUpRight, Check, ChevronRight, Package, Truck, X } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { ArrowLeft, ArrowUpRight, Check, ChevronRight, Package, Truck } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { orderApi } from '../../api';
-import { errorMessage } from '../../api/client';
+import { CancelOrder, CancellationStatus } from '../../components/order/Cancellation';
 import UpiPayment, { awaitingUpi } from '../../components/order/UpiPayment';
 import { Empty, Skeleton, StatusBadge } from '../../components/ui/bits';
 import { ease, fadeUp, stagger } from '../../components/ui/motion';
@@ -28,7 +27,7 @@ export function Orders() {
               ))}
             </div>
             <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2"><p className="font-semibold">{o.order_number}</p><StatusBadge status={o.status} />{awaitingUpi(o) && <StatusBadge payment status="pending" />}</div>
+              <div className="flex flex-wrap items-center gap-2"><p className="font-semibold">{o.order_number}</p><StatusBadge status={o.status} />{awaitingUpi(o) && <StatusBadge payment status="pending" />}{['refund_pending', 'refunded'].includes(o.payment_status) && <StatusBadge payment status={o.payment_status} />}</div>
               <p className="mt-1 text-sm text-ink-soft">{date(o.created_at)} · {o.items.reduce((s, i) => s + i.quantity, 0)} items · {price(o.total_amount)}</p>
             </div>
             <ChevronRight size={18} className="text-ink-faint transition group-hover:translate-x-1" />
@@ -39,10 +38,7 @@ export function Orders() {
   );
 }
 
-function Timeline({ status, createdAt, updatedAt }) {
-  if (status === 'cancelled') {
-    return <div className="flex items-center gap-3 rounded-2xl bg-danger/10 p-4 text-sm text-danger"><X size={18} /> This order was cancelled on {dateTime(updatedAt)}.</div>;
-  }
+function Timeline({ status, createdAt }) {
   const current = ORDER_STEPS.indexOf(status);
   return (
     <ol className="relative grid grid-cols-5">
@@ -65,14 +61,8 @@ function Timeline({ status, createdAt, updatedAt }) {
 
 export function OrderDetail() {
   const { id } = useParams();
-  const qc = useQueryClient();
   const { add } = useCart();
   const { data: o, isPending } = useQuery({ queryKey: ['orders', id], queryFn: () => orderApi.get(id) });
-  const cancel = useMutation({
-    mutationFn: () => orderApi.cancel(id),
-    onSuccess: (data) => { qc.setQueryData(['orders', id], data); qc.invalidateQueries({ queryKey: ['orders'] }); toast.success('Order cancelled'); },
-    onError: (e) => toast.error(errorMessage(e)),
-  });
   if (isPending) return <Skeleton className="h-96" />;
   const a = o.shipping_address || {};
 
@@ -87,7 +77,9 @@ export function OrderDetail() {
           </div>
           <div className="flex gap-2"><StatusBadge status={o.status} /><StatusBadge payment status={o.payment_status} /></div>
         </div>
-        <div className="mt-8"><Timeline status={o.status} createdAt={o.created_at} updatedAt={o.updated_at} /></div>
+        {o.status === 'cancelled'
+          ? <div className="mt-6"><CancellationStatus order={o} /></div>
+          : <div className="mt-8"><Timeline status={o.status} createdAt={o.created_at} /></div>}
         {o.awb_code && o.status !== 'cancelled' && (
           <div className="mt-6 flex flex-wrap items-center gap-4 rounded-2xl bg-brand-soft p-4 text-sm">
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-surface text-brand"><Truck size={19} /></span>
@@ -136,12 +128,7 @@ export function OrderDetail() {
             <div className="flex justify-between text-xs text-ink-faint"><span>Includes GST</span><span>{priceExact(o.tax_amount)}</span></div>
             <div className="flex justify-between border-t border-line pt-3 font-display text-lg font-bold"><span>Total</span><span>{price(o.total_amount)}</span></div>
           </div>
-          {['pending', 'confirmed'].includes(o.status) && (
-            <button className="btn-outline w-full text-danger hover:border-danger" disabled={cancel.isPending}
-              onClick={() => window.confirm('Cancel this order?') && cancel.mutate()}>
-              {cancel.isPending ? 'Cancelling…' : 'Cancel order'}
-            </button>
-          )}
+          <CancelOrder order={o} />
         </div>
       </div>
     </div>

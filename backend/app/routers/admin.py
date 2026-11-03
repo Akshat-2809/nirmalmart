@@ -223,7 +223,7 @@ def set_order_status(order_id: int, body: OrderStatusUpdate, db: Session = Depen
 
 @router.put("/orders/{order_id}/payment", response_model=AdminOrderResponse)
 def set_order_payment(order_id: int, body: PaymentStatusUpdate, db: Session = Depends(get_db)):
-    return _with_customer(set_payment_status(db, order_id, body.payment_status))
+    return _with_customer(set_payment_status(db, order_id, body.payment_status, body.refund_reference))
 
 
 @router.delete("/orders/{order_id}")

@@ -121,7 +121,9 @@ export function StatusBadge({ status, className, payment }) {
     pending: 'bg-warning/10 text-warning', confirmed: 'bg-brand/10 text-brand', processing: 'bg-brand/10 text-brand',
     shipped: 'bg-sky-500/10 text-sky-600 dark:text-sky-400', delivered: 'bg-success/10 text-success',
     cancelled: 'bg-danger/10 text-danger', paid: 'bg-success/10 text-success', failed: 'bg-danger/10 text-danger',
-    refunded: 'bg-muted text-ink-soft',
+    refund_pending: 'bg-warning/10 text-warning', refunded: 'bg-muted text-ink-soft',
   }[status] || 'bg-muted text-ink-soft';
-  return <span className={cn('badge', style, className)}>{payment ? `Payment ${status}` : status}</span>;
+  const label = { refund_pending: 'Refund pending', refunded: 'Refunded' }[status]
+    || (payment ? `Payment ${status}` : status);
+  return <span className={cn('badge', style, className)}>{label}</span>;
 }

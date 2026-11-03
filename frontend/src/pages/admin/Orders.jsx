@@ -22,28 +22,44 @@ const NEXT = {
   shipped: [['delivered', 'Mark delivered']],
 };
 
-// UPI QR payments are checked by hand against the WhatsApp screenshot and the bank app
+// UPI QR payments and refunds are handled by hand: checked against the WhatsApp screenshot and the bank app
+const UNDO = { paid: 'pending', failed: 'pending', refunded: 'refund_pending' };
+const TOASTS = { paid: 'Payment marked received', refund_pending: 'Refund is now pending', refunded: 'Refund recorded' };
+
 function PaymentPanel({ order, onChange }) {
   const qc = useQueryClient();
+  const [ref, setRef] = useState('');
   const setPayment = useMutation({
-    mutationFn: (s) => adminApi.setPaymentStatus(order.id, s),
-    onSuccess: (o) => { toast.success(o.payment_status === 'paid' ? 'Payment marked received' : `Payment marked ${o.payment_status}`); qc.invalidateQueries({ queryKey: ['admin'] }); onChange(o); },
+    mutationFn: (s) => adminApi.setPaymentStatus(order.id, s, s === 'refunded' ? ref.trim() || undefined : undefined),
+    onSuccess: (o) => { toast.success(TOASTS[o.payment_status] || `Payment marked ${o.payment_status}`); qc.invalidateQueries({ queryKey: ['admin'] }); onChange(o); },
     onError: (e) => toast.error(errorMessage(e)),
   });
   const ps = order.payment_status;
+  const amount = <b className="text-ink">{priceExact(order.total_amount)}</b>;
+  const busy = setPayment.isPending;
   return (
     <div className="rounded-2xl border border-line p-4">
       <div className="flex items-center justify-between gap-2">
         <p className="text-xs uppercase tracking-wider text-ink-faint">Payment · UPI QR</p>
         <StatusBadge payment status={ps} />
       </div>
-      {ps === 'pending' && (
-        <p className="mt-2 text-ink-soft">Look for the customer’s screenshot on WhatsApp ({PAYMENT.waDisplay}) and check that <b className="text-ink">{priceExact(order.total_amount)}</b> for <b className="text-ink">{order.order_number}</b> has reached the bank account.</p>
+      {ps === 'pending' && (order.status === 'cancelled'
+        ? <p className="mt-2 text-ink-soft">Cancelled before the payment was confirmed. If {amount} still arrives, mark it received and it becomes a refund to send back.</p>
+        : <p className="mt-2 text-ink-soft">Look for the customer’s screenshot on WhatsApp ({PAYMENT.waDisplay}) and check that {amount} for <b className="text-ink">{order.order_number}</b> has reached the bank account.</p>)}
+      {ps === 'refund_pending' && (
+        <div className="mt-2 space-y-3">
+          <p className="text-ink-soft">Refund {amount} by UPI to the account the customer paid from (find their payment in the HDFC Vyapar app), then record it here. The customer sees the refund progress on their order.</p>
+          <input value={ref} onChange={(e) => setRef(e.target.value)} maxLength={100} placeholder="Refund UPI reference / UTR (optional)" className="input" />
+        </div>
+      )}
+      {ps === 'refunded' && (
+        <p className="mt-2 text-ink-soft">Refunded {dateTime(order.refunded_at)}{order.refund_reference && <> · ref <b className="text-ink">{order.refund_reference}</b></>}</p>
       )}
       <div className="mt-3 flex flex-wrap gap-2">
-        {ps !== 'paid' && <button disabled={setPayment.isPending} onClick={() => setPayment.mutate('paid')} className="btn-primary btn-sm">Payment received</button>}
-        {ps === 'pending' && <button disabled={setPayment.isPending} onClick={() => setPayment.mutate('failed')} className="btn-outline btn-sm text-danger">Not received</button>}
-        {ps !== 'pending' && <button disabled={setPayment.isPending} onClick={() => window.confirm('Set this payment back to pending?') && setPayment.mutate('pending')} className="btn-ghost btn-sm">Undo</button>}
+        {['pending', 'failed'].includes(ps) && <button disabled={busy} onClick={() => setPayment.mutate('paid')} className="btn-primary btn-sm">Payment received</button>}
+        {ps === 'pending' && <button disabled={busy} onClick={() => setPayment.mutate('failed')} className="btn-outline btn-sm text-danger">Not received</button>}
+        {ps === 'refund_pending' && <button disabled={busy} onClick={() => window.confirm(`Confirm you have sent ${priceExact(order.total_amount)} back to the customer?`) && setPayment.mutate('refunded')} className="btn-primary btn-sm">Mark refunded</button>}
+        {UNDO[ps] && <button disabled={busy} onClick={() => window.confirm('Undo this payment update?') && setPayment.mutate(UNDO[ps])} className="btn-ghost btn-sm">Undo</button>}
       </div>
     </div>
   );
@@ -65,7 +81,7 @@ function OrderDrawer({ order, onClose, onChange }) {
   // With a courier booked, cancelling happens through the shipment first
   const actions = (order && NEXT[order.status]?.filter(([s]) => !(s === 'cancelled' && order.awb_code))) || [];
   // Only orders whose payment hasn't been confirmed can be deleted
-  const canDelete = order && !['paid', 'refunded'].includes(order.payment_status) && !order.awb_code;
+  const canDelete = order && !['paid', 'refund_pending', 'refunded'].includes(order.payment_status) && !order.awb_code;
   return (
     <Drawer open={!!order} onClose={onClose} title={order?.order_number} width="max-w-lg"
       footer={(actions.length > 0 || canDelete) && (
@@ -89,6 +105,9 @@ function OrderDrawer({ order, onClose, onChange }) {
       {order && (
         <div className="space-y-6 p-6 text-sm">
           <div className="flex gap-2"><StatusBadge status={order.status} /><StatusBadge payment status={order.payment_status} /></div>
+          {order.status === 'cancelled' && (
+            <p className="rounded-xl bg-danger/10 px-3 py-2 text-danger">Cancelled {dateTime(order.cancelled_at || order.updated_at)}{order.cancel_reason && ` · ${order.cancel_reason}`}</p>
+          )}
           <div><p className="text-xs uppercase tracking-wider text-ink-faint">Customer</p><p className="mt-1 font-semibold">{order.customer_name}</p><p className="text-ink-soft">{order.customer_email}</p></div>
           <div><p className="text-xs uppercase tracking-wider text-ink-faint">Ship to</p>
             <p className="mt-1">{a.full_name} · {a.phone}<br />{a.address_line1}{a.address_line2 && `, ${a.address_line2}`}<br />{a.city}, {a.state} – {a.postal_code}</p></div>

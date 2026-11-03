@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from app.database import get_db
-from app.schemas.order import OrderCreate, OrderResponse
+from app.schemas.order import OrderCancel, OrderCreate, OrderResponse
 from app.services.auth import get_current_user
 from app.services.order import create_order_from_cart, get_user_orders, get_order_by_id, cancel_order_by_customer
 from app.models.user import User
@@ -29,5 +29,6 @@ def get_order(order_id: int, user: User = Depends(get_current_user), db: Session
 
 
 @router.post("/{order_id}/cancel", response_model=OrderResponse)
-def cancel_order(order_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    return cancel_order_by_customer(db, order_id, user.id)
+def cancel_order(order_id: int, body: Optional[OrderCancel] = None, user: User = Depends(get_current_user),
+                 db: Session = Depends(get_db)):
+    return cancel_order_by_customer(db, order_id, user.id, body.reason if body else None)

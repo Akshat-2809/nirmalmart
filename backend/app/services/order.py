@@ -23,7 +23,8 @@ TRANSITIONS = {
     "delivered": set(),
     "cancelled": set(),
 }
-CUSTOMER_CANCELLABLE = {"pending", "confirmed"}
+# Like Amazon, customers can cancel until the courier has the parcel
+CUSTOMER_CANCELLABLE = {"pending", "confirmed", "processing"}
 
 
 def generate_order_number() -> str:
@@ -116,18 +117,32 @@ def get_order_by_id(db: Session, order_id: int, user_id: Optional[int] = None) -
     return q.first()
 
 
-def cancel_order_by_customer(db: Session, order_id: int, user_id: int) -> Order:
+def _cancel(db: Session, order: Order, reason: Optional[str] = None) -> None:
+    _restock(order)
+    order.status = "cancelled"
+    order.cancelled_at = datetime.now(timezone.utc)
+    order.cancel_reason = (reason or "").strip()[:200] or None
+    if order.payment_status == "paid":
+        order.payment_status = "refund_pending"
+    db.commit()
+
+
+def cancel_order_by_customer(db: Session, order_id: int, user_id: int, reason: Optional[str] = None) -> Order:
     order = get_order_by_id(db, order_id, user_id)
     if not order:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Order not found")
     if order.status not in CUSTOMER_CANCELLABLE:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, f"An order that is {order.status} can no longer be cancelled")
-    if order.awb_code:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST, "This order is already with the courier; please contact us to cancel it")
-    _drop_unfinished_shipment(db, order)
-    _restock(order)
-    order.status = "cancelled"
-    db.commit()
+    # A booked courier pickup is cancelled with the order; Shiprocket refuses once the parcel is picked up
+    try:
+        if order.awb_code:
+            shiprocket.cancel_shipment(db, order)
+        else:
+            _drop_unfinished_shipment(db, order)
+    except HTTPException:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "We couldn't stop the courier pickup just now. "
+                            "Please try again in a few minutes, or contact us to cancel.")
+    _cancel(db, order, reason or "Cancelled by customer")
     return get_order_by_id(db, order_id)
 
 
@@ -143,18 +158,27 @@ def update_order_status(db: Session, order_id: int, new_status: str) -> Order:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Cancel the courier shipment first, then cancel the order")
     if new_status == "cancelled":
         _drop_unfinished_shipment(db, order)
-        _restock(order)
+        _cancel(db, order, "Cancelled by store")
+        return get_order_by_id(db, order_id)
     order.status = new_status
     db.commit()
     return get_order_by_id(db, order_id)
 
 
-def set_payment_status(db: Session, order_id: int, payment_status: str) -> Order:
-    """UPI QR payments are checked by hand, so the admin records the outcome here."""
+def set_payment_status(db: Session, order_id: int, payment_status: str, refund_reference: Optional[str] = None) -> Order:
+    """UPI QR payments and refunds are handled by hand, so the admin records each outcome here."""
     order = get_order_by_id(db, order_id)
     if not order:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Order not found")
+    # Money that arrives for an already-cancelled order is owed back to the customer
+    if payment_status == "paid" and order.status == "cancelled":
+        payment_status = "refund_pending"
     order.payment_status = payment_status
+    if payment_status == "refunded":
+        order.refunded_at = datetime.now(timezone.utc)
+        order.refund_reference = (refund_reference or "").strip() or None
+    else:
+        order.refunded_at = order.refund_reference = None
     db.commit()
     return get_order_by_id(db, order_id)
 
@@ -164,7 +188,7 @@ def delete_order(db: Session, order_id: int) -> None:
     order = get_order_by_id(db, order_id)
     if not order:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Order not found")
-    if order.payment_status in ("paid", "refunded"):
+    if order.payment_status in ("paid", "refund_pending", "refunded"):
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Orders with a confirmed payment can't be deleted")
     if order.awb_code:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Cancel the courier shipment first, then delete the order")

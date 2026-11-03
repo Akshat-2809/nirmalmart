@@ -42,7 +42,7 @@ export const orderApi = {
   create: (body) => d(client.post('/orders', body)),
   list: () => d(client.get('/orders')),
   get: (id) => d(client.get(`/orders/${id}`)),
-  cancel: (id) => d(client.post(`/orders/${id}/cancel`)),
+  cancel: (id, reason) => d(client.post(`/orders/${id}/cancel`, { reason })),
 };
 
 export const userApi = {
@@ -79,7 +79,7 @@ export const adminApi = {
   orders: (params) => d(client.get('/admin/orders', { params })),
   setOrderStatus: (id, status) => d(client.put(`/admin/orders/${id}/status`, { status })),
   deleteOrder: (id) => d(client.delete(`/admin/orders/${id}`)),
-  setPaymentStatus: (id, payment_status) => d(client.put(`/admin/orders/${id}/payment`, { payment_status })),
+  setPaymentStatus: (id, payment_status, refund_reference) => d(client.put(`/admin/orders/${id}/payment`, { payment_status, refund_reference })),
   shippingStatus: () => d(client.get('/admin/shipping/status')),
   couriers: (id, weight, cod) => d(client.get(`/admin/orders/${id}/couriers`, { params: { weight, cod } })),
   shipOrder: (id, body) => d(client.post(`/admin/orders/${id}/ship`, body)),
