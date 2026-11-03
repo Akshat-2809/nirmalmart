@@ -12,7 +12,7 @@ from app.schemas.user import AdminUserUpdate
 from app.schemas.ai_product import AIProductGenerationResponse
 from app.services.auth import require_admin
 from app.services import product as product_service
-from app.services.order import get_all_orders, get_order_by_id, update_order_status, set_payment_status, _with_customer
+from app.services.order import get_all_orders, get_order_by_id, update_order_status, set_payment_status, delete_order, _with_customer
 from app.services import shiprocket
 from app.services.ai import generate_product_listing
 from app.services.settings import get_settings, update_settings
@@ -224,6 +224,12 @@ def set_order_status(order_id: int, body: OrderStatusUpdate, db: Session = Depen
 @router.put("/orders/{order_id}/payment", response_model=AdminOrderResponse)
 def set_order_payment(order_id: int, body: PaymentStatusUpdate, db: Session = Depends(get_db)):
     return _with_customer(set_payment_status(db, order_id, body.payment_status))
+
+
+@router.delete("/orders/{order_id}")
+def remove_order(order_id: int, db: Session = Depends(get_db)):
+    delete_order(db, order_id)
+    return {"message": "Order deleted"}
 
 
 # ───────────── Shiprocket shipping ─────────────

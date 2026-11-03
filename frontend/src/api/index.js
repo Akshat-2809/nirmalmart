@@ -78,6 +78,7 @@ export const adminApi = {
   },
   orders: (params) => d(client.get('/admin/orders', { params })),
   setOrderStatus: (id, status) => d(client.put(`/admin/orders/${id}/status`, { status })),
+  deleteOrder: (id) => d(client.delete(`/admin/orders/${id}`)),
   setPaymentStatus: (id, payment_status) => d(client.put(`/admin/orders/${id}/payment`, { payment_status })),
   shippingStatus: () => d(client.get('/admin/shipping/status')),
   couriers: (id, weight, cod) => d(client.get(`/admin/orders/${id}/couriers`, { params: { weight, cod } })),

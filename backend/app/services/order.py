@@ -159,6 +159,22 @@ def set_payment_status(db: Session, order_id: int, payment_status: str) -> Order
     return get_order_by_id(db, order_id)
 
 
+def delete_order(db: Session, order_id: int) -> None:
+    """Admins may remove an order (e.g. a test or abandoned one) only while its payment is unconfirmed."""
+    order = get_order_by_id(db, order_id)
+    if not order:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Order not found")
+    if order.payment_status in ("paid", "refunded"):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Orders with a confirmed payment can't be deleted")
+    if order.awb_code:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Cancel the courier shipment first, then delete the order")
+    _drop_unfinished_shipment(db, order)
+    if order.status != "cancelled":   # cancelled orders were already restocked
+        _restock(order)
+    db.delete(order)
+    db.commit()
+
+
 def _with_customer(order: Order) -> Order:
     order.customer_name = order.user.full_name if order.user else None
     order.customer_email = order.user.email if order.user else None
