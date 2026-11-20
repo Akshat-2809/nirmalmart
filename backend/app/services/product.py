@@ -11,7 +11,7 @@ from app.models.review import Review
 from app.schemas.product import ProductCreate, ProductUpdate
 from app.services.pricing import to_money
 
-SORTS = ("newest", "price_low", "price_high", "rating", "popular", "discount", "name")
+SORTS = ("newest", "price_low", "price_high", "rating", "popular", "discount", "name", "name_desc")
 
 
 def unique_slug(db: Session, name: str, exclude_id: Optional[int] = None) -> str:
@@ -92,6 +92,7 @@ def get_products(db: Session, page: int = 1, per_page: int = 12, sort_by: str = 
         "popular": [Product.sold_count.desc(), Product.rating_count.desc()],
         "discount": [discount.desc()],
         "name": [Product.name.asc()],
+        "name_desc": [Product.name.desc()],
     }.get(sort_by, [Product.created_at.desc()])
     query = query.order_by(*order, Product.id.desc())
 

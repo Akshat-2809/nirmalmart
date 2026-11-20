@@ -265,6 +265,8 @@ def order_couriers(order_id: int, weight: float = Query(..., gt=0, le=100), cod:
 
 @router.post("/orders/{order_id}/ship", response_model=AdminOrderResponse)
 def ship_order(order_id: int, body: ShipOrderRequest, db: Session = Depends(get_db)):
+    if body.cod and not get_settings(db).cod_enabled:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Cash on delivery is switched off in Settings")
     pkg = body.model_dump(include={"weight", "length", "breadth", "height"})
     return _with_customer(shiprocket.ship_order(db, _order_or_404(db, order_id), pkg, body.cod, body.courier_id))
 

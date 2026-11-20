@@ -22,9 +22,12 @@ export default function ShippingPanel({ order, onChange }) {
   const qc = useQueryClient();
   const { data: conn, isPending: connLoading } = useQuery({ queryKey: ['admin', 'shipping'], queryFn: adminApi.shippingStatus, staleTime: 5 * 60_000 });
   const [parcel, setParcel] = useState(() => ({ ...DEFAULT_PARCEL, ...store.get(PARCEL_KEY, {}) }));
-  const [cod, setCod] = useState(order.payment_status !== 'paid');
+  const { data: settings } = useQuery({ queryKey: ['admin', 'settings'], queryFn: adminApi.settings, staleTime: 60_000 });
+  const codOn = !!settings?.cod_enabled;   // Settings → Cash on delivery
+  const [cod, setCod] = useState(false);   // Prepaid unless the admin picks COD
   const [courier, setCourier] = useState(null);   // null = Shiprocket's recommended courier
 
+  if (!codOn && cod) setCod(false);   // COD switched off while this panel was open
   const done = (msg) => (o) => { onChange(o); qc.invalidateQueries({ queryKey: ['admin', 'orders'] }); if (msg) toast.success(msg); };
   const fail = (e) => toast.error(errorMessage(e));
   const options = useMutation({ mutationFn: () => adminApi.couriers(order.id, parcel.weight, cod), onError: fail });
@@ -94,8 +97,8 @@ export default function ShippingPanel({ order, onChange }) {
         </div>
 
         <p className="mt-4 text-xs font-semibold text-ink-soft">Payment</p>
-        <div className="mt-2 grid grid-cols-2 gap-2">
-          {[[false, 'Prepaid', 'Customer has paid'], [true, 'Cash on delivery', `Courier collects ${price(order.total_amount)}`]].map(([v, t, sub]) => (
+        <div className={cn('mt-2 grid gap-2', codOn ? 'grid-cols-2' : 'grid-cols-1')}>
+          {[[false, 'Prepaid', 'Customer has paid'], ...(codOn ? [[true, 'Cash on delivery', `Courier collects ${price(order.total_amount)}`]] : [])].map(([v, t, sub]) => (
             <button key={t} type="button" onClick={() => { setCod(v); options.reset(); setCourier(null); }}
               className={cn('rounded-xl border p-2.5 text-left transition', cod === v ? 'border-brand bg-brand-soft' : 'border-line hover:border-ink/30')}>
               <span className="block text-sm font-semibold">{t}</span><span className="block text-[11px] text-ink-soft">{sub}</span>

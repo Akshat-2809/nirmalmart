@@ -8,7 +8,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=8, max_length=128)
     full_name: str = Field(..., min_length=2, max_length=100, pattern=NAME_PATTERN)
-    phone: Optional[str] = Field(None, pattern=MOBILE_PATTERN)
+    phone: str = Field(..., pattern=MOBILE_PATTERN)
 
 
 class UserLogin(BaseModel):

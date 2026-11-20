@@ -11,6 +11,27 @@ import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../lib/cn';
 import { date, price } from '../../lib/format';
 
+// "Delete" is a soft delete: the account is switched off (can't sign in) but its orders and details are kept.
+// Picking Customer or Admin again restores it.
+function RoleSelect({ u, me, onChange, className }) {
+  const value = u.is_active ? u.role : 'deleted';
+  const change = (v) => {
+    if (v === 'deleted') {
+      if (window.confirm(`Delete ${u.full_name}'s account? They won't be able to sign in. Their orders are kept, and you can restore the account later.`)) onChange({ is_active: false });
+    } else onChange({ role: v, is_active: true });
+  };
+  return (
+    <select disabled={u.id === me.id} value={value} onChange={(e) => change(e.target.value)} aria-label="Role"
+      className={cn('input h-8 w-auto rounded-full text-xs', value === 'deleted' && 'border-danger/40 text-danger')}>
+      <option value="customer">Customer</option><option value="admin">Admin</option><option value="deleted">Delete</option>
+    </select>
+  );
+}
+
+const StatusBadge = ({ u }) => (
+  <span className={cn('badge', u.is_active ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger')}>{u.is_active ? 'Active' : 'Inactive'}</span>
+);
+
 export default function Customers() {
   const { user: me } = useAuth();
   const qc = useQueryClient();
@@ -20,7 +41,7 @@ export default function Customers() {
   const { data: users, isPending } = useQuery({ queryKey: ['admin', 'users', q], queryFn: () => adminApi.users(q || undefined) });
   const update = useMutation({
     mutationFn: ({ id, body }) => adminApi.updateUser(id, body),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin', 'users'] }); toast.success('User updated'); },
+    onSuccess: (_, { body }) => { qc.invalidateQueries({ queryKey: ['admin', 'users'] }); toast.success(body.is_active === false ? 'Account deleted (inactive)' : 'User updated'); },
     onError: (e) => toast.error(errorMessage(e)),
   });
 
@@ -40,12 +61,8 @@ export default function Customers() {
               <p className="shrink-0 text-right text-sm font-semibold">{price(u.spend)}<span className="block text-xs font-normal text-ink-faint">{u.orders} orders</span></p>
             </div>
             <div className="mt-3 flex items-center gap-2">
-              <select disabled={u.id === me.id} value={u.role} onChange={(e) => update.mutate({ id: u.id, body: { role: e.target.value } })}
-                className="input h-8 w-auto rounded-full text-xs" aria-label="Role"><option value="customer">Customer</option><option value="admin">Admin</option></select>
-              <button disabled={u.id === me.id} onClick={() => update.mutate({ id: u.id, body: { is_active: !u.is_active } })}
-                className={cn('badge h-8 px-3 disabled:opacity-60', u.is_active ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger')}>
-                {u.is_active ? 'Active' : 'Disabled'}
-              </button>
+              <RoleSelect u={u} me={me} onChange={(body) => update.mutate({ id: u.id, body })} />
+              <StatusBadge u={u} />
               <span className="ml-auto text-xs text-ink-faint">Joined {date(u.created_at)}</span>
             </div>
           </div>
@@ -72,14 +89,10 @@ export default function Customers() {
                     <td className="px-4 py-3">{u.orders}</td>
                     <td className="px-4 py-3 font-semibold">{price(u.spend)}</td>
                     <td className="px-4 py-3">
-                      <select disabled={u.id === me.id} value={u.role} onChange={(e) => update.mutate({ id: u.id, body: { role: e.target.value } })}
-                        className="input h-8 w-auto rounded-full text-xs"><option value="customer">Customer</option><option value="admin">Admin</option></select>
+                      <RoleSelect u={u} me={me} onChange={(body) => update.mutate({ id: u.id, body })} />
                     </td>
                     <td className="px-4 py-3">
-                      <button disabled={u.id === me.id} onClick={() => update.mutate({ id: u.id, body: { is_active: !u.is_active } })}
-                        className={cn('badge transition disabled:opacity-60', u.is_active ? 'bg-success/10 text-success hover:bg-danger/10 hover:text-danger' : 'bg-danger/10 text-danger hover:bg-success/10 hover:text-success')}>
-                        {u.is_active ? 'Active' : 'Disabled'}
-                      </button>
+                      <StatusBadge u={u} />
                     </td>
                   </motion.tr>
                 ))}

@@ -1,6 +1,6 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, ImagePlus, Pencil, Plus, Search, Sparkles, Star, Trash2, Upload } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight, ImagePlus, Pencil, Plus, Search, Sparkles, Star, Trash2, Upload } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { adminApi } from '../../api';
@@ -261,19 +261,36 @@ function Editor({ productId, open, onClose, categories }) {
   );
 }
 
+const SORT_OPTIONS = [['newest', 'Newest first'], ['name', 'Name A → Z'], ['name_desc', 'Name Z → A'], ['price_low', 'Price low → high'], ['price_high', 'Price high → low']];
+
+// Column header that sorts the list; clicking again flips ascending / descending
+function SortHeader({ label, asc, desc, sort, onSort }) {
+  const Icon = sort === asc ? ArrowUp : sort === desc ? ArrowDown : ArrowUpDown;
+  return (
+    <th className="px-4 py-3">
+      <button type="button" onClick={() => onSort(sort === asc ? desc : asc)}
+        className={cn('inline-flex items-center gap-1 uppercase tracking-wider transition hover:text-ink', (sort === asc || sort === desc) && 'text-ink')}>
+        {label} <Icon size={13} />
+      </button>
+    </th>
+  );
+}
+
 export default function Products() {
   const qc = useQueryClient();
   const [search, setSearch] = useState('');
   const [q, setQ] = useState('');
   const [category, setCategory] = useState('');
   const [page, setPage] = useState(1);
+  const [sort, setSort] = useState('newest');
   const [editing, setEditing] = useState(null);
+  const onSort = (s) => { setSort(s); setPage(1); };
   useEffect(() => { const t = setTimeout(() => { setQ(search); setPage(1); }, 250); return () => clearTimeout(t); }, [search]);
 
   const { data: categories = [] } = useQuery({ queryKey: ['admin', 'categories'], queryFn: adminApi.categories });
   const { data, isPending } = useQuery({
-    queryKey: ['admin', 'products', q, category, page],
-    queryFn: () => adminApi.products({ search: q || undefined, category: category || undefined, page, per_page: 15 }),
+    queryKey: ['admin', 'products', q, category, sort, page],
+    queryFn: () => adminApi.products({ search: q || undefined, category: category || undefined, sort_by: sort, page, per_page: 15 }),
     placeholderData: keepPreviousData,
   });
   const del = useMutation({
@@ -300,6 +317,9 @@ export default function Products() {
         <select className="input w-auto" value={category} onChange={(e) => { setCategory(e.target.value); setPage(1); }}>
           <option value="">All categories</option>{categories.map((c) => <option key={c.id} value={c.slug}>{c.name}</option>)}
         </select>
+        <select className="input w-auto" value={sort} onChange={(e) => onSort(e.target.value)} aria-label="Sort products">
+          {SORT_OPTIONS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+        </select>
       </div>
 
       <div className="space-y-2 md:hidden">
@@ -325,7 +345,7 @@ export default function Products() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] text-sm">
             <thead className="border-b border-line bg-muted/50 text-left text-xs uppercase tracking-wider text-ink-faint">
-              <tr><th className="px-4 py-3">Product</th><th className="px-4 py-3">Price</th><th className="px-4 py-3">Stock</th><th className="px-4 py-3">Visible</th><th className="px-4 py-3" /></tr>
+              <tr><SortHeader label="Product" asc="name" desc="name_desc" sort={sort} onSort={onSort} /><SortHeader label="Price" asc="price_low" desc="price_high" sort={sort} onSort={onSort} /><th className="px-4 py-3">Stock</th><th className="px-4 py-3">Visible</th><th className="px-4 py-3" /></tr>
             </thead>
             <tbody className="divide-y divide-line">
               {isPending ? [...Array(6)].map((_, i) => <tr key={i}><td colSpan={5} className="px-4 py-3"><Skeleton className="h-10" /></td></tr>) :

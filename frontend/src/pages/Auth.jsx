@@ -119,11 +119,11 @@ export function Register() {
   const submit = async (e) => {
     e.preventDefault();
     if (!isName(f.full_name)) return toast.error('Please enter your name using letters only');
-    if (f.phone && !isMobile(f.phone)) return toast.error('Mobile number must be 10 digits starting with 6–9');
+    if (!isMobile(f.phone)) return toast.error('Please enter a 10-digit mobile number starting with 6–9');
     if (f.password.length < 8) return toast.error('Password must be at least 8 characters');
     setLoading(true);
     try {
-      const u = await register({ ...f, full_name: f.full_name.trim(), email: f.email.trim(), phone: f.phone || undefined });
+      const u = await register({ ...f, full_name: f.full_name.trim(), email: f.email.trim(), phone: f.phone });
       toast.success(`Welcome to NirmalMart, ${u.full_name.split(' ')[0]}! 🎉`);
       navigate(to, { replace: true });
     } catch (err) {
@@ -138,7 +138,7 @@ export function Register() {
       <form onSubmit={submit} className="space-y-4">
         <div><label className="label" htmlFor="name">Full name</label><input id="name" required minLength={2} autoComplete="name" value={f.full_name} onChange={(e) => setF({ ...f, full_name: cleanName(e.target.value) })} className="input" /></div>
         <div><label className="label" htmlFor="email">Email</label><input id="email" type="email" required autoComplete="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} className="input" /></div>
-        <div><label className="label" htmlFor="phone">Mobile (optional)</label><input id="phone" inputMode="numeric" maxLength={10} autoComplete="tel-national" placeholder="10-digit number" value={f.phone} onChange={(e) => setF({ ...f, phone: cleanMobile(e.target.value) })} className="input" /></div>
+        <div><label className="label" htmlFor="phone">Mobile number</label><input id="phone" required minLength={10} inputMode="numeric" maxLength={10} autoComplete="tel-national" placeholder="10-digit number" value={f.phone} onChange={(e) => setF({ ...f, phone: cleanMobile(e.target.value) })} className="input" /></div>
         <div>
           <label className="label" htmlFor="pw">Password</label>
           <PasswordInput id="pw" autoComplete="new-password" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} />
