@@ -53,6 +53,7 @@ export const userApi = {
   addAddress: (body) => d(client.post('/users/me/addresses', body)),
   updateAddress: (id, body) => d(client.put(`/users/me/addresses/${id}`, body)),
   deleteAddress: (id) => d(client.delete(`/users/me/addresses/${id}`)),
+  deleteAccount: (password) => d(client.delete('/users/me', { data: { password } })),
 };
 
 export const adminApi = {

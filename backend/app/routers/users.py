@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 from app.database import get_db
-from app.schemas.user import UserResponse, UserUpdate, AddressCreate, AddressResponse
+from app.schemas.user import UserResponse, UserUpdate, AddressCreate, AddressResponse, AccountDelete
+from app.services.account import delete_account
 from app.services.auth import get_current_user
 from app.models.user import User
 from app.models.address import Address
@@ -13,6 +14,13 @@ router = APIRouter(prefix="/api/users", tags=["Users"])
 @router.get("/me", response_model=UserResponse)
 def get_profile(user: User = Depends(get_current_user)):
     return user
+
+
+@router.delete("/me")
+def delete_my_account(body: AccountDelete, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Erases the signed-in customer's account (password required). Order records stay, anonymised."""
+    delete_account(db, user, body.password)
+    return {"message": "Your account has been deleted"}
 
 
 @router.put("/me", response_model=UserResponse)

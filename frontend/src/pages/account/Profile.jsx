@@ -3,6 +3,7 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { authApi, userApi } from '../../api';
 import { errorMessage } from '../../api/client';
+import DeleteAccountCard from '../../components/DeleteAccountCard';
 import { useAuth } from '../../context/AuthContext';
 import { date } from '../../lib/format';
 import { cleanMobile, cleanName, isMobile, isName } from '../../lib/validate';
@@ -48,6 +49,7 @@ export function Security() {
     save.mutate();
   };
   return (
+    <div className="space-y-6">
     <div className="card p-6">
       <h2 className="font-display text-xl font-bold">Change password</h2>
       <form className="mt-6 max-w-sm space-y-4" onSubmit={submit}>
@@ -56,6 +58,8 @@ export function Security() {
         ))}
         <button className="btn-dark" disabled={save.isPending}>{save.isPending ? 'Updating…' : 'Update password'}</button>
       </form>
+    </div>
+    <DeleteAccountCard />
     </div>
   );
 }

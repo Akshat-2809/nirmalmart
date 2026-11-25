@@ -20,7 +20,7 @@ def _has_purchased(db: Session, user_id: int, product_id: int) -> bool:
 
 
 def _to_response(r: Review) -> ReviewResponse:
-    return ReviewResponse(id=r.id, user_id=r.user_id, user_name=r.user.full_name if r.user else "Customer",
+    return ReviewResponse(id=r.id, user_id=r.user_id, user_name=r.user.full_name if r.user and r.user.is_active else "Customer",
                           product_id=r.product_id, rating=r.rating, title=r.title, comment=r.comment,
                           is_verified_purchase=r.is_verified_purchase, created_at=r.created_at)
 

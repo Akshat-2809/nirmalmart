@@ -34,6 +34,10 @@ class UserUpdate(BaseModel):
     phone: Optional[str] = Field(None, pattern=MOBILE_PATTERN)
 
 
+class AccountDelete(BaseModel):
+    password: str = Field(..., min_length=1, max_length=128)
+
+
 class PasswordChange(BaseModel):
     current_password: str
     new_password: str = Field(..., min_length=8, max_length=128)

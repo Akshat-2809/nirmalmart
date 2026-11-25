@@ -9,7 +9,7 @@ const NAV = [
   ['/account/orders', Package, 'Orders'],
   ['/account/addresses', MapPin, 'Addresses'],
   ['/wishlist', Heart, 'Wishlist'],
-  ['/account/security', KeyRound, 'Password'],
+  ['/account/security', KeyRound, 'Password & security'],
 ];
 
 export default function AccountLayout({ children }) {

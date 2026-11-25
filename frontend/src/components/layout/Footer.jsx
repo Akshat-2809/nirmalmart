@@ -10,7 +10,7 @@ import { Logo } from '../ui/bits';
 
 const STATIC_COLS = [
   { title: 'Account', links: [['My account', '/account'], ['Orders', '/account/orders'], ['Wishlist', '/wishlist'], ['Bag', '/cart']] },
-  { title: 'Help', links: [['Shipping', '/shipping'], ['Returns', '/faq#returns'], ['Contact us', '/contact'], ['FAQs', '/faq']] },
+  { title: 'Help', links: [['Shipping', '/shipping'], ['Returns', '/faq#returns'], ['Contact us', '/contact'], ['FAQs', '/faq'], ['Privacy policy', '/privacy'], ['Terms of use', '/terms'], ['Delete account', '/delete-account']] },
 ];
 
 export default function Footer() {
@@ -56,7 +56,7 @@ export default function Footer() {
         <div className="container flex flex-col items-center justify-between gap-3 py-6 text-xs text-ink-faint sm:flex-row">
           <p>© {new Date().getFullYear()} NirmalMart. All rights reserved.</p>
           <p className="flex items-center gap-3">
-            <span>Secure payments</span><span>·</span><span>UPI</span><span>·</span><span>Cards</span><span>·</span><span>Net banking</span>
+            <span>Secure checkout</span><span>·</span><span>Pay by UPI</span>
           </p>
         </div>
       </div>
