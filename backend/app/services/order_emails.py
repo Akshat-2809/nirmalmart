@@ -1,4 +1,4 @@
-"""Order and return emails, sent automatically whenever an order changes — whatever changed it
+"""Order and return emails (and app notifications), sent automatically whenever an order changes — whatever changed it
 (the customer, the admin panel or the courier's tracking updates).
 
 How: after each database flush we note what changed on orders and returns; once the transaction
@@ -12,7 +12,8 @@ from sqlalchemy.orm import Session
 
 from app.models.order import Order
 from app.models.return_request import ReturnRequest
-from app.services import email, email_templates as tpl
+from app.models.device import Device
+from app.services import email, email_templates as tpl, push, push_texts
 
 log = logging.getLogger("nirmalmart.email")
 _KEY = "nm_pending_emails"
@@ -22,6 +23,16 @@ RUN_INLINE = False
 
 ORDER_STATUS_EMAILS = {"shipped", "delivered", "cancelled"}
 RETURN_STATUS_EMAILS = {"pickup_scheduled", "rejected", "completed"}
+
+
+# Load the old value before it's overwritten, even when the object was refreshed after a commit;
+# otherwise saving the same status again would look like a change and send a duplicate update.
+def _keep_old(*_):
+    pass
+
+
+for _attr in (Order.status, Order.payment_status, ReturnRequest.status):
+    event.listen(_attr, "set", _keep_old, active_history=True)
 
 
 def _changed(obj, attr):
@@ -109,5 +120,26 @@ def _send_all(pending):
                     email.send(user.email, subject, html, text)
             except Exception:
                 log.exception("order email %s %s %s failed", kind, obj_id, ev)
+            try:
+                _notify(db, kind, obj_id, ev)
+            except Exception:
+                log.exception("order notification %s %s %s failed", kind, obj_id, ev)
     finally:
         db.close()
+
+
+def _notify(db, kind, obj_id, ev):
+    """The same update as a notification on the customer's phones (where they're signed in and
+    haven't turned order updates off). "Placed" isn't sent: they've just seen it in the app."""
+    if not push.enabled():
+        return
+    ret = db.get(ReturnRequest, obj_id) if kind == "return" else None
+    order = db.get(Order, ret.order_id if ret else obj_id)
+    if not order or not _recipient(order):
+        return
+    devices = db.query(Device).filter(Device.user_id == order.user_id, Device.orders.is_(True)).all()
+    for lang in {d.lang for d in devices}:
+        texts = push_texts.return_push(order, ret, ev, lang) if ret else push_texts.order_push(order, ev, lang)
+        if texts:
+            push.send_many([d.token for d in devices if d.lang == lang], texts[0], texts[1],
+                           route=f"/account/orders/{order.id}", channel=push.ORDERS_CHANNEL, tag=f"order-{order.id}")

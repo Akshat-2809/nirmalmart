@@ -20,11 +20,12 @@ const T = {
         'Your bag and wishlist. If you are not signed in, these stay on your own device only.',
         'The pincode you enter to check delivery dates, kept on your device.',
         `If you sign up for offers, your email address. We send offers from ${EMAIL.promotions}, and every email has an unsubscribe link.`,
+        'If you allow notifications in the app: a notification ID for your phone (from Google Firebase), the app’s language and your notification choices.',
       ]],
       ['What we don’t collect', [
         'We don’t take card or bank details. You pay by UPI in your own UPI app; we only see the payment proof you choose to send us on WhatsApp.',
         'We don’t use advertising trackers, analytics tools or sell your data to anyone.',
-        'The app doesn’t read your contacts, location, camera or files. It asks for photo access only on older phones, and only to save our UPI QR code when you tap “Save QR”.',
+        'The app doesn’t read your contacts, location, camera or files. It asks to show notifications, and asks for photo access only on older phones, and only to save our UPI QR code when you tap “Save QR”.',
       ]],
       ['How we use it', [
         'To take, pack, deliver and track your orders, and to handle cancellations, returns and refunds.',
@@ -36,6 +37,7 @@ const T = {
         `Courier partners (through Shiprocket): your name, phone and delivery address, so they can deliver and pick up parcels.`,
         'Our hosting providers, who store data for us under contract: Vercel (website), Render (servers) and Supabase (database and product images), in Singapore.',
         'Resend, which delivers our emails (order updates, password resets and offers you signed up for).',
+        'Google Firebase, which delivers the app’s notifications (order updates, and offers if you leave them on).',
         `WhatsApp: only the messages you choose to send us (for example payment proof to ${PAYMENT.waDisplay}).`,
         'Government authorities, only when the law requires it (for example GST records).',
       ]],
@@ -46,7 +48,8 @@ const T = {
       ['Your choices', [
         'View and edit your name, mobile and addresses any time in My account.',
         'Delete your account yourself from My account → Password & security on the website, or Account → Delete account in the app. See the Delete your account page for details.',
-        'Signing out removes your login from that device.',
+        'Turn order-update or offer notifications off any time in the app (Account → Settings) or in your phone’s settings.',
+        'Signing out removes your login from that device, and order updates stop going to it.',
       ]],
       ['Security', [
         'All traffic uses HTTPS. Passwords are hashed, logins use short-lived tokens, and only our staff can see orders in the admin panel.',
@@ -73,11 +76,12 @@ const T = {
         'तुमची बॅग आणि विशलिस्ट. साइन इन नसल्यास त्या फक्त तुमच्या डिव्हाइसवर राहतात.',
         'डिलिव्हरीची तारीख पाहण्यासाठी टाकलेला पिनकोड, तुमच्या डिव्हाइसवर.',
         `ऑफर्ससाठी साइन अप केल्यास तुमचा ईमेल. आम्ही ${EMAIL.promotions} वरून ऑफर्स पाठवतो आणि प्रत्येक ईमेलमध्ये अनसबस्क्राइब लिंक असते.`,
+        'अ‍ॅपमध्ये नोटिफिकेशन्सना परवानगी दिल्यास: तुमच्या फोनचा नोटिफिकेशन आयडी (Google Firebase कडून), अ‍ॅपची भाषा आणि तुमच्या नोटिफिकेशन निवडी.',
       ]],
       ['आम्ही काय गोळा करत नाही', [
         'आम्ही कार्ड किंवा बँक तपशील घेत नाही. तुम्ही तुमच्या UPI अ‍ॅपमधून पैसे भरता; तुम्ही WhatsApp वर पाठवलेला पेमेंटचा पुरावाच आम्हाला दिसतो.',
         'आम्ही जाहिरात ट्रॅकर्स किंवा अ‍ॅनालिटिक्स वापरत नाही आणि तुमची माहिती कोणालाही विकत नाही.',
-        'अ‍ॅप तुमचे संपर्क, लोकेशन, कॅमेरा किंवा फाइल्स वाचत नाही. जुन्या फोनवर ‘QR जतन करा’ दाबल्यावरच फोटो परवानगी मागते.',
+        'अ‍ॅप तुमचे संपर्क, लोकेशन, कॅमेरा किंवा फाइल्स वाचत नाही. ते नोटिफिकेशन्स दाखवण्याची परवानगी मागते, आणि जुन्या फोनवर ‘QR जतन करा’ दाबल्यावरच फोटो परवानगी मागते.',
       ]],
       ['आम्ही ती कशासाठी वापरतो', [
         'ऑर्डर घेणे, पॅक करणे, पोहोचवणे, ट्रॅक करणे आणि रद्द / परत / परताव्यासाठी.',
@@ -89,6 +93,7 @@ const T = {
         'कुरिअर भागीदार (Shiprocket मार्फत): पार्सल पोहोचवण्यासाठी आणि नेण्यासाठी नाव, फोन आणि पत्ता.',
         'आमचे होस्टिंग प्रदाते, जे करारानुसार आमच्यासाठी माहिती साठवतात: Vercel (वेबसाइट), Render (सर्व्हर) आणि Supabase (डेटाबेस व फोटो), सिंगापूरमध्ये.',
         'Resend, जे आमचे ईमेल पोहोचवते (ऑर्डर अपडेट्स, पासवर्ड रीसेट आणि तुम्ही मागितलेल्या ऑफर्स).',
+        'Google Firebase, जे अ‍ॅपचे नोटिफिकेशन्स पोहोचवते (ऑर्डर अपडेट्स, आणि चालू ठेवल्यास ऑफर्स).',
         `WhatsApp: फक्त तुम्ही आम्हाला पाठवलेले संदेश (उदा. ${PAYMENT.waDisplay} वर पेमेंटचा पुरावा).`,
         'कायद्याने आवश्यक असल्यासच सरकारी यंत्रणा (उदा. GST नोंदी).',
       ]],
@@ -99,7 +104,8 @@ const T = {
       ['तुमचे पर्याय', [
         'माझे खाते मध्ये कधीही नाव, मोबाईल आणि पत्ते पहा व बदला.',
         'वेबसाइटवर माझे खाते → पासवर्ड व सुरक्षा, किंवा अ‍ॅपमध्ये खाते → खाते हटवा येथून तुम्ही स्वतः खाते हटवू शकता. तपशीलासाठी ‘खाते हटवा’ पान पहा.',
-        'साइन आउट केल्यावर त्या डिव्हाइसवरून लॉगिन काढले जाते.',
+        'ऑर्डर अपडेट्स किंवा ऑफर्सचे नोटिफिकेशन्स अ‍ॅपमध्ये (खाते → सेटिंग्ज) किंवा फोनच्या सेटिंग्जमध्ये कधीही बंद करा.',
+        'साइन आउट केल्यावर त्या डिव्हाइसवरून लॉगिन काढले जाते आणि तिथे ऑर्डर अपडेट्स जाणे थांबते.',
       ]],
       ['सुरक्षा', ['सर्व माहिती HTTPS ने जाते. पासवर्ड सुरक्षित स्वरूपात ठेवले जातात आणि ऑर्डर्स फक्त आमच्या कर्मचाऱ्यांना दिसतात.']],
       ['मुले', ['निर्मल मार्ट प्रौढांसाठी आहे. तुमचे वय १८ पेक्षा कमी असल्यास खाते तयार करू नका.']],

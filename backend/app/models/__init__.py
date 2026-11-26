@@ -12,8 +12,10 @@ from app.models.setting import StoreSetting
 from app.models.subscriber import Subscriber
 from app.models.password_reset import PasswordReset
 from app.models.broadcast import Broadcast
+from app.models.device import Device
+from app.models.push_broadcast import PushBroadcast
 
 __all__ = [
     "User", "Address", "Category", "Product", "ProductImage",
-    "CartItem", "Order", "OrderItem", "ReturnRequest", "Review", "Payment", "WishlistItem", "StoreSetting", "Subscriber", "PasswordReset", "Broadcast"
+    "CartItem", "Order", "OrderItem", "ReturnRequest", "Review", "Payment", "WishlistItem", "StoreSetting", "Subscriber", "PasswordReset", "Broadcast", "Device", "PushBroadcast"
 ]

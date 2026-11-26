@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { FolderTree, LayoutDashboard, Mail, Megaphone, Menu, Moon, Package, Settings, ShoppingCart, Store, Sun, Users } from 'lucide-react';
+import { FolderTree, LayoutDashboard, Mail, Megaphone, Menu, Moon, Package, Settings, ShoppingCart, Store, Sun, Users, BellRing } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { NavLink, useLocation, useOutlet } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -16,6 +16,7 @@ const NAV = [
   ['/admin/customers', Users, 'Customers'],
   ['/admin/subscribers', Mail, 'Subscribers'],
   ['/admin/broadcasts', Megaphone, 'Broadcasts'],
+  ['/admin/notifications', BellRing, 'App notifications'],
   ['/admin/settings', Settings, 'Settings'],
 ];
 

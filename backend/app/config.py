@@ -56,6 +56,10 @@ class Settings(BaseSettings):
     EMAIL_REPLY_TO: str = "support@nirmalmart.in"
     SITE_URL: str = "https://www.nirmalmart.in"
 
+    # Push notifications to the app (Firebase Cloud Messaging): the whole service-account JSON
+    # from Firebase → Project settings → Service accounts. Empty = no notifications.
+    FIREBASE_SERVICE_ACCOUNT: str = ""
+
     GST_RATE: float = 0.18
     FREE_SHIPPING_THRESHOLD: float = 499.0
     SHIPPING_FEE: float = 49.0

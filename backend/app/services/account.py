@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 
 from app.models.address import Address
 from app.models.cart import CartItem
+from app.models.device import Device
 from app.models.order import Order
 from app.models.return_request import OPEN_RETURN_STATUSES, ReturnRequest
 from app.models.user import User
@@ -42,7 +43,7 @@ def delete_account(db: Session, user: User, password: str) -> None:
         raise HTTPException(status.HTTP_400_BAD_REQUEST,
                             f"Please wait until these orders are delivered or cancelled: {', '.join(busy)}")
 
-    for model in (Address, CartItem, WishlistItem):
+    for model in (Address, CartItem, WishlistItem, Device):
         db.query(model).filter(model.user_id == user.id).delete(synchronize_session=False)
 
     # Orders are kept for the business's records, without personal contact details

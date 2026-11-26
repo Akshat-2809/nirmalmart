@@ -11,8 +11,8 @@ from app.database import create_tables, SessionLocal
 from app.models.user import User
 from app.services.auth import hash_password
 from app.routers import auth, products, categories, cart, orders, reviews, users, admin, wishlist, shipping, settings as settings_router
-from app.routers import newsletter, broadcasts
-import app.services.order_emails  # noqa: F401  (sends order emails when orders change)
+from app.routers import newsletter, broadcasts, devices, notifications
+import app.services.order_emails  # noqa: F401  (sends order emails and notifications when orders change)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("nirmalmart")
@@ -79,6 +79,8 @@ for r in (auth, products, categories, cart, orders, reviews, users, wishlist, se
 app.include_router(newsletter.router)
 app.include_router(newsletter.admin_router)
 app.include_router(broadcasts.router)
+app.include_router(devices.router)
+app.include_router(notifications.router)
 
 
 @app.get("/api/health", tags=["Health"])
