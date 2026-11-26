@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from pydantic import BaseModel, EmailStr, Field
+from app.services import passwords
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.user import User
@@ -40,6 +42,31 @@ def refresh(body: RefreshRequest, db: Session = Depends(get_db)):
 @router.get("/me", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)):
     return current_user
+
+
+class ForgotIn(BaseModel):
+    email: EmailStr
+
+
+class ResetIn(BaseModel):
+    token: str = Field(..., min_length=10, max_length=200)
+    new_password: str = Field(..., min_length=8, max_length=128)
+
+
+@router.post("/forgot-password")
+def forgot_password(body: ForgotIn, request: Request, db: Session = Depends(get_db)):
+    """Emails a reset link if the address has an account. Always answers the same, so nobody can
+    find out which emails are registered."""
+    if passwords.too_many(request):
+        raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, "Too many attempts — please try again in a few minutes")
+    passwords.start_reset(db, body.email)
+    return {"message": "If that email has an account, we’ve sent a link to reset the password. Check your inbox (and spam)."}
+
+
+@router.post("/reset-password")
+def reset_password(body: ResetIn, db: Session = Depends(get_db)):
+    passwords.finish_reset(db, body.token, body.new_password)
+    return {"message": "Password updated — you can sign in now"}
 
 
 @router.post("/change-password")

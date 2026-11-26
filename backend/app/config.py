@@ -49,6 +49,13 @@ class Settings(BaseSettings):
     SHIPROCKET_API_URL: str = "https://apiv2.shiprocket.in/v1/external"
 
     # Pricing rules (INR)
+    # Emails through Resend (resend.com). Without a key nothing is sent and the shop works as before.
+    RESEND_API_KEY: str = ""
+    EMAIL_FROM: str = "Nirmal Mart <noreply@nirmalmart.in>"          # password resets, order updates
+    EMAIL_PROMO_FROM: str = "Nirmal Mart <promotions@nirmalmart.in>"  # offers to subscribers
+    EMAIL_REPLY_TO: str = "support@nirmalmart.in"
+    SITE_URL: str = "https://www.nirmalmart.in"
+
     GST_RATE: float = 0.18
     FREE_SHIPPING_THRESHOLD: float = 499.0
     SHIPPING_FEE: float = 49.0

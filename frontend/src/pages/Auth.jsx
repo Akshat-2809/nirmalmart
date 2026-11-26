@@ -1,8 +1,9 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRight, Eye, EyeOff, Heart, Package, Truck } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Eye, EyeOff, Heart, MailCheck, Package, Truck } from 'lucide-react';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { authApi } from '../api';
 import { errorMessage } from '../api/client';
 import { Logo } from '../components/ui/bits';
 import { ease } from '../components/ui/motion';
@@ -98,7 +99,11 @@ export function Login() {
     <Shell title="Welcome back" subtitle="Sign in to continue shopping." footer={<>New to NirmalMart? <Link to="/register" state={{ from: to }} className="font-semibold text-brand">Create an account</Link></>}>
       <motion.form key={shake} animate={shake ? { x: [0, -10, 10, -6, 6, 0] } : {}} transition={{ duration: 0.4 }} onSubmit={submit} className="space-y-4">
         <div><label className="label" htmlFor="email">Email or username</label><input id="email" type="text" required autoCapitalize="none" autoCorrect="off" spellCheck={false} autoComplete="username" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} className="input" /></div>
-        <div><label className="label" htmlFor="pw">Password</label><PasswordInput id="pw" autoComplete="current-password" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} /></div>
+        <div>
+          <div className="flex items-center justify-between"><label className="label" htmlFor="pw">Password</label>
+            <Link to="/forgot-password" state={{ email: f.email.includes('@') ? f.email.trim() : '' }} className="mb-1.5 text-sm font-semibold text-brand hover:underline">Forgot password?</Link></div>
+          <PasswordInput id="pw" autoComplete="current-password" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} />
+        </div>
         <Submit loading={loading}>Sign in</Submit>
       </motion.form>
     </Shell>
@@ -158,6 +163,91 @@ export function Register() {
         </div>
         <Submit loading={loading}>Create account</Submit>
       </form>
+    </Shell>
+  );
+}
+
+/** Forgot password: emails a one-time reset link (the answer is the same whether or not the email has an account) */
+export function ForgotPassword() {
+  const location = useLocation();
+  const [email, setEmail] = useState(location.state?.email || '');
+  const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+  const submit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await authApi.forgotPassword(email.trim());
+      setSent(true);
+    } catch (err) {
+      toast.error(errorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+  return (
+    <Shell title={sent ? 'Check your email' : 'Forgot password?'}
+      subtitle={sent ? `If ${email.trim()} has an account, we’ve sent a link to reset the password. It works for 1 hour.` : 'Enter your email and we’ll send you a link to choose a new password.'}
+      footer={<>Remembered it? <Link to="/login" className="font-semibold text-brand">Back to sign in</Link></>}>
+      {sent ? (
+        <div className="space-y-4">
+          <div className="flex items-start gap-3 rounded-2xl bg-brand-soft/60 p-4 text-sm"><MailCheck size={20} className="shrink-0 text-brand" />
+            <span>Didn’t get it in a few minutes? Check your spam folder, or <button type="button" className="font-semibold text-brand" onClick={() => setSent(false)}>try again</button>.</span></div>
+        </div>
+      ) : (
+        <form onSubmit={submit} className="space-y-4">
+          <div><label className="label" htmlFor="email">Email</label>
+            <input id="email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} className="input" /></div>
+          <Submit loading={loading}>Send reset link</Submit>
+        </form>
+      )}
+    </Shell>
+  );
+}
+
+/** Opened from the reset email: /reset-password?token=… */
+export function ResetPassword() {
+  const [params] = useSearchParams();
+  const token = params.get('token') || '';
+  const navigate = useNavigate();
+  const [f, setF] = useState({ password: '', confirm: '' });
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
+  const s = strength(f.password);
+  const submit = async (e) => {
+    e.preventDefault();
+    if (f.password.length < 8) return toast.error('Password must be at least 8 characters');
+    if (f.password !== f.confirm) return toast.error('Passwords don’t match');
+    setLoading(true);
+    try {
+      await authApi.resetPassword(token, f.password);
+      setDone(true);
+    } catch (err) {
+      toast.error(errorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+  if (!token) return <Navigate to="/forgot-password" replace />;
+  return (
+    <Shell title={done ? 'Password updated' : 'Choose a new password'}
+      subtitle={done ? 'You can sign in with your new password — on the website and in the app.' : 'Use at least 8 characters. A mix of letters, numbers and symbols is strongest.'}
+      footer={<><Link to="/forgot-password" className="font-semibold text-brand">Need a new link?</Link></>}>
+      {done ? (
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 rounded-2xl bg-success/10 p-4 text-sm text-success"><CheckCircle2 size={20} /> Your password has been changed.</div>
+          <button type="button" className="btn-primary w-full" onClick={() => navigate('/login', { replace: true })}>Sign in</button>
+        </div>
+      ) : (
+        <form onSubmit={submit} className="space-y-4">
+          <div><label className="label" htmlFor="pw">New password</label>
+            <PasswordInput id="pw" autoComplete="new-password" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} />
+            {f.password && <div className="mt-2 flex gap-1">{[0, 1, 2, 3].map((i) => <span key={i} className={cn('h-1 flex-1 rounded-full', i < s ? (s >= 3 ? 'bg-success' : 'bg-warning') : 'bg-line')} />)}</div>}</div>
+          <div><label className="label" htmlFor="pw2">Confirm new password</label>
+            <PasswordInput id="pw2" autoComplete="new-password" value={f.confirm} onChange={(e) => setF({ ...f, confirm: e.target.value })} /></div>
+          <Submit loading={loading}>Update password</Submit>
+        </form>
+      )}
     </Shell>
   );
 }

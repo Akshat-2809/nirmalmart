@@ -7,6 +7,8 @@ export const authApi = {
   register: (body) => d(client.post('/auth/register', body)),
   me: () => d(client.get('/auth/me')),
   changePassword: (body) => d(client.post('/auth/change-password', body)),
+  forgotPassword: (email) => d(client.post('/auth/forgot-password', { email })),
+  resetPassword: (token, new_password) => d(client.post('/auth/reset-password', { token, new_password })),
 };
 
 export const catalogApi = {
@@ -64,6 +66,10 @@ export const newsletterApi = {
 export const adminApi = {
   subscribers: (includeUnsubscribed) => d(client.get('/admin/subscribers', { params: { include_unsubscribed: includeUnsubscribed || undefined } })),
   exportSubscribers: () => d(client.get('/admin/subscribers/export', { responseType: 'blob' })),
+  broadcasts: () => d(client.get('/admin/broadcasts')),
+  previewBroadcast: (body) => d(client.post('/admin/broadcasts/preview', body)),
+  testBroadcast: (body) => d(client.post('/admin/broadcasts/test', body)),
+  sendBroadcast: (body) => d(client.post('/admin/broadcasts', body)),
   dashboard: (days = 30) => d(client.get('/admin/dashboard', { params: { days } })),
   users: (search) => d(client.get('/admin/users', { params: { search } })),
   updateUser: (id, body) => d(client.patch(`/admin/users/${id}`, body)),

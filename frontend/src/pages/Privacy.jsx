@@ -28,13 +28,14 @@ const T = {
       ]],
       ['How we use it', [
         'To take, pack, deliver and track your orders, and to handle cancellations, returns and refunds.',
-        'To contact you about your order by phone or WhatsApp.',
+        'To contact you about your order by phone, WhatsApp or email — order updates, refunds and password-reset links.',
         'To keep your account, addresses, bag and wishlist in sync between the website and the app.',
         'To keep the shop secure and prevent misuse.',
       ]],
       ['Who we share it with', [
         `Courier partners (through Shiprocket): your name, phone and delivery address, so they can deliver and pick up parcels.`,
         'Our hosting providers, who store data for us under contract: Vercel (website), Render (servers) and Supabase (database and product images), in Singapore.',
+        'Resend, which delivers our emails (order updates, password resets and offers you signed up for).',
         `WhatsApp: only the messages you choose to send us (for example payment proof to ${PAYMENT.waDisplay}).`,
         'Government authorities, only when the law requires it (for example GST records).',
       ]],
@@ -80,13 +81,14 @@ const T = {
       ]],
       ['आम्ही ती कशासाठी वापरतो', [
         'ऑर्डर घेणे, पॅक करणे, पोहोचवणे, ट्रॅक करणे आणि रद्द / परत / परताव्यासाठी.',
-        'तुमच्या ऑर्डरबद्दल फोन किंवा WhatsApp वर संपर्क करण्यासाठी.',
+        'तुमच्या ऑर्डरबद्दल फोन, WhatsApp किंवा ईमेलवर संपर्क करण्यासाठी — ऑर्डर अपडेट्स, परतावा आणि पासवर्ड रीसेट लिंक.',
         'वेबसाइट आणि अ‍ॅपमध्ये तुमचे खाते, पत्ते, बॅग आणि विशलिस्ट एकसारखे ठेवण्यासाठी.',
         'दुकान सुरक्षित ठेवण्यासाठी आणि गैरवापर टाळण्यासाठी.',
       ]],
       ['आम्ही कोणाला देतो', [
         'कुरिअर भागीदार (Shiprocket मार्फत): पार्सल पोहोचवण्यासाठी आणि नेण्यासाठी नाव, फोन आणि पत्ता.',
         'आमचे होस्टिंग प्रदाते, जे करारानुसार आमच्यासाठी माहिती साठवतात: Vercel (वेबसाइट), Render (सर्व्हर) आणि Supabase (डेटाबेस व फोटो), सिंगापूरमध्ये.',
+        'Resend, जे आमचे ईमेल पोहोचवते (ऑर्डर अपडेट्स, पासवर्ड रीसेट आणि तुम्ही मागितलेल्या ऑफर्स).',
         `WhatsApp: फक्त तुम्ही आम्हाला पाठवलेले संदेश (उदा. ${PAYMENT.waDisplay} वर पेमेंटचा पुरावा).`,
         'कायद्याने आवश्यक असल्यासच सरकारी यंत्रणा (उदा. GST नोंदी).',
       ]],

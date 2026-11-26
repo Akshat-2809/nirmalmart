@@ -24,6 +24,8 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 const OrderSuccess = lazy(() => import('./pages/OrderSuccess'));
 const Login = named(() => import('./pages/Auth'), 'Login');
 const Register = named(() => import('./pages/Auth'), 'Register');
+const ForgotPassword = named(() => import('./pages/Auth'), 'ForgotPassword');
+const ResetPassword = named(() => import('./pages/Auth'), 'ResetPassword');
 const AccountLayout = lazy(() => import('./pages/account/AccountLayout'));
 const Addresses = lazy(() => import('./pages/account/Addresses'));
 const Orders = named(() => import('./pages/account/Orders'), 'Orders');
@@ -40,6 +42,7 @@ const AdminCategories = lazy(() => import('./pages/admin/Categories'));
 const AdminCustomers = lazy(() => import('./pages/admin/Customers'));
 const AdminSettings = lazy(() => import('./pages/admin/Settings'));
 const AdminSubscribers = lazy(() => import('./pages/admin/Subscribers'));
+const AdminBroadcasts = lazy(() => import('./pages/admin/Broadcasts'));
 
 const FullPageSpinner = () => <div className="grid min-h-[60vh] place-items-center text-brand"><Spinner className="h-6 w-6" /></div>;
 
@@ -73,6 +76,8 @@ export default function App() {
           <Route path="unsubscribe" element={<Unsubscribe />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
+          <Route path="forgot-password" element={<ForgotPassword />} />
+          <Route path="reset-password" element={<ResetPassword />} />
           <Route path="checkout" element={<RequireAuth><Checkout /></RequireAuth>} />
           <Route path="order/:id/success" element={<RequireAuth><OrderSuccess /></RequireAuth>} />
           <Route path="account" element={<RequireAuth><AccountLayout /></RequireAuth>}>
@@ -97,6 +102,7 @@ export default function App() {
           <Route path="categories" element={<AdminCategories />} />
           <Route path="customers" element={<AdminCustomers />} />
           <Route path="subscribers" element={<AdminSubscribers />} />
+          <Route path="broadcasts" element={<AdminBroadcasts />} />
           <Route path="settings" element={<AdminSettings />} />
         </Route>
       </Routes>
