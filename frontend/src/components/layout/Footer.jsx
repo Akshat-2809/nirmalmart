@@ -11,7 +11,7 @@ import { Logo } from '../ui/bits';
 
 const STATIC_COLS = [
   { title: 'Account', links: [['My account', '/account'], ['Orders', '/account/orders'], ['Wishlist', '/wishlist'], ['Bag', '/cart']] },
-  { title: 'Help', links: [['Shipping', '/shipping'], ['Returns', '/faq#returns'], ['Contact us', '/contact'], ['FAQs', '/faq'], ['Privacy policy', '/privacy'], ['Terms of use', '/terms'], ['Delete account', '/delete-account']] },
+  { title: 'Help', links: [['Shipping', '/shipping'], ['Returns', '/faq#returns'], ['Contact us', '/contact'], ['FAQs', '/faq'], ['Refund policy', '/refunds'], ['Privacy policy', '/privacy'], ['Terms of use', '/terms'], ['Delete account', '/delete-account']] },
 ];
 
 export default function Footer() {

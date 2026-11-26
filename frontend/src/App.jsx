@@ -17,6 +17,7 @@ const Privacy = lazy(() => import('./pages/Privacy'));
 const Terms = lazy(() => import('./pages/Terms'));
 const DeleteAccount = lazy(() => import('./pages/DeleteAccount'));
 const Unsubscribe = lazy(() => import('./pages/Unsubscribe'));
+const Refunds = lazy(() => import('./pages/Refunds'));
 const Checkout = lazy(() => import('./pages/Checkout'));
 const Wishlist = lazy(() => import('./pages/Wishlist'));
 const NotFound = lazy(() => import('./pages/NotFound'));
@@ -66,6 +67,8 @@ export default function App() {
           <Route path="faq" element={<Faq />} />
           <Route path="privacy" element={<Privacy />} />
           <Route path="terms" element={<Terms />} />
+          <Route path="refunds" element={<Refunds />} />
+          <Route path="refund-policy" element={<Navigate to="/refunds" replace />} />
           <Route path="delete-account" element={<DeleteAccount />} />
           <Route path="unsubscribe" element={<Unsubscribe />} />
           <Route path="login" element={<Login />} />

@@ -33,6 +33,7 @@ const PAGES = [
   ['/shipping', { en: 'Shipping', mr: 'शिपिंग' }],
   ['/faq', { en: 'FAQs', mr: 'प्रश्नोत्तरे' }],
   ['/contact', { en: 'Contact us', mr: 'संपर्क' }],
+  ['/refunds', { en: 'Refunds', mr: 'परतावा' }],
   ['/privacy', { en: 'Privacy', mr: 'गोपनीयता' }],
   ['/terms', { en: 'Terms', mr: 'अटी' }],
 ];
