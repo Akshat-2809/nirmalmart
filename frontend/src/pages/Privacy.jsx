@@ -1,6 +1,6 @@
 import InfoPage, { useInfoLang } from '../components/InfoPage';
 import { LegalSections } from '../components/LegalSections';
-import { PAYMENT, PHONE } from '../lib/contact';
+import { EMAIL, PAYMENT, PHONE } from '../lib/contact';
 
 // Plain-language privacy policy for the website and the Android app. Linked from the footer,
 // the app's Account tab and the Play Store listing. Keep "Last updated" current when this changes.
@@ -19,6 +19,7 @@ const T = {
         'Reviews you write, which show publicly with your name.',
         'Your bag and wishlist. If you are not signed in, these stay on your own device only.',
         'The pincode you enter to check delivery dates, kept on your device.',
+        `If you sign up for offers, your email address. We send offers from ${EMAIL.promotions}, and every email has an unsubscribe link.`,
       ]],
       ['What we don’t collect', [
         'We don’t take card or bank details. You pay by UPI in your own UPI app; we only see the payment proof you choose to send us on WhatsApp.',
@@ -54,7 +55,7 @@ const T = {
       ]],
       ['Changes and contact', [
         'If we change this policy we’ll update the date at the top of this page.',
-        `Questions or requests about your data: call or WhatsApp us on ${PHONE.display}.`,
+        `Questions or requests about your data: email ${EMAIL.support}, or call or WhatsApp us on ${PHONE.display}.`,
       ]],
     ],
   },
@@ -70,6 +71,7 @@ const T = {
         'तुम्ही लिहिलेले रिव्ह्यू, जे तुमच्या नावासह सर्वांना दिसतात.',
         'तुमची बॅग आणि विशलिस्ट. साइन इन नसल्यास त्या फक्त तुमच्या डिव्हाइसवर राहतात.',
         'डिलिव्हरीची तारीख पाहण्यासाठी टाकलेला पिनकोड, तुमच्या डिव्हाइसवर.',
+        `ऑफर्ससाठी साइन अप केल्यास तुमचा ईमेल. आम्ही ${EMAIL.promotions} वरून ऑफर्स पाठवतो आणि प्रत्येक ईमेलमध्ये अनसबस्क्राइब लिंक असते.`,
       ]],
       ['आम्ही काय गोळा करत नाही', [
         'आम्ही कार्ड किंवा बँक तपशील घेत नाही. तुम्ही तुमच्या UPI अ‍ॅपमधून पैसे भरता; तुम्ही WhatsApp वर पाठवलेला पेमेंटचा पुरावाच आम्हाला दिसतो.',
@@ -101,7 +103,7 @@ const T = {
       ['मुले', ['निर्मल मार्ट प्रौढांसाठी आहे. तुमचे वय १८ पेक्षा कमी असल्यास खाते तयार करू नका.']],
       ['बदल आणि संपर्क', [
         'धोरण बदलल्यास आम्ही वरील तारीख बदलू.',
-        `तुमच्या माहितीबद्दल प्रश्न किंवा विनंती: ${PHONE.display} वर कॉल किंवा WhatsApp करा.`,
+        `तुमच्या माहितीबद्दल प्रश्न किंवा विनंती: ${EMAIL.support} वर ईमेल करा, किंवा ${PHONE.display} वर कॉल / WhatsApp करा.`,
       ]],
     ],
   },

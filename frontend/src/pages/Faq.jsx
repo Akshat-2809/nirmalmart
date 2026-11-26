@@ -3,7 +3,7 @@ import { ChevronDown } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import InfoPage, { useInfoLang } from '../components/InfoPage';
-import { PHONE } from '../lib/contact';
+import { EMAIL, PHONE } from '../lib/contact';
 import { cn } from '../lib/cn';
 
 // [id, question, answer] — ids stay the same in both languages so links like /faq#returns work
@@ -22,7 +22,7 @@ const T = {
       ['cancel', 'Can I cancel my order?', 'Yes, before it starts being processed. Open the order in Account → Orders and tap “Cancel order”. After that, call or WhatsApp us and we’ll help.'],
       ['returns', 'Can I return or exchange a product?', 'Yes, within 5 days of delivery. Open the order in My account → Orders and tap Return / Exchange, then choose the items and a reason. Our courier collects the item from your address. Returns are refunded to the UPI account you paid from once we receive the item (the delivery charge isn’t refunded). Exchanges are for the same item, for a wrong size or a defect.'],
       ['account', 'Do I need an account to order?', 'Yes — a free account lets you place orders, save addresses and track deliveries. You can browse and fill your bag without one.'],
-      ['contact', 'How can I contact you?', `Call or WhatsApp us on ${PHONE.display}.`],
+      ['contact', 'How can I contact you?', `Call or WhatsApp us on ${PHONE.display}, or email ${EMAIL.support}.`],
     ],
   },
   mr: {
@@ -39,7 +39,7 @@ const T = {
       ['cancel', 'मी ऑर्डर रद्द करू शकतो का?', 'हो, ऑर्डरवर प्रक्रिया सुरू होण्यापूर्वी. खाते → ऑर्डर्स मध्ये ऑर्डर उघडा आणि “Cancel order” दाबा. त्यानंतर आम्हाला कॉल किंवा WhatsApp करा, आम्ही मदत करू.'],
       ['returns', 'उत्पादन परत किंवा बदलून मिळू शकते का?', 'हो, डिलिव्हरीनंतर 5 दिवसांच्या आत. My account → Orders मध्ये ऑर्डर उघडा आणि Return / Exchange वर टॅप करा, नंतर वस्तू आणि कारण निवडा. आमचा कुरिअर वस्तू तुमच्या पत्त्यावरून घेऊन जाईल. वस्तू आमच्याकडे पोहोचल्यावर परतावा तुम्ही ज्या UPI खात्यातून पैसे भरले त्यात मिळेल (डिलिव्हरी शुल्क परत मिळत नाही). बदली (exchange) फक्त त्याच वस्तूसाठी आहे — चुकीचा आकार किंवा दोष असल्यास.'],
       ['account', 'ऑर्डर करण्यासाठी खाते आवश्यक आहे का?', 'हो — मोफत खात्यामुळे ऑर्डर देणे, पत्ते सेव्ह करणे आणि डिलिव्हरी ट्रॅक करणे शक्य होते. खात्याशिवायही तुम्ही उत्पादने पाहू शकता आणि बॅगेत टाकू शकता.'],
-      ['contact', 'तुमच्याशी संपर्क कसा साधायचा?', `${PHONE.display} वर कॉल किंवा WhatsApp करा.`],
+      ['contact', 'तुमच्याशी संपर्क कसा साधायचा?', `${PHONE.display} वर कॉल किंवा WhatsApp करा, किंवा ${EMAIL.support} वर ईमेल करा.`],
     ],
   },
 };

@@ -56,7 +56,14 @@ export const userApi = {
   deleteAccount: (password) => d(client.delete('/users/me', { data: { password } })),
 };
 
+export const newsletterApi = {
+  subscribe: (email) => d(client.post('/newsletter/subscribe', { email, source: 'website' })),
+  unsubscribe: (token) => d(client.post('/newsletter/unsubscribe', { token })),
+};
+
 export const adminApi = {
+  subscribers: (includeUnsubscribed) => d(client.get('/admin/subscribers', { params: { include_unsubscribed: includeUnsubscribed || undefined } })),
+  exportSubscribers: () => d(client.get('/admin/subscribers/export', { responseType: 'blob' })),
   dashboard: (days = 30) => d(client.get('/admin/dashboard', { params: { days } })),
   users: (search) => d(client.get('/admin/users', { params: { search } })),
   updateUser: (id, body) => d(client.patch(`/admin/users/${id}`, body)),

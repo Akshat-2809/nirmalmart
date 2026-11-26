@@ -3,6 +3,10 @@ import { Facebook, Instagram, Youtube } from 'lucide-react';
 // Store contact details, shared by the footer and the Contact us page
 export const PHONE = { display: '+91 74982 99375', tel: '+917498299375', wa: '917498299375' };
 
+// Email: support for orders, returns, accounts and data requests; info for anything else.
+// Offers are sent from promotions@ (admin → Subscribers). help@ forwards to support@.
+export const EMAIL = { support: 'support@nirmalmart.in', info: 'info@nirmalmart.in', promotions: 'promotions@nirmalmart.in' };
+
 // UPI QR payments: customers pay to this QR and send proof on WhatsApp; the admin then marks the order paid
 export const PAYMENT = {
   qr: '/upi-qr.jpg',

@@ -16,6 +16,7 @@ const Faq = lazy(() => import('./pages/Faq'));
 const Privacy = lazy(() => import('./pages/Privacy'));
 const Terms = lazy(() => import('./pages/Terms'));
 const DeleteAccount = lazy(() => import('./pages/DeleteAccount'));
+const Unsubscribe = lazy(() => import('./pages/Unsubscribe'));
 const Checkout = lazy(() => import('./pages/Checkout'));
 const Wishlist = lazy(() => import('./pages/Wishlist'));
 const NotFound = lazy(() => import('./pages/NotFound'));
@@ -37,6 +38,7 @@ const AdminOrders = lazy(() => import('./pages/admin/Orders'));
 const AdminCategories = lazy(() => import('./pages/admin/Categories'));
 const AdminCustomers = lazy(() => import('./pages/admin/Customers'));
 const AdminSettings = lazy(() => import('./pages/admin/Settings'));
+const AdminSubscribers = lazy(() => import('./pages/admin/Subscribers'));
 
 const FullPageSpinner = () => <div className="grid min-h-[60vh] place-items-center text-brand"><Spinner className="h-6 w-6" /></div>;
 
@@ -65,6 +67,7 @@ export default function App() {
           <Route path="privacy" element={<Privacy />} />
           <Route path="terms" element={<Terms />} />
           <Route path="delete-account" element={<DeleteAccount />} />
+          <Route path="unsubscribe" element={<Unsubscribe />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
           <Route path="checkout" element={<RequireAuth><Checkout /></RequireAuth>} />
@@ -90,6 +93,7 @@ export default function App() {
           <Route path="orders" element={<AdminOrders />} />
           <Route path="categories" element={<AdminCategories />} />
           <Route path="customers" element={<AdminCustomers />} />
+          <Route path="subscribers" element={<AdminSubscribers />} />
           <Route path="settings" element={<AdminSettings />} />
         </Route>
       </Routes>

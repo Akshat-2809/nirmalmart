@@ -3,7 +3,7 @@ import DeleteAccountCard from '../components/DeleteAccountCard';
 import InfoPage, { useInfoLang } from '../components/InfoPage';
 import { LegalSections } from '../components/LegalSections';
 import { useAuth } from '../context/AuthContext';
-import { PHONE } from '../lib/contact';
+import { EMAIL, PHONE } from '../lib/contact';
 
 // Public page about deleting a Nirmal Mart account — the web link the Play Store asks for.
 // Signed-in customers can delete right here; others are sent to sign in first.
@@ -17,7 +17,7 @@ const T = {
         'Website: sign in, go to My account → Password & security, and choose Delete my account.',
         'App: open the Account tab and tap Delete account at the bottom.',
         'You’ll be asked for your password to confirm.',
-        `Can’t sign in? Call or WhatsApp us on ${PHONE.display} from your registered mobile number and we’ll delete it for you.`,
+        `Can’t sign in? Email ${EMAIL.support} from your registered email, or call / WhatsApp ${PHONE.display} from your registered mobile, and we’ll delete it for you.`,
       ]],
       ['What gets deleted', [
         'Your name, email address, mobile number and password.',
@@ -40,7 +40,7 @@ const T = {
         'वेबसाइट: साइन इन करा, माझे खाते → पासवर्ड वर जा आणि ‘खाते हटवा’ निवडा.',
         'अ‍ॅप: खाते टॅब उघडा आणि खाली ‘खाते हटवा’ दाबा.',
         'निश्चित करण्यासाठी पासवर्ड विचारला जाईल.',
-        `साइन इन करता येत नाही? नोंदणीकृत मोबाईलवरून ${PHONE.display} वर कॉल किंवा WhatsApp करा, आम्ही खाते हटवू.`,
+        `साइन इन करता येत नाही? नोंदणीकृत ईमेलवरून ${EMAIL.support} वर ईमेल करा, किंवा नोंदणीकृत मोबाईलवरून ${PHONE.display} वर कॉल / WhatsApp करा, आम्ही खाते हटवू.`,
       ]],
       ['काय हटवले जाते', [
         'तुमचे नाव, ईमेल, मोबाईल नंबर आणि पासवर्ड.',

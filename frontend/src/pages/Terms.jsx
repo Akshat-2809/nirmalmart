@@ -1,6 +1,6 @@
 import InfoPage, { useInfoLang } from '../components/InfoPage';
 import { LegalSections } from '../components/LegalSections';
-import { PHONE } from '../lib/contact';
+import { EMAIL, PHONE } from '../lib/contact';
 import { PRIVACY_UPDATED } from './Privacy';
 
 // Terms of use for the website and the app. They describe how the shop actually works today
@@ -43,7 +43,7 @@ const T = {
       ]],
       ['Law and disputes', [
         'These terms follow Indian law. Courts in Maharashtra have jurisdiction.',
-        `For any problem, contact us first on ${PHONE.display} — we’ll try to sort it out quickly.`,
+        `For any problem, contact us first on ${PHONE.display} or ${EMAIL.support} — we’ll try to sort it out quickly.`,
       ]],
     ],
   },
@@ -82,7 +82,7 @@ const T = {
       ]],
       ['कायदा आणि वाद', [
         'या अटी भारतीय कायद्यानुसार आहेत. महाराष्ट्रातील न्यायालयांना अधिकारक्षेत्र आहे.',
-        `कोणतीही अडचण असल्यास आधी ${PHONE.display} वर संपर्क करा — आम्ही लवकर सोडवण्याचा प्रयत्न करू.`,
+        `कोणतीही अडचण असल्यास आधी ${PHONE.display} किंवा ${EMAIL.support} वर संपर्क करा — आम्ही लवकर सोडवण्याचा प्रयत्न करू.`,
       ]],
     ],
   },

@@ -9,8 +9,9 @@ from app.models.review import Review
 from app.models.payment import Payment
 from app.models.wishlist import WishlistItem
 from app.models.setting import StoreSetting
+from app.models.subscriber import Subscriber
 
 __all__ = [
     "User", "Address", "Category", "Product", "ProductImage",
-    "CartItem", "Order", "OrderItem", "ReturnRequest", "Review", "Payment", "WishlistItem", "StoreSetting"
+    "CartItem", "Order", "OrderItem", "ReturnRequest", "Review", "Payment", "WishlistItem", "StoreSetting", "Subscriber"
 ]

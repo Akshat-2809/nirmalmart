@@ -11,6 +11,7 @@ from app.database import create_tables, SessionLocal
 from app.models.user import User
 from app.services.auth import hash_password
 from app.routers import auth, products, categories, cart, orders, reviews, users, admin, wishlist, shipping, settings as settings_router
+from app.routers import newsletter
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("nirmalmart")
@@ -74,6 +75,8 @@ app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads"
 
 for r in (auth, products, categories, cart, orders, reviews, users, wishlist, settings_router, shipping, admin):
     app.include_router(r.router)
+app.include_router(newsletter.router)
+app.include_router(newsletter.admin_router)
 
 
 @app.get("/api/health", tags=["Health"])

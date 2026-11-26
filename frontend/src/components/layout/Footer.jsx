@@ -1,11 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
-import { catalogApi } from '../../api';
-import { SOCIAL } from '../../lib/contact';
+import { catalogApi, newsletterApi } from '../../api';
+import { errorMessage } from '../../api/client';
+import { EMAIL, SOCIAL } from '../../lib/contact';
 import { Logo } from '../ui/bits';
 
 const STATIC_COLS = [
@@ -15,6 +16,12 @@ const STATIC_COLS = [
 
 export default function Footer() {
   const [email, setEmail] = useState('');
+  // Saved to the store's list of offer subscribers (admin → Subscribers)
+  const subscribe = useMutation({
+    mutationFn: newsletterApi.subscribe,
+    onSuccess: (r) => { setEmail(''); r.status === 'already' ? toast(r.message, { icon: '💌' }) : toast.success(r.message); },
+    onError: (e) => toast.error(errorMessage(e, 'Couldn’t sign you up — please try again')),
+  });
   const { data: categories = [] } = useQuery({ queryKey: ['categories'], queryFn: catalogApi.categories, staleTime: 300_000 });
   const COLS = [
     { title: 'Shop', links: [['All products', '/shop'], ['🔥 Trending', '/shop?trending=true'],
@@ -28,10 +35,11 @@ export default function Footer() {
           <Logo />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-ink-soft">
             Trending gadgets and everyday essentials at great prices — delivered to your door across Maharashtra.</p>
-          <form className="mt-6 flex max-w-sm gap-2" onSubmit={(e) => { e.preventDefault(); setEmail(''); toast.success('You’re on the list!'); }}>
+          <form className="mt-6 flex max-w-sm gap-2" onSubmit={(e) => { e.preventDefault(); if (!subscribe.isPending) subscribe.mutate(email.trim()); }}>
             <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Your email for offers" className="input rounded-full" aria-label="Email" />
-            <motion.button whileTap={{ scale: 0.92 }} className="btn-dark h-11 w-11 shrink-0 px-0" aria-label="Subscribe"><ArrowRight size={18} /></motion.button>
+            <motion.button whileTap={{ scale: 0.92 }} className="btn-dark h-11 w-11 shrink-0 px-0" aria-label="Subscribe" disabled={subscribe.isPending}>{subscribe.isPending ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" /> : <ArrowRight size={18} />}</motion.button>
           </form>
+          <p className="mt-2 text-xs text-ink-faint">Offers and new arrivals, now and then. Unsubscribe anytime.</p>
           <div className="mt-6 flex gap-1">
             {SOCIAL.map(([name, Icon, url]) => (
               <motion.a key={name} href={url} target="_blank" rel="noopener noreferrer" whileHover={{ y: -3 }}
@@ -54,7 +62,7 @@ export default function Footer() {
       </div>
       <div className="border-t border-line">
         <div className="container flex flex-col items-center justify-between gap-3 py-6 text-xs text-ink-faint sm:flex-row">
-          <p>© {new Date().getFullYear()} NirmalMart. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} NirmalMart. All rights reserved. · <a href={`mailto:${EMAIL.support}`} className="hover:text-brand">{EMAIL.support}</a></p>
           <p className="flex items-center gap-3">
             <span>Secure checkout</span><span>·</span><span>Pay by UPI</span>
           </p>
