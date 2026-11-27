@@ -1,0 +1,273 @@
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-11-24T18:15:00Z"
+ },
+ "title": "Nirmal Mart App — iOS & Android",
+ "launch": {
+  "view": "canvas"
+ },
+ "pages": [],
+ "boards": {
+  "iOS-Welcome.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "iOS · Welcome",
+   "is_interactive": true,
+   "radius": 44
+  },
+  "iOS-Login.dc.html": {
+   "x": 470,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "iOS · Sign in",
+   "is_interactive": true,
+   "radius": 44
+  },
+  "Main.dc.html": {
+   "x": 940,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "iOS · Home",
+   "is_interactive": true,
+   "radius": 44
+  },
+  "iOS-Search.dc.html": {
+   "x": 1410,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "iOS · Search",
+   "is_interactive": true,
+   "radius": 44
+  },
+  "iOS-Shop.dc.html": {
+   "x": 1880,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "iOS · Shop",
+   "is_interactive": true,
+   "radius": 44
+  },
+  "iOS-Product.dc.html": {
+   "x": 2350,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "iOS · Product",
+   "is_interactive": true,
+   "radius": 44
+  },
+  "iOS-Bag.dc.html": {
+   "x": 2820,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "iOS · Bag",
+   "is_interactive": true,
+   "radius": 44
+  },
+  "iOS-Checkout.dc.html": {
+   "x": 3290,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "iOS · Checkout",
+   "is_interactive": true,
+   "radius": 44
+  },
+  "iOS-Success.dc.html": {
+   "x": 3760,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "iOS · Order placed",
+   "is_interactive": true,
+   "radius": 44
+  },
+  "iOS-Orders.dc.html": {
+   "x": 4230,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "iOS · Orders & tracking",
+   "is_interactive": true,
+   "radius": 44
+  },
+  "iOS-Wishlist.dc.html": {
+   "x": 4700,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "iOS · Wishlist",
+   "is_interactive": true,
+   "radius": 44
+  },
+  "iOS-Account.dc.html": {
+   "x": 5170,
+   "y": 0,
+   "w": 390,
+   "h": 844,
+   "title": "iOS · Account",
+   "is_interactive": true,
+   "radius": 44
+  },
+  "Android-Welcome.dc.html": {
+   "x": 0,
+   "y": 1264,
+   "w": 390,
+   "h": 844,
+   "title": "Android · Welcome",
+   "is_interactive": true,
+   "radius": 28
+  },
+  "Android-Login.dc.html": {
+   "x": 470,
+   "y": 1264,
+   "w": 390,
+   "h": 844,
+   "title": "Android · Sign in",
+   "is_interactive": true,
+   "radius": 28
+  },
+  "Android-Home.dc.html": {
+   "x": 940,
+   "y": 1264,
+   "w": 390,
+   "h": 844,
+   "title": "Android · Home",
+   "is_interactive": true,
+   "radius": 28
+  },
+  "Android-Search.dc.html": {
+   "x": 1410,
+   "y": 1264,
+   "w": 390,
+   "h": 844,
+   "title": "Android · Search",
+   "is_interactive": true,
+   "radius": 28
+  },
+  "Android-Shop.dc.html": {
+   "x": 1880,
+   "y": 1264,
+   "w": 390,
+   "h": 844,
+   "title": "Android · Shop",
+   "is_interactive": true,
+   "radius": 28
+  },
+  "Android-Product.dc.html": {
+   "x": 2350,
+   "y": 1264,
+   "w": 390,
+   "h": 844,
+   "title": "Android · Product",
+   "is_interactive": true,
+   "radius": 28
+  },
+  "Android-Bag.dc.html": {
+   "x": 2820,
+   "y": 1264,
+   "w": 390,
+   "h": 844,
+   "title": "Android · Bag",
+   "is_interactive": true,
+   "radius": 28
+  },
+  "Android-Checkout.dc.html": {
+   "x": 3290,
+   "y": 1264,
+   "w": 390,
+   "h": 844,
+   "title": "Android · Checkout",
+   "is_interactive": true,
+   "radius": 28
+  },
+  "Android-Success.dc.html": {
+   "x": 3760,
+   "y": 1264,
+   "w": 390,
+   "h": 844,
+   "title": "Android · Order placed",
+   "is_interactive": true,
+   "radius": 28
+  },
+  "Android-Orders.dc.html": {
+   "x": 4230,
+   "y": 1264,
+   "w": 390,
+   "h": 844,
+   "title": "Android · Orders & tracking",
+   "is_interactive": true,
+   "radius": 28
+  },
+  "Android-Wishlist.dc.html": {
+   "x": 4700,
+   "y": 1264,
+   "w": 390,
+   "h": 844,
+   "title": "Android · Wishlist",
+   "is_interactive": true,
+   "radius": 28
+  },
+  "Android-Account.dc.html": {
+   "x": 5170,
+   "y": 1264,
+   "w": 390,
+   "h": 844,
+   "title": "Android · Account",
+   "is_interactive": true,
+   "radius": 28
+  }
+ },
+ "order": [
+  "Main.dc.html",
+  "iOS-Welcome.dc.html",
+  "iOS-Login.dc.html",
+  "iOS-Search.dc.html",
+  "iOS-Shop.dc.html",
+  "iOS-Product.dc.html",
+  "iOS-Bag.dc.html",
+  "iOS-Checkout.dc.html",
+  "iOS-Success.dc.html",
+  "iOS-Orders.dc.html",
+  "iOS-Wishlist.dc.html",
+  "iOS-Account.dc.html",
+  "Android-Welcome.dc.html",
+  "Android-Login.dc.html",
+  "Android-Home.dc.html",
+  "Android-Search.dc.html",
+  "Android-Shop.dc.html",
+  "Android-Product.dc.html",
+  "Android-Bag.dc.html",
+  "Android-Checkout.dc.html",
+  "Android-Success.dc.html",
+  "Android-Orders.dc.html",
+  "Android-Wishlist.dc.html",
+  "Android-Account.dc.html"
+ ],
+ "notes": {
+  "ios": {
+   "x": 0,
+   "y": -300,
+   "text": "iOS — Cupertino patterns",
+   "kind": "title1",
+   "maxW": 5560
+  },
+  "android": {
+   "x": 0,
+   "y": 964,
+   "text": "Android — Material 3",
+   "kind": "title1",
+   "maxW": 5560
+  }
+ },
+ "designSystems": []
+}

@@ -1,0 +1,1074 @@
+{
+  "@@locale": "en",
+  "appName": "Nirmal Mart",
+  "tabHome": "Home",
+  "tabShop": "Shop",
+  "tabWishlist": "Wishlist",
+  "tabAccount": "Account",
+  "welcomeGetStarted": "Get started",
+  "welcomeBrowseGuest": "Browse as guest",
+  "authSkip": "Skip",
+  "authBack": "Back",
+  "loginTitle": "Welcome back",
+  "loginSub": "Sign in to continue shopping.",
+  "registerTitle": "Create your account",
+  "registerSub": "It takes less than a minute.",
+  "tabSignIn": "Sign in",
+  "tabCreateAccount": "Create account",
+  "fieldFullName": "Full name",
+  "hintFullName": "Your name",
+  "fieldEmailOrUsername": "Email or username",
+  "fieldEmail": "Email",
+  "hintEmail": "you@example.com",
+  "fieldMobile": "Mobile number",
+  "hintMobile": "10-digit number",
+  "fieldPassword": "Password",
+  "hintPassword": "Your password",
+  "hintNewPassword": "At least 8 characters",
+  "showPassword": "Show password",
+  "hidePassword": "Hide password",
+  "forgotPassword": "Forgot password?",
+  "newToNirmalMart": "New to Nirmal Mart?",
+  "createAnAccount": "Create an account",
+  "haveAccount": "Already have an account?",
+  "termsNote": "By creating an account you agree to Nirmal Mart’s Terms and Privacy Policy.",
+  "errName": "Please enter your name using letters only",
+  "errEmail": "Please enter a valid email",
+  "errLogin": "Please enter your email or username",
+  "errMobile": "Please enter a 10-digit mobile number starting with 6–9",
+  "errPasswordShort": "Password must be at least 8 characters",
+  "errPasswordEmpty": "Please enter your password",
+  "signedInWelcome": "Welcome back, {name}!",
+  "@signedInWelcome": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "registeredWelcome": "Welcome to Nirmal Mart, {name}! 🎉",
+  "@registeredWelcome": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "strength0": "Too weak",
+  "strength1": "Weak",
+  "strength2": "Okay",
+  "strength3": "Good",
+  "strength4": "Strong",
+  "strengthHint": "use 8+ characters with numbers & symbols",
+  "forgotTitle": "Forgot your password?",
+  "forgotBody": "Message us on WhatsApp from your registered mobile number and we’ll help you reset it. Reset by email is coming soon.",
+  "forgotWhatsApp": "Message us on WhatsApp",
+  "forgotWhatsAppText": "Hello Nirmal Mart, I forgot my app password. My account email is: {email}",
+  "@forgotWhatsAppText": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "whatsAppMissing": "Couldn’t open WhatsApp",
+  "secureNote": "Your details are safe with us",
+  "homeSearchHint": "Search Nirmal Mart",
+  "homeDeliverTo": "Deliver to",
+  "homeAddPincode": "Add pincode",
+  "homeBag": "Bag",
+  "offersLabel": "Offers",
+  "promoTrendingBadge": "Trending now",
+  "promoTrendingTitle": "Trending Gadgets",
+  "promoTrendingAlt": "ट्रेंडिंग गॅझेट्स",
+  "promoUpTo": "Up to {pct}% off",
+  "@promoUpTo": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      }
+    }
+  },
+  "promoBudgetBadge": "Budget picks",
+  "promoBudgetTitle": "Under ₹999",
+  "promoBudgetAlt": "₹999 पेक्षा कमी किमतीत",
+  "promoBudgetLine": "{count} great gadgets",
+  "@promoBudgetLine": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "promoCategoryBadge": "Shop by category",
+  "promoFrom": "From {price}",
+  "@promoFrom": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "shopNow": "Shop now",
+  "dealsEndsIn": "Ends in",
+  "seeAll": "See all",
+  "trendingAlt": "ट्रेंडिंग गॅझेट्स",
+  "viewAll": "View all",
+  "showMore": "Show more ({count} left)",
+  "@showMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recentEyebrow": "Pick up where you left off",
+  "recentTitle": "Recently viewed",
+  "loadingSlow": "Loading the latest deals…",
+  "loadError": "Couldn’t load the shop",
+  "loadErrorBody": "Please check your internet connection and try again.",
+  "tryAgain": "Try again",
+  "add": "Add",
+  "addedToBag": "Added to bag",
+  "viewBag": "View bag",
+  "outOfStock": "Out of stock",
+  "bestseller": "Bestseller",
+  "savedToWishlist": "Saved to wishlist",
+  "removedFromWishlist": "Removed from wishlist",
+  "wishlistError": "Couldn’t update your wishlist",
+  "addToWishlist": "Save to wishlist",
+  "removeFromWishlist": "Remove from wishlist",
+  "pincodeTitle": "Where should we deliver?",
+  "pincodeBody": "Enter your pincode to see when your order will arrive.",
+  "pincodeField": "Pincode",
+  "pincodeCheck": "Check",
+  "pincodeDeliveryBy": "Delivery by {date}",
+  "@pincodeDeliveryBy": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "pincodeUnserviceable": "Sorry, we don’t deliver to this pincode yet",
+  "pincodeInvalid": "Please enter a valid 6-digit pincode",
+  "homeGreeting": "Hello, {name}",
+  "@homeGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeGreetingGuest": "Hello",
+  "homeSearchFor": "Search",
+  "catTitle": "Shop by category",
+  "catAlt": "विभागानुसार खरेदी",
+  "dodBadge": "Deal of the day",
+  "dodOnlyLeft": "Only {count} left",
+  "@dodOnlyLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dodSellingFast": "Selling fast",
+  "moreDealsTitle": "More deals for today",
+  "moreDealsAlt": "आजच्या ऑफर्स",
+  "budgetTitle": "Shop by budget",
+  "budgetAlt": "बजेटनुसार खरेदी",
+  "budgetUnder": "Under",
+  "budgetPremium": "Premium",
+  "itemsCount": "{count, plural, =1{1 item} other{{count} items}}",
+  "@itemsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trendingNow": "Trending now",
+  "justForYou": "Just for you",
+  "justForYouAlt": "तुमच्यासाठी खास",
+  "madeWith": "Made with ❤️ in Maharashtra",
+  "youSave": "Save {amount}",
+  "@youSave": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "offTag": "{pct}% OFF",
+  "@offTag": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      }
+    }
+  },
+  "addCaps": "ADD",
+  "removeOne": "Remove one",
+  "addOne": "Add one more",
+  "freeDeliveryMore": "Add {amount} more for FREE delivery",
+  "@freeDeliveryMore": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "photoOf": "Photo {n} of {total}",
+  "@photoOf": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "close": "Close",
+  "inclusiveTaxes": "Inclusive of all taxes",
+  "inStock": "In stock, ready to ship",
+  "hurryOnlyLeft": "Hurry — only {count} left",
+  "@hurryOnlyLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "quantity": "Quantity",
+  "benefitDelivery": "Free delivery\nabove ₹499",
+  "benefitReturns": "5-day return\n/ exchange",
+  "benefitSecure": "Secure\nUPI payment",
+  "deliveryCheckTitle": "Check delivery date",
+  "deliveryEnterPin": "Enter your pincode",
+  "deliveryChecking": "Checking…",
+  "deliveryGetItBy": "Get it by",
+  "deliveringTo": "Delivering to {pin}",
+  "@deliveringTo": {
+    "placeholders": {
+      "pin": {
+        "type": "String"
+      }
+    }
+  },
+  "change": "Change",
+  "aboutProduct": "About this product",
+  "highlights": "Highlights",
+  "specifications": "Specifications",
+  "ratingsReviews": "Ratings & reviews",
+  "writeReview": "Write a review",
+  "signInToReview": "Sign in to review",
+  "noReviewsYet": "No reviews yet",
+  "noReviewsBody": "Bought this? Tell others how it is.",
+  "reviewsCount": "{count, plural, =1{1 review} other{{count} reviews}}",
+  "@reviewsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "verifiedPurchase": "Verified purchase",
+  "reviewTapStars": "Tap the stars to rate",
+  "reviewPickStars": "Please choose a star rating",
+  "star1": "Poor",
+  "star2": "Fair",
+  "star3": "Good",
+  "star4": "Very good",
+  "star5": "Excellent",
+  "reviewTitle": "Title (optional)",
+  "reviewComment": "Your review (optional)",
+  "postReview": "Post review",
+  "reviewThanks": "Thanks for your review!",
+  "shareText": "{name} for just {price} at Nirmal Mart 🛒\n{link}",
+  "@shareText": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "share": "Share",
+  "topDeal": "Top deal",
+  "catTrendingChip": "Trending",
+  "newArrival": "New arrival",
+  "beFirstToReview": "Be the first to review",
+  "youMayAlsoLike": "You may also like",
+  "addToBag": "Add to bag",
+  "goToBag": "Go to bag",
+  "buyNow": "Buy now",
+  "productGone": "This product isn’t available",
+  "productGoneBody": "It may have been removed from the shop. Have a look at what’s new instead.",
+  "backToShopping": "Back to shopping",
+  "searchHint": "Search in English or मराठी",
+  "clearSearch": "Clear",
+  "recentSearches": "Recent searches",
+  "clearAll": "Clear all",
+  "popularNow": "Popular right now",
+  "browseCategories": "Browse categories",
+  "seeAllResultsFor": "See all results for “{q}”",
+  "@seeAllResultsFor": {
+    "placeholders": {
+      "q": {
+        "type": "String"
+      }
+    }
+  },
+  "useThisName": "Search this name",
+  "resultsCount": "{count, plural, =1{1 result} other{{count} results}}",
+  "@resultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "resultsFor": "for “{q}”",
+  "@resultsFor": {
+    "placeholders": {
+      "q": {
+        "type": "String"
+      }
+    }
+  },
+  "showingResultsFor": "Showing results for “{q}”: {word}",
+  "@showingResultsFor": {
+    "placeholders": {
+      "q": {
+        "type": "String"
+      },
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "showingSimilar": "Showing close matches",
+  "noResultsFor": "No results for “{q}”",
+  "@noResultsFor": {
+    "placeholders": {
+      "q": {
+        "type": "String"
+      }
+    }
+  },
+  "noResultsBody": "Check the spelling, or try a simpler word.",
+  "didYouMean": "Did you mean",
+  "youMightLike": "You might like these",
+  "noFilterResults": "Nothing matches these filters",
+  "noFilterResultsBody": "Try removing a filter.",
+  "clearFilters": "Clear filters",
+  "filterInStock": "In stock",
+  "under": "Under {price}",
+  "@under": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "sortBy": "Sort by",
+  "sortBest": "Best match",
+  "sortPriceLow": "Price: low to high",
+  "sortPriceHigh": "Price: high to low",
+  "sortDiscount": "Biggest discount",
+  "sortNewest": "Newest",
+  "shopAlt": "खरेदी",
+  "shopEmpty": "Nothing here yet",
+  "shopEmptyBody": "New products are added often — have a look at the rest of the shop.",
+  "seeAllProducts": "See all products",
+  "productsCount": "{count, plural, =1{1 product} other{{count} products}}",
+  "@productsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backToTop": "Back to top",
+  "sortPopular": "Popular",
+  "filters": "Filters",
+  "allProducts": "All",
+  "removeFilter": "Remove filter {name}",
+  "@removeFilter": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "viewGrid": "Grid view",
+  "viewList": "List view",
+  "categoryLabel": "Category",
+  "priceLabel": "Price",
+  "brandLabel": "Brand",
+  "inStockOnly": "In stock only",
+  "reset": "Reset",
+  "showResults": "Show results",
+  "noProductsMatch": "No products match",
+  "showProducts": "{count, plural, =1{Show 1 product} other{Show {count} products}}",
+  "@showProducts": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "myBag": "My bag",
+  "myBagAlt": "माझी बॅग",
+  "freeDeliveryUnlocked": "Yay! You get FREE delivery on this order",
+  "deliveryBy": "by",
+  "lineSoldOut": "Out of stock — remove it to continue",
+  "lineOnlyLeft": "Only {count} left — reduce the quantity",
+  "@lineOnlyLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "percentOff": "{pct}% off",
+  "@percentOff": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      }
+    }
+  },
+  "remove": "Remove",
+  "removedFromBag": "Removed from bag",
+  "undo": "Undo",
+  "moveToWishlist": "Move to wishlist",
+  "movedToWishlist": "Moved to wishlist",
+  "fixQuantity": "Set to what's left",
+  "fillGapTitle": "Add {amount} more for free delivery",
+  "@fillGapTitle": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "fillGapBody": "Any one of these gets you there",
+  "priceDetails": "Price details",
+  "mrpItems": "{count, plural, =1{MRP (1 item)} other{MRP ({count} items)}}",
+  "@mrpItems": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "discount": "Discount",
+  "deliveryLabel": "Delivery",
+  "free": "FREE",
+  "total": "Total",
+  "includesGst": "Includes GST {amount}",
+  "@includesGst": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "savingOnOrder": "You’re saving {amount} on this order",
+  "@savingOnOrder": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "secureCheckout": "Secure checkout",
+  "payByUpi": "Pay by UPI",
+  "fiveDayReturns": "5-day returns",
+  "fixBagFirst": "Some items need attention before checkout",
+  "viewDetails": "View details",
+  "checkout": "Checkout",
+  "bagEmpty": "Your bag is empty",
+  "bagEmptyAlt": "तुमची बॅग रिकामी आहे",
+  "bagEmptyBody": "Trending gadgets and home essentials are waiting.",
+  "startShopping": "Start shopping",
+  "inYourWishlist": "{count, plural, =1{1 item in your wishlist} other{{count} items in your wishlist}}",
+  "@inYourWishlist": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "view": "View",
+  "checkoutAlt": "चेकआउट",
+  "deliverToCaps": "DELIVER TO",
+  "itemsCaps": "{count, plural, =1{1 ITEM} other{{count} ITEMS}}",
+  "@itemsCaps": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "editBag": "Edit bag",
+  "deliveryInstructions": "Delivery instructions (optional)",
+  "paymentCaps": "PAYMENT",
+  "upiApps": "Google Pay, PhonePe, Paytm, BHIM…",
+  "payAfterPlacing": "You’ll pay right after placing the order — open your UPI app from here, or scan the QR.",
+  "itemsLabel": "{count, plural, =1{Items (1)} other{Items ({count})}}",
+  "@itemsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "youSavedLabel": "You save",
+  "toPay": "To pay",
+  "placeOrder": "Place order · {amount}",
+  "@placeOrder": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "placingOrder": "Placing order…",
+  "agreeTerms": "By placing the order you agree to the Terms & Privacy Policy",
+  "orderFailed": "Couldn’t place the order. Please try again.",
+  "addAddressFirst": "Add a delivery address to continue",
+  "addressesError": "Couldn’t load your addresses",
+  "addDeliveryAddress": "Add delivery address",
+  "chooseAddress": "Deliver to",
+  "addNewAddress": "Add new address",
+  "newAddress": "New address",
+  "fieldLine1": "House no., building, street",
+  "fieldLine2": "Area, landmark (optional)",
+  "fieldCity": "City",
+  "fieldState": "State",
+  "errLine1": "Enter house no. and street",
+  "errCity": "Enter a city name using letters only",
+  "errState": "Select state",
+  "labelHome": "Home",
+  "labelWork": "Work",
+  "labelOther": "Other",
+  "saveDeliverHere": "Save and deliver here",
+  "orderPlaced": "Order placed!",
+  "orderPlacedPay": "One last step — pay by UPI and send us the proof.",
+  "orderPlacedThanks": "Thank you for shopping with Nirmal Mart. We’ll keep you posted.",
+  "orderNumber": "Order {number}",
+  "@orderNumber": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "orderIdCopied": "Order ID copied",
+  "viewOrder": "View order",
+  "continueShopping": "Continue shopping",
+  "paymentPending": "Payment pending",
+  "payByUpi2": "Pay {amount} by UPI",
+  "@payByUpi2": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "qrFor": "UPI QR code for {payee}",
+  "@qrFor": {
+    "placeholders": {
+      "payee": {
+        "type": "String"
+      }
+    }
+  },
+  "payWithUpiApp": "Pay with UPI app",
+  "saveQr": "Save QR to gallery",
+  "copyUpiId": "Copy UPI ID",
+  "upiIdCopied": "UPI ID copied",
+  "noUpiApp": "No UPI app found — scan or save the QR instead",
+  "qrSaved": "QR saved to your gallery — open it from your UPI app",
+  "qrNotSaved": "Couldn’t save the QR — please allow photo access",
+  "payStepsTitle": "How to pay",
+  "payStep1": "Pay exactly {amount} — tap Pay with UPI app, or scan the QR.",
+  "@payStep1": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payStep2": "Take a screenshot of the successful payment.",
+  "payStep3": "Tap the green button and attach the screenshot in WhatsApp.",
+  "utrHint": "UPI reference / UTR no. (optional)",
+  "sendProof": "Send payment proof on WhatsApp",
+  "sendProofNote": "Sends to {number}. We’ll confirm your order once the payment is checked.",
+  "@sendProofNote": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "beingPacked": "Being packed",
+  "buyAgain": "Buy again",
+  "buyAgainNone": "These items are sold out right now",
+  "buyAgainSome": "{count, plural, =1{1 item added — the rest are sold out} other{{count} items added — the rest are sold out}}",
+  "@buyAgainSome": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cancelExchangeQ": "Cancel this exchange?",
+  "cancelReturnQ": "Cancel this return?",
+  "cancelRequestBody": "The courier pickup will be called off too.",
+  "cancelNoChargeNote": "No payment has been confirmed for this order, so nothing will be charged.",
+  "cancelOrder": "Cancel order",
+  "cancelPackedNote": "Your parcel is packed. Cancelling now also cancels the courier pickup.",
+  "cancelRefundNote": "Your {amount} will be refunded to the UPI account you paid from.",
+  "@cancelRefundNote": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelRequest": "Cancel request",
+  "cancelledNothingCharged": "Cancelled · nothing was charged",
+  "cancelledOn": "Cancelled on {date}",
+  "@cancelledOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelledRefundPending": "Cancelled · {amount} refund on the way",
+  "@cancelledRefundPending": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelledRefunded": "Cancelled · {amount} refunded",
+  "@cancelledRefunded": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "deliveredOn": "Delivered {date}",
+  "@deliveredOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "deliveredReturnUntil": "Delivered {date} · return until {until}",
+  "@deliveredReturnUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "until": {
+        "type": "String"
+      }
+    }
+  },
+  "deliveringToCaps": "DELIVERING TO",
+  "details": "Details",
+  "exchangeIt": "Exchange",
+  "exchangeNote": "We’ll pick up the item and send you a replacement — no extra charge.",
+  "exchangeRequested": "Exchange requested — we’ll be in touch",
+  "exchangeWord": "Exchange",
+  "helpMessage": "Hello Nirmal Mart, I need help with my order {number}.",
+  "@helpMessage": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "inReturn": "{count} in return",
+  "@inReturn": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "keepIt": "Keep it",
+  "keepOrder": "Keep order",
+  "myOrders": "My orders",
+  "myOrdersAlt": "माझ्या ऑर्डर्स",
+  "needHelp": "Need help?",
+  "noOrders": "No orders yet",
+  "noOrdersBody": "When you order something, you’ll find it here.",
+  "noOrdersHere": "Nothing here",
+  "onTheWay": "On the way",
+  "orderCancelled": "Order cancelled",
+  "orderConfirmedLine": "Order confirmed · we’ll pack it soon",
+  "orderDetails": "Order details",
+  "ordersActive": "Active",
+  "ordersCount": "{count, plural, =1{1 order} other{{count} orders}}",
+  "@ordersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "paidBy": "Payment: {method}",
+  "@paidBy": {
+    "placeholders": {
+      "method": {
+        "type": "String"
+      }
+    }
+  },
+  "payNow": "Pay now",
+  "payToConfirm": "Pay {amount} to confirm your order",
+  "@payToConfirm": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payToConfirmBody": "We’ll start packing once your UPI payment is checked.",
+  "pickItemsAndReason": "Choose the items and a reason",
+  "pickReason": "Choose a reason",
+  "placedOn": "Placed {when}",
+  "@placedOn": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plusMore": "+{count} more",
+  "@plusMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qtyPrice": "Qty {qty} · {price}",
+  "@qtyPrice": {
+    "placeholders": {
+      "qty": {
+        "type": "int"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "rateItems": "Rate items",
+  "refundDone": "{amount} refunded to your UPI account",
+  "@refundDone": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "refundOnTheWay": "{amount} refund on the way to your UPI account",
+  "@refundOnTheWay": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "refundToUpi": "refund {amount} to your UPI",
+  "@refundToUpi": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "requestCancelled": "Request cancelled",
+  "requestExchange": "Request exchange",
+  "requestReturn": "Request return",
+  "retApproved": "Approved",
+  "retExchanged": "Exchanged",
+  "retPickedUp": "Picked up",
+  "retPickupScheduled": "Pickup scheduled",
+  "retReceived": "Received",
+  "retRefunded": "Refunded",
+  "retRejected": "Not approved",
+  "retRequested": "Requested",
+  "returnCommentHint": "Anything else we should know? (optional)",
+  "returnExchange": "Return / exchange",
+  "returnForRefund": "Return",
+  "returnInProgressLine": "Return or exchange in progress",
+  "returnNote": "We’ll pick it up from your address. {amount} will be refunded to your UPI once it reaches us.",
+  "@returnNote": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "returnNoteNoAmount": "We’ll pick it up from your address and refund you once it reaches us.",
+  "returnRequested": "Return requested — we’ll be in touch",
+  "returnUntilDays": "{days, plural, =1{Return or exchange until {date} · 1 day left} other{Return or exchange until {date} · {days} days left}}",
+  "@returnUntilDays": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "returnUntilToday": "Return or exchange until {date} · last day",
+  "@returnUntilToday": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "returnWord": "Return",
+  "sendProofShort": "Send proof",
+  "stAwaitingPayment": "Awaiting payment",
+  "stCancelled": "Cancelled",
+  "stConfirmed": "Confirmed",
+  "stDelivered": "Delivered",
+  "stPacked": "Packed",
+  "stRefundPending": "Refund pending",
+  "stRefunded": "Refunded",
+  "stReturnInProgress": "Return in progress",
+  "stShipped": "Shipped",
+  "statusCaps": "STATUS",
+  "stepConfirmed": "Confirmed",
+  "stepDelivered": "Delivered",
+  "stepPacked": "Packed",
+  "stepPlaced": "Placed",
+  "stepShipped": "Shipped",
+  "today": "Today",
+  "track": "Track",
+  "trackPickup": "Track pickup",
+  "upiPending": "UPI (pending)",
+  "whatsWrong": "What’s the reason?",
+  "whichItems": "Which items?",
+  "whyCancel": "Why are you cancelling?",
+  "addedToBagCount": "{count, plural, =1{1 item added to bag} other{{count} items added to bag}}",
+  "@addedToBagCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wishlistShareTitle": "My Nirmal Mart wishlist 🛒",
+  "wishlistGuest": "Saved on this phone only. Sign in to keep it on every device.",
+  "priceDropBanner": "{count, plural, =1{1 item is cheaper than when you saved it} other{{count} items are cheaper than when you saved them}}",
+  "@priceDropBanner": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wishlistAlt": "विशलिस्ट",
+  "savedCount": "{count} saved",
+  "@savedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addAllToBag": "Add all to bag",
+  "movedToBag": "Moved to bag",
+  "inYourBag": "In your bag",
+  "moveToBag": "Move to bag",
+  "priceDropped": "Price dropped {amount}",
+  "@priceDropped": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "wishlistEmpty": "Nothing saved yet",
+  "wishlistEmptyBody": "Tap the ♡ on any product to save it here for later.",
+  "exploreProducts": "Explore products",
+  "accountCaps": "ACCOUNT",
+  "accountDeleted": "Your account has been deleted",
+  "accountGuestBody": "Sign in to track orders and keep your bag and wishlist on every device.",
+  "accountHello": "Hello!",
+  "addressDeleted": "Address removed",
+  "addressesTile": "Addresses",
+  "appearance": "Appearance",
+  "awaitingPaymentCount": "{count, plural, =1{1 awaiting payment} other{{count} awaiting payment}}",
+  "@awaitingPaymentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cancel": "Cancel",
+  "changePassword": "Change password",
+  "confirmNewPassword": "Confirm new password",
+  "currentPassword": "Current password",
+  "defaultSet": "Default address updated",
+  "defaultTag": "DEFAULT",
+  "deleteAccount": "Delete account",
+  "deleteAccountQ": "Delete your account?",
+  "deleteAccountSub": "Permanently remove your account",
+  "deleteAddressQ": "Remove this address?",
+  "deleteEnterPassword": "Enter your password to confirm",
+  "deleteKeepsOrders": "Order records are kept without your contact details, as required for GST and returns. Orders still on their way must be delivered or cancelled first.",
+  "deleteMyAccount": "Delete my account",
+  "deletePoint1": "Your name, email, mobile, saved addresses, bag and wishlist are erased.",
+  "deletePoint2": "You’ll be signed out and can’t sign in to this account again.",
+  "deletePoint3": "This can’t be undone. You can create a new account later with the same email.",
+  "edit": "Edit",
+  "editAddress": "Edit address",
+  "editProfile": "Edit profile",
+  "emailCantChange": "Email can’t be changed",
+  "enterCurrentPassword": "Enter your current password",
+  "faqs": "FAQs",
+  "helpCaps": "HELP",
+  "helpGeneral": "Hello Nirmal Mart, I have a question.",
+  "keepMyAccount": "Keep my account",
+  "language": "Language",
+  "makeDefault": "Make default",
+  "myStuffCaps": "MY STUFF",
+  "newPassword": "New password",
+  "noAddressesBody": "Add one now and checkout will be quicker.",
+  "noAddressesYet": "No saved addresses",
+  "ordersTile": "Orders",
+  "passwordUpdated": "Password updated",
+  "passwordsDontMatch": "Passwords don’t match",
+  "payAmount": "Pay {amount}",
+  "@payAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "perkFaster": "Faster checkout with saved addresses",
+  "perkSync": "Wishlist and bag saved to your account",
+  "perkTrack": "Track every order",
+  "privacyPolicy": "Privacy policy",
+  "profileUpdated": "Profile updated",
+  "saveAddress": "Save address",
+  "saveChanges": "Save changes",
+  "savedAddresses": "Saved addresses",
+  "settingsCaps": "SETTINGS",
+  "shippingReturns": "Shipping & delivery",
+  "signOut": "Sign out",
+  "signOutBody": "Your bag and wishlist stay saved in your account.",
+  "signOutQ": "Sign out?",
+  "signedOut": "Signed out",
+  "termsOfUse": "Terms of use",
+  "themeAuto": "Auto",
+  "themeDark": "Dark",
+  "themeLight": "Light",
+  "updatePassword": "Update password",
+  "version": "version {v}",
+  "@version": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "updateReady": "A new version of Nirmal Mart is ready. Restart to use it.",
+  "later": "Later",
+  "restart": "Restart",
+  "contactUsTitle": "Contact us",
+  "contactUsBody": "Choose whichever is easier for you.",
+  "contactUsSub": "WhatsApp, email or call",
+  "contactWhatsApp": "Chat on WhatsApp",
+  "contactWhatsAppSub": "Quickest — send photos too",
+  "contactCall": "Call us",
+  "callFailed": "Couldn’t open the dialer — call {phone}",
+  "@callFailed": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "faqTitle": "FAQs",
+  "stillQuestion": "Still have a question?",
+  "followUs": "Follow us",
+  "followUsSub": "New arrivals, offers and product videos",
+  "linkFailed": "Couldn’t open the link",
+  "contactEmail": "Email us",
+  "emailFailed": "No email app found — write to {email}",
+  "@emailFailed": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "helpEmailSubject": "Help with order {number}",
+  "@helpEmailSubject": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "adminNoteTitle": "Store admin",
+  "adminNoteBody": "Orders, products, stock and settings are managed on the website.",
+  "adminNoteOpen": "Open admin",
+  "refundPolicy": "Refund & cancellation policy",
+  "upiRef": "UPI ref {ref}",
+  "@upiRef": {
+    "placeholders": {
+      "ref": {
+        "type": "String"
+      }
+    }
+  },
+  "forgotEmailBody": "Enter your account email and we’ll send you a link to choose a new password.",
+  "sendResetLink": "Send reset link",
+  "checkYourEmail": "Check your email",
+  "resetSentBody": "If {email} has an account, we’ve sent a link to reset the password. It works for 1 hour — check spam too. After choosing a new password, sign in here.",
+  "@resetSentBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "backToSignIn": "Back to sign in",
+  "resendLink": "Didn’t get it? Send again",
+  "forgotNoEmailAccess": "Can’t get into your email? WhatsApp us",
+  "notificationsCaps": "NOTIFICATIONS",
+  "notifOrders": "Order updates",
+  "notifOrdersSub": "Payment, shipping, delivery and refunds",
+  "notifOffers": "Offers & deals",
+  "notifOffersSub": "Sales and new arrivals",
+  "notifBlocked": "Notifications are off for Nirmal Mart. Turn them on in your phone’s Settings → Apps → Nirmal Mart → Notifications."
+}

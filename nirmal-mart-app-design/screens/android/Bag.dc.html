@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Bag</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Noto+Sans+Devanagari:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#317239;text-decoration:none}a:hover{color:#245a2b}
+.nm-scroll{scrollbar-width:none}.nm-scroll::-webkit-scrollbar{display:none}
+@keyframes nmUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.nm-up{animation:nmUp .55s cubic-bezier(.2,.8,.2,1) both}
+@keyframes nmFade{from{opacity:0}to{opacity:1}}
+.nm-fade{animation:nmFade .3s ease both}
+@keyframes nmPop{0%{transform:scale(.6)}50%{transform:scale(1.3)}100%{transform:scale(1)}}
+.nm-pop{animation:nmPop .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes nmBA{0%{transform:scale(1)}40%{transform:scale(1.45)}100%{transform:scale(1)}}
+@keyframes nmBB{0%{transform:scale(1)}40%{transform:scale(1.45)}100%{transform:scale(1)}}
+.nm-ba{animation:nmBA .5s ease}.nm-bb{animation:nmBB .5s ease}
+@keyframes nmShimmer{from{background-position:-300px 0}to{background-position:300px 0}}
+.nm-sk{background:linear-gradient(90deg,#EEEEEA 0,#F8F8F5 50%,#EEEEEA 100%);background-size:600px 100%;animation:nmShimmer 1.2s linear infinite}
+.nm-press{transition:transform .15s ease,background-color .25s ease,color .25s ease}.nm-press:active{transform:scale(.95)}
+@keyframes nmSheet{from{transform:translateY(100%)}to{transform:none}}
+.nm-sheet{animation:nmSheet .38s cubic-bezier(.2,.9,.25,1) both}
+@keyframes nmDraw{to{stroke-dashoffset:0}}
+@keyframes nmConf{0%{transform:translateY(-60px) rotate(0);opacity:1}100%{transform:translateY(640px) rotate(620deg);opacity:0}}
+@keyframes nmFloat{0%,100%{transform:translateY(0) rotate(var(--r,6deg))}50%{transform:translateY(-12px) rotate(var(--r,6deg))}}
+.nm-float{animation:nmFloat 4s ease-in-out infinite}
+@keyframes nmFly{0%{transform:translate(0,0) scale(1);opacity:1}80%{opacity:1}100%{transform:translate(118px,-700px) scale(.25);opacity:0}}
+.nm-fly{animation:nmFly .75s cubic-bezier(.5,0,.75,.4) forwards}
+@keyframes nmRing{0%{box-shadow:0 0 0 0 rgba(49,114,57,.45)}100%{box-shadow:0 0 0 14px rgba(49,114,57,0)}}
+.nm-ring{animation:nmRing 1.4s ease-out infinite}
+@keyframes nmDrive{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
+.nm-drive{animation:nmDrive 1.2s ease-in-out infinite}
+@keyframes nmSpin{to{transform:rotate(360deg)}}
+@keyframes nmToast{0%{opacity:0;transform:translate(-50%,20px)}12%{opacity:1;transform:translate(-50%,0)}85%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,10px)}}
+.nm-toast{animation:nmToast 2.2s ease both}
+@keyframes nmScaleIn{from{opacity:0;transform:scale(.4) rotate(-12deg)}to{opacity:1;transform:none}}
+.nm-scalein{animation:nmScaleIn .7s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes nmGrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes nmTick{0%{transform:translateY(-6px);opacity:0}100%{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FAFAF8; color: #111217; font-family: Inter, 'Noto Sans Devanagari', system-ui, sans-serif; box-sizing: border-box">
+<div class="nm-scroll" style="position: absolute; top: 0; left: 0; right: 0; bottom: 100px; overflow-y: auto; overflow-x: hidden"><div style="padding: 36px 4px 0; height: 64px; box-sizing: content-box; display: flex; align-items: center; gap: 4px"><a href="Android-Product.dc.html" aria-label="Back" class="nm-press" style="position: relative; width: 48px; height: 48px; border-radius: 999px; background: transparent; border: none; display: flex; align-items: center; justify-content: center; color: #111217; padding: 0; cursor: pointer; box-sizing: border-box; flex-shrink: 0"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display: block; flex-shrink: 0"><path d="M20 12H5"/><path d="M11 6l-6 6 6 6"/></svg></a><div style="flex: 1; min-width: 0"><h1 style="margin: 0; font-size: 22px; font-weight: 700; line-height: 1.2">{{ title }}</h1></div></div><sc-if value="{{ has }}" hint-placeholder-val="{{ true }}">
+<div style="margin: 10px 16px 0; background: {{ fdBg }}; border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; transition: background-color .3s ease">
+<div style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600; color: #1E4D25"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#317239" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display: block; flex-shrink: 0"><path d="M3 6h11v10H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>{{ fdText }}</div>
+<div style="height: 6px; border-radius: 3px; background: #DCE7DD; overflow: hidden"><div style="width: {{ fdPct }}%; height: 6px; border-radius: 3px; background: #317239; transition: width .6s cubic-bezier(.3,.9,.3,1)"></div></div>
+</div>
+<div style="padding: 0 16px"><sc-for list="{{ items }}" as="item" hint-placeholder-count="3"><div class="nm-up" style="animation-delay: {{ item.delay }}ms; display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid #E5E5E0">
+<div style="width: 84px; height: 84px; flex-shrink: 0"><div style="width: 100%; height: 84px; background: #F3F3F0; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #317239"><sc-if value="{{ item.ic_car }}" hint-placeholder-val="{{ true }}"><svg role="img" aria-label="Product photo" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="display: block; flex-shrink: 0"><path d="M4 16v-4l2.5-5h11L20 12v4z"/><circle cx="8" cy="16.5" r="2"/><circle cx="16" cy="16.5" r="2"/><path d="M4 12h16"/></svg></sc-if><sc-if value="{{ item.ic_bolt }}" hint-placeholder-val="{{ false }}"><svg role="img" aria-label="Product photo" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="display: block; flex-shrink: 0"><path d="M13 3L5 14h6l-1 7 8-11h-6z"/></svg></sc-if><sc-if value="{{ item.ic_bottle }}" hint-placeholder-val="{{ false }}"><svg role="img" aria-label="Product photo" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="display: block; flex-shrink: 0"><path d="M10 3h4v3l2 3v12H8V9l2-3z"/><path d="M8 13h8"/></svg></sc-if><sc-if value="{{ item.ic_kitchen }}" hint-placeholder-val="{{ false }}"><svg role="img" aria-label="Product photo" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="display: block; flex-shrink: 0"><path d="M4 10h16v4a6 6 0 0 1-6 6h-4a6 6 0 0 1-6-6z"/><path d="M2 10h20"/><path d="M9 7c0-1 1-2 1-3M14 7c0-1 1-2 1-3"/></svg></sc-if><sc-if value="{{ item.ic_clean }}" hint-placeholder-val="{{ false }}"><svg role="img" aria-label="Product photo" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="display: block; flex-shrink: 0"><path d="M8 9h6v12H8z"/><path d="M9 9V6h4l3-2"/><path d="M18 7h2M18 10h2"/></svg></sc-if><sc-if value="{{ item.ic_bath }}" hint-placeholder-val="{{ false }}"><svg role="img" aria-label="Product photo" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="display: block; flex-shrink: 0"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/></svg></sc-if><sc-if value="{{ item.ic_kids }}" hint-placeholder-val="{{ false }}"><svg role="img" aria-label="Product photo" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="display: block; flex-shrink: 0"><path d="M4 20l4-1 11-11-3-3L5 16z"/><path d="M14 7l3 3"/></svg></sc-if></div></div>
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<div style="font-size: 14px; font-weight: 600; line-height: 1.3">{{ item.name }}</div>
+<div lang="mr" style="font-size: 11px; color: #5F6270">{{ item.mr }}</div>
+<div style="display: flex; align-items: baseline; gap: 6px; margin-top: 2px"><span style="font-size: 15px; font-weight: 800">{{ item.lineTxt }}</span><span style="font-size: 12px; color: #5F6270; text-decoration: line-through">{{ item.lineMrpTxt }}</span></div>
+<div style="display: flex; align-items: center; justify-content: space-between; margin-top: 6px">
+<div style="display: flex; align-items: center; border: 1px solid #E5E5E0; border-radius: 999px; background: #fff; height: 34px">
+<button type="button" aria-label="Decrease quantity" onClick="{{ item.dec }}" style="width: 36px; height: 34px; border: none; background: none; color: #111217; display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: block; flex-shrink: 0"><path d="M5 12h14"/></svg></button>
+<span style="min-width: 22px; text-align: center; font-size: 14px; font-weight: 700">{{ item.q }}</span>
+<button type="button" aria-label="Increase quantity" onClick="{{ item.inc }}" style="width: 36px; height: 34px; border: none; background: none; color: #317239; display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: block; flex-shrink: 0"><path d="M12 5v14M5 12h14"/></svg></button>
+</div>
+<div style="display: flex; align-items: center">
+<button type="button" onClick="{{ item.save }}" style="height: 40px; border: none; background: none; color: #317239; font: inherit; font-size: 13px; font-weight: 600; padding: 0 8px; cursor: pointer">Save for later</button>
+<button type="button" aria-label="Remove {{ item.name }}" onClick="{{ item.remove }}" style="width: 40px; height: 40px; border: none; background: none; color: #5F6270; display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display: block; flex-shrink: 0"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/></svg></button>
+</div></div></div></div></sc-for></div>
+<button type="button" class="nm-press" style="margin: 16px 16px 0; width: calc(100% - 32px); height: 52px; border: 1px dashed #B9C9BB; border-radius: 12px; background: #fff; display: flex; align-items: center; gap: 10px; padding: 0 14px; font: inherit; font-size: 14px; font-weight: 600; color: #111217; cursor: pointer"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#317239" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display: block; flex-shrink: 0"><path d="M3 12V4h8l9 9-8 8-9-9z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg><span style="flex: 1; text-align: left">Apply coupon</span><span style="color: #317239">View offers</span><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5F6270" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display: block; flex-shrink: 0"><path d="M9 5l7 7-7 7"/></svg></button>
+<div style="margin: 16px 16px 24px; background: #fff; border: 1px solid #E5E5E0; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; font-size: 14px">
+<div style="font-size: 15px; font-weight: 700">Price details</div>
+<div style="display: flex; justify-content: space-between; color: #4C4F5C"><span>MRP ({{ countTxt }})</span><span>{{ mrpTxt }}</span></div>
+<div style="display: flex; justify-content: space-between; color: #4C4F5C"><span>Discount</span><span style="color: #15803D">−{{ saveTxt }}</span></div>
+<div style="display: flex; justify-content: space-between; color: #4C4F5C"><span>Delivery</span><span style="color: {{ delColor }}; font-weight: 600">{{ delTxt }}</span></div>
+<div style="height: 1px; background: #E5E5E0"></div>
+<div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 16px"><span>Total</span><span>{{ totalTxt }}</span></div>
+</div>
+</sc-if>
+<sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}"><div class="nm-up" style="padding: 90px 40px 0; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center">
+<span class="nm-scalein" style="width: 110px; height: 110px; border-radius: 999px; background: #E9F3EB; color: #317239; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="display: block; flex-shrink: 0"><path d="M6 7h12l1 13H5L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></span>
+<div style="font-size: 22px; font-weight: 800">Your bag is empty</div><div lang="mr" style="font-size: 13px; color: #5F6270">तुमची बॅग रिकामी आहे</div>
+<div style="font-size: 14px; color: #5F6270; line-height: 1.5">Trending gadgets and home essentials are waiting.</div>
+<a href="Android-Shop.dc.html" class="nm-press" style="margin-top: 8px; height: 48px; padding: 0 28px; border-radius: 24px; background: #317239; color: #fff; font-size: 16px; font-weight: 700; display: flex; align-items: center">Start shopping</a>
+</div></sc-if></div><sc-if value="{{ has }}" hint-placeholder-val="{{ true }}"><div style="position: absolute; left: 0; right: 0; bottom: 0; background: #F1F3EE; padding: 12px 16px 28px; display: flex; align-items: center; gap: 14px; z-index: 5"><div><div style="font-size: 20px; font-weight: 800">{{ totalTxt }}</div><div style="font-size: 12px; font-weight: 600; color: #15803D">You save {{ saveTxt }}</div></div><a href="Android-Checkout.dc.html" class="nm-press" style="flex: 1; height: 56px; border-radius: 28px; background: #317239; color: #fff; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; border: none; cursor: pointer; font-family: inherit; box-shadow: 0 2px 6px rgba(49,114,57,0.3); ">Checkout <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="display: block; flex-shrink: 0"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg></a></div></sc-if><sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}"><div key="{{ toastKey }}" class="nm-toast" role="status" style="position: absolute; left: 50%; bottom: 120px; background: #111217; color: #fff; font-size: 14px; font-weight: 600; padding: 12px 16px; border-radius: 8px; display: flex; align-items: center; gap: 8px; white-space: nowrap; z-index: 30"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="#fff" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display: block; flex-shrink: 0"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>{{ toast }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props){ super(props); this.state = { items: [{ id: 'torch', q: 1 }, { id: 'bottle', q: 1 }, { id: 'clip', q: 1 }], toast: '', toastKey: 0 }; }
+get P(){ if(!this._P){ this._P = [{"id": "vac", "name": "Vacuum Cleaner", "mr": "व्हॅक्यूम क्लीनर", "price": 1000, "mrp": 2100, "icon": "car", "cat": "car"}, {"id": "washer", "name": "Portable Washer Gun", "mr": "पोर्टेबल वॉशर गन", "price": 1500, "mrp": 2000, "icon": "car", "cat": "car"}, {"id": "pump", "name": "Mini Foot Pump", "mr": "मिनी फूट पंप", "price": 400, "mrp": 599, "icon": "car", "cat": "car"}, {"id": "holder", "name": "Bike Mobile Holder", "mr": "बाईक मोबाईल होल्डर", "price": 250, "mrp": 399, "icon": "car", "cat": "car"}, {"id": "org", "name": "Car Back Seat Organizer", "mr": "कार बॅक सीट ऑर्गनायझर", "price": 150, "mrp": 180, "icon": "car", "cat": "car"}, {"id": "torch", "name": "LM 7703 Torch", "mr": "LM 7703 टॉर्च", "price": 450, "mrp": 599, "icon": "bolt", "cat": "tools"}, {"id": "mz", "name": "Rechargeable Torch (MZ M035)", "mr": "रिचार्जेबल टॉर्च", "price": 400, "mrp": 800, "icon": "bolt", "cat": "tools"}, {"id": "solar", "name": "Camera Shape Solar Light", "mr": "कॅमेरा आकाराचा सोलर लाईट", "price": 400, "mrp": 700, "icon": "bolt", "cat": "tools"}, {"id": "bottle", "name": "Steel Bottle", "mr": "स्टील बाटली", "price": 200, "mrp": 400, "icon": "bottle", "cat": "kitchen"}, {"id": "grinder", "name": "Electric Grinder", "mr": "इलेक्ट्रिक ग्राइंडर", "price": 400, "mrp": 700, "icon": "kitchen", "cat": "kitchen"}, {"id": "plate", "name": "Leaf Shape Chutney Plate Pack of 10", "mr": "पानाच्या आकाराची चटणी प्लेट (१० नग)", "price": 100, "mrp": 150, "icon": "kitchen", "cat": "kitchen"}, {"id": "divider", "name": "Refrigerator Adjustable Divider Pack of 5", "mr": "फ्रिज डिव्हायडर (५ नग)", "price": 50, "mrp": 75, "icon": "kitchen", "cat": "kitchen"}, {"id": "duster", "name": "Microfiber Feather Duster", "mr": "मायक्रोफायबर फेदर डस्टर", "price": 200, "mrp": 300, "icon": "clean", "cat": "clean"}, {"id": "rope", "name": "Clothes Rope with Hooks", "mr": "हुकसह कपड्यांची दोरी", "price": 100, "mrp": 150, "icon": "clean", "cat": "clean"}, {"id": "mop", "name": "Feather Mop", "mr": "फेदर मॉप", "price": 120, "mrp": 150, "icon": "clean", "cat": "clean"}, {"id": "clip", "name": "Toothbrush Cover Clip Pack Of 10", "mr": "टूथब्रश कव्हर क्लिप 10 नगांचा संच", "price": 100, "mrp": 200, "icon": "bath", "cat": "bath"}, {"id": "soap", "name": "Wall Mounted Soap Rack (Pack of 04)", "mr": "भिंतीवर लावण्यासाठी साबणाचा ट्रे (०४ नग)", "price": 100, "mrp": 130, "icon": "bath", "cat": "bath"}, {"id": "tablet", "name": "LCD Writing Tablet", "mr": "एलसीडी रायटिंग टॅब्लेट", "price": 100, "mrp": 150, "icon": "kids", "cat": "kids"}]; } return this._P; }
+fmt(n){ return '\u20B9' + Number(n).toLocaleString('en-IN'); }
+prod(id){ return this.P.find(function(p){ return p.id === id; }); }
+item(p, extra){
+const o = Object.assign({}, p, { priceTxt: this.fmt(p.price), mrpTxt: this.fmt(p.mrp), off: Math.round((1 - p.price / p.mrp) * 100) }, extra || {});
+['car','bolt','bottle','kitchen','clean','bath','kids'].forEach(function(k){ o['ic_' + k] = p.icon === k; });
+return o;
+}
+later(fn, ms){ this._t = this._t || []; this._t.push(setTimeout(fn, ms)); }
+componentWillUnmount(){ (this._t || []).forEach(clearTimeout); (this._i || []).forEach(clearInterval); }
+every(fn, ms){ this._i = this._i || []; this._i.push(setInterval(fn, ms)); }
+
+get isIOS(){ return false; }
+renderVals() {
+const s = this.state; const self = this;
+const its = s.items.map(function(it){ return Object.assign({}, self.prod(it.id), { q: it.q }); });
+const sub = its.reduce(function(a, x){ return a + x.price * x.q; }, 0); const mrp = its.reduce(function(a, x){ return a + x.mrp * x.q; }, 0);
+const n = its.reduce(function(a, x){ return a + x.q; }, 0); const free = sub >= 499;
+const upd = function(id, d){ self.setState(function(st){ return { items: st.items.map(function(it){ return it.id === id ? { id: it.id, q: Math.max(1, Math.min(10, it.q + d)) } : it; }) }; }); };
+const drop = function(id, msg){ self.setState(function(st){ return { items: st.items.filter(function(it){ return it.id !== id; }), toast: msg, toastKey: st.toastKey + 1 }; }); self.later(function(){ self.setState({ toast: '' }); }, 2300); };
+return { title: n ? 'Bag (' + n + ')' : 'Bag', has: its.length > 0, empty: its.length === 0, countTxt: n + (n === 1 ? ' item' : ' items'),
+fdText: free ? 'You’ve unlocked free delivery' : 'Add ' + this.fmt(499 - sub) + ' more for free delivery', fdPct: Math.min(100, Math.round(sub / 499 * 100)), fdBg: free ? '#E9F3EB' : '#FFF6E8',
+mrpTxt: this.fmt(mrp), saveTxt: this.fmt(mrp - sub), totalTxt: this.fmt(sub), delTxt: free ? 'FREE' : 'Calculated at checkout', delColor: free ? '#15803D' : '#4C4F5C',
+toast: s.toast, toastKey: s.toastKey,
+items: its.map(function(x, i){ return self.item(x, { delay: i * 70, q: x.q, lineTxt: self.fmt(x.price * x.q), lineMrpTxt: self.fmt(x.mrp * x.q),
+dec: function(){ upd(x.id, -1); }, inc: function(){ upd(x.id, 1); }, remove: function(){ drop(x.id, 'Removed from bag'); }, save: function(){ drop(x.id, 'Saved to your wishlist'); } }); }) };
+}
+}
+</script>
+</body>
+</html>

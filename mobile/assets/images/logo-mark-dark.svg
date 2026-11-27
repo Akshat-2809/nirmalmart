@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="20 228 1362 934" role="img" aria-label="Nirmal Mart">
+<defs><mask id="gap" maskUnits="userSpaceOnUse" x="0" y="0" width="1400" height="1400"><rect x="0" y="0" width="1400" height="1400" fill="#fff"/><circle cx="556" cy="1030" r="138" fill="#000"/><circle cx="1142" cy="1030" r="138" fill="#000"/></mask><clipPath id="inside"><path d="M0 0 H632 V325 C820 318 1010 372 1098 478 C1168 562 1158 690 1078 790 C996 890 860 944 682 956 V1400 H0 Z"/></clipPath></defs>
+<g fill="none" stroke="#F4F4F6" stroke-width="86" stroke-linecap="round" stroke-linejoin="round" mask="url(#gap)">
+<path d="M78 426 H430 L374 888 Q366 1004 480 1006"/>
+<path d="M480 1006 H1318"/>
+</g>
+<circle cx="556" cy="1030" r="114" fill="#F4F4F6"/>
+<circle cx="1142" cy="1030" r="114" fill="#F4F4F6"/>
+<path d="M548 852 L688 470 L906 800 L1120 440" clip-path="url(#inside)" fill="none" stroke="#4CA35E" stroke-width="122" stroke-linejoin="round"/>
+<path d="M1093 434 C1135 418 1178 428 1198 474 C1244 578 1290 738 1322 886 C1276 852 1226 852 1180 888 L1136 738 C1188 620 1180 512 1093 434 Z" fill="#A3303B"/>
+<path d="M632 325 C820 318 1010 372 1098 478 C1168 562 1158 690 1078 790 C996 890 860 944 682 956 C850 900 980 822 1036 712 C1084 616 1068 526 1004 462 C916 376 780 336 632 325 Z" fill="#D8AB54"/>
+<path d="M864 344 C908 286 966 252 1014 258 C1072 266 1100 330 1062 426" fill="none" stroke="#D8AB54" stroke-width="30" stroke-linecap="round"/>
+</svg>
